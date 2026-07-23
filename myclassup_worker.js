@@ -6,7 +6,7 @@ const SITE_NAME = "우리동네 잘가르치는 과외";
 const PHONE = "010-6834-8080";
 const PHONE_TEL = "01068348080";
 // 문의 저장용 Apps Script 웹앱 주소 (배포 후 여기에 붙여넣기)
-const INQUIRY_ENDPOINT = "REPLACE_APPS_SCRIPT_ENDPOINT";
+const INQUIRY_ENDPOINT = "https://script.google.com/macros/s/AKfycbwRti9J3kYRRcd0Au7DYgxmMr2G4L1MGHWd4QeUqXu7L7xkFoY4UobIU5zhA2aXkOpzug/exec";
 const INDEXNOW_KEY = "REPLACE_INDEXNOW_KEY_MYCLASSUP"; // 예: "https://script.google.com/macros/s/AKfy.../exec"
 
 // 슬러그 역매핑
@@ -428,7 +428,7 @@ async function submitInq(){
   var fullAddr = addr + (addrDetail ? ' '+addrDetail : '');
   note.style.color='#5b636e';note.textContent='전송 중...';
   var endpoint=${JSON.stringify(INQUIRY_ENDPOINT)};
-  var payload={name:name,phone:phone,address:fullAddr,grade:grade,subject:subject,message:msg,page:location.href,time:new Date().toLocaleString('ko-KR')};
+  var payload={site:'myclassup',name:name,phone:phone,address:fullAddr,grade:grade,subject:subject,message:msg,page:location.href,time:new Date().toLocaleString('ko-KR')};
   if(!endpoint){note.style.color='#c0392b';note.textContent='문의 접수 준비 중입니다. 전화로 문의해 주세요.';return;}
   try{
     await fetch(endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
