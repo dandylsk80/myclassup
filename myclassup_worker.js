@@ -591,24 +591,18 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .herobtns .hinq{background:transparent;color:var(--ink);border:1.5px solid #3a4666!important}
 
 /* ── 홈 섹션들 ── */
-.subjgrid{display:flex;flex-direction:column;margin-top:8px}
-/* 대형 타이포 아코디언 */
-.subjacc{border-bottom:1px solid var(--line)}
-.subjacc:first-of-type{border-top:1px solid var(--line)}
-.subjacc summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:12px;padding:16px 2px;user-select:none}
-.subjacc summary::-webkit-details-marker{display:none}
+.subjgrid{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+/* 배경 이미지 과목 카드 (전체 펼침) */
+.subjacc{position:relative;border-radius:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--sc) 40%,#455274);background-image:var(--bg);background-size:cover;background-position:center;isolation:isolate}
+.subjacc::before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(18,24,36,.93) 0%,rgba(18,24,36,.86) 45%,rgba(18,24,36,.62) 100%);z-index:-1}
+.sa-head{display:flex;align-items:baseline;gap:11px;padding:15px 16px 0}
 .sa-idx{font-size:11px;font-weight:800;color:var(--sc);font-variant-numeric:tabular-nums;letter-spacing:1px}
-.sa-name{font-size:30px;font-weight:900;letter-spacing:-1.2px;color:var(--ink);line-height:1;transition:color .15s}
-.subjacc[open] .sa-name{color:var(--sc)}
-.subjacc summary:hover .sa-name{color:var(--sc)}
-.sa-en{font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:var(--sub);opacity:.7}
-.sa-plus{margin-left:auto;font-size:20px;font-weight:400;color:var(--sub);transition:transform .2s}
-.subjacc[open] .sa-plus{transform:rotate(45deg);color:var(--sc)}
-.sa-body{padding:0 2px 18px;animation:saFade .25s ease}
-@keyframes saFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.sa-body p{font-size:13.5px;color:#d3dbea;line-height:1.8;margin:0 0 12px;border-left:3px solid var(--sc);padding-left:12px}
+.sa-name{font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--sc);line-height:1;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.sa-en{font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:#c3cde4;opacity:.85}
+.sa-body{padding:11px 16px 15px}
+.sa-body p{font-size:13px;color:#e2e8f5;line-height:1.75;margin:0 0 11px;border-left:3px solid var(--sc);padding-left:11px;text-shadow:0 1px 6px rgba(0,0,0,.55)}
 .sa-lvs{display:flex;gap:6px}
-.sa-lvs span{font-size:11px;font-weight:800;color:var(--sc);background:color-mix(in srgb,var(--sc) 14%,transparent);border:1px solid color-mix(in srgb,var(--sc) 35%,transparent);padding:4px 12px;border-radius:999px}
+.sa-lvs span{font-size:11px;font-weight:800;color:var(--sc);background:rgba(12,16,26,.55);border:1px solid color-mix(in srgb,var(--sc) 50%,transparent);padding:4px 12px;border-radius:999px}
 .goal3{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
 .goalcard{background:var(--panel2);border:1px solid #455274;border-radius:16px;padding:16px}
 .goalcard .gic{font-size:24px;margin-bottom:6px}
@@ -957,7 +951,9 @@ function pageHome(){
   const SUBJ_BLURB={"국어":"독해력과 어휘, 서술형 답안까지. 교과서 지문을 뜯어 읽으며 국어의 기본기를 잡습니다.","영어":"단어·문법·독해·듣기를 균형 있게. 학교 내신과 실전 감각을 함께 가져갑니다.","수학":"개념 이해부터 응용·심화까지. 오답을 다시 잡으며 수학 자신감을 되찾습니다.","과학":"암기가 아닌 원리 이해로. 실험과 탐구 흐름을 따라 개념을 연결합니다.","사회":"역사·지리·일반사회를 하나의 흐름으로. 자료 읽기와 맥락 잡기를 훈련합니다."};
   const SUBJ_COLOR={"국어":"#ff2d2d","영어":"#1a6dff","수학":"#22c55e","과학":"#8b2dff","사회":"#ff9500"};
   const SUBJ_EN_LBL={"국어":"KOREAN","영어":"ENGLISH","수학":"MATH","과학":"SCIENCE","사회":"SOCIAL"};
-  const subjCards=SUBJECTS.map((s,i)=>{const c=SUBJ_COLOR[s]||"#b8f545";return `<details class="subjacc" style="--sc:${c}"${i===0?" open":""}><summary><span class="sa-idx">0${i+1}</span><span class="sa-name">${esc(s)}</span><span class="sa-en">${SUBJ_EN_LBL[s]||""}</span><span class="sa-plus">+</span></summary><div class="sa-body"><p>${esc(SUBJ_BLURB[s]||s)}</p><div class="sa-lvs"><span>초등</span><span>중학</span><span>고교</span></div></div></details>`;}).join("");
+  const SUBJ_IMG={"국어":"111.jpg","영어":"112.jpg","수학":"113.jpg","과학":"115.jpg","사회":"114.jpg"};
+  const IMG_BASE="https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/";
+  const subjCards=SUBJECTS.map((s,i)=>{const c=SUBJ_COLOR[s]||"#b8f545";const bg=IMG_BASE+(SUBJ_IMG[s]||"123.jpg");return `<div class="subjacc" style="--sc:${c};--bg:url('${bg}')"><div class="sa-head"><span class="sa-idx">0${i+1}</span><span class="sa-name">${esc(s)}</span><span class="sa-en">${SUBJ_EN_LBL[s]||""}</span></div><div class="sa-body"><p>${esc(SUBJ_BLURB[s]||s)}</p><div class="sa-lvs"><span>초등</span><span>중학</span><span>고교</span></div></div></div>`;}).join("");
 
   // 메인 FAQ
   const homeFaqs=[
