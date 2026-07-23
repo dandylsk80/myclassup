@@ -2,7 +2,7 @@ const REGIONS = [{"slug":"gangwon-gangreungsi-gangnamdong","sido":"강원","sgg"
 // ===== semoacademy.com Worker v2 =====
 const SITE = "myclassup.com";
 const SITE_URL = "https://myclassup.com";
-const SITE_NAME = "우리동네 잘가르치는 과외";
+const SITE_NAME = "우리동네 과외";
 const PHONE = "010-6834-8080";
 const PHONE_TEL = "01068348080";
 // 문의 저장용 Apps Script 웹앱 주소 (배포 후 여기에 붙여넣기)
@@ -335,7 +335,7 @@ function layout({title,desc,canonical,jsonld,body,crumb,image}){
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(canonical)}"><meta property="og:site_name" content="${SITE_NAME}"><meta property="og:image" content="${image||SITE_URL+'/logo.png'}">
 ${ldBlocks}
 <style>${CSS}</style></head><body>
-<header class="hd"><div class="wrap"><a href="/" class="logo">${LOGO_SVG}<span class="logotxt">우리동네 잘가르치는 과외</span></a><nav class="gnav"><a href="tel:${PHONE_TEL}" class="gnav-call">📞 ${PHONE}</a></nav></div></header>
+<header class="hd"><div class="wrap"><a href="/" class="logo">${LOGO_SVG}<span class="logotxt">우리동네 과외</span></a><nav class="gnav"><a href="tel:${PHONE_TEL}" class="gnav-call">📞 ${PHONE}</a></nav></div></header>
 <main class="wrap">${bc}${body}</main>
 <footer class="ft"><div class="wrap">
 <p class="ftname">${LOGO_SVG_SM} ${SITE_NAME}</p>
@@ -389,6 +389,14 @@ const INQUIRY_MODAL = `<div class="inqback" id="inqBack" onclick="if(event.targe
 <button class="inqsubmit" onclick="submitInq()">문의 보내기</button>
 <a href="tel:${PHONE_TEL}" class="inqcall">📞 바로 전화하기 ${PHONE}</a>
 <p class="inqnote" id="iqNote"></p>
+</div></div>
+<div class="thxback" id="thxBack" onclick="if(event.target===this)closeThx()">
+<div class="thxbox">
+<div class="thxic">✅</div>
+<h3>감사합니다</h3>
+<p>문의가 정상적으로 접수되었습니다.<br>확인 후 <b>꼭 연락드리겠습니다.</b></p>
+<a href="tel:${PHONE_TEL}" class="thxcall">📞 지금 바로 통화하기</a>
+<button class="thxok" onclick="closeThx()">확인</button>
 </div></div>`;
 
 // 문의 JS
@@ -423,11 +431,13 @@ async function submitInq(){
   if(!endpoint){note.style.color='#c0392b';note.textContent='문의 접수 준비 중입니다. 전화로 문의해 주세요.';return;}
   try{
     await fetch(endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
-    note.style.color='#2c6e63';note.textContent='문의가 접수되었습니다. 곧 연락드리겠습니다.';
+    note.textContent='';closeInq();openThx();
     ['iqName','iqPhone','iqAddr','iqAddrDetail','iqMsg'].forEach(function(id){document.getElementById(id).value='';});
     document.getElementById('iqGrade').value='';document.getElementById('iqSubject').value='';
   }catch(e){ note.style.color='#c0392b';note.textContent='전송에 실패했습니다. 전화로 문의해 주세요.'; }
-}`;
+}
+function openThx(){ var b=document.getElementById('thxBack'); if(b){ b.classList.add('on'); document.body.style.overflow='hidden'; } }
+function closeThx(){ var b=document.getElementById('thxBack'); if(b){ b.classList.remove('on'); document.body.style.overflow=''; } }`;
 
 const CSS = `
 :root{--bg:#1e2635;--panel:#293246;--panel2:#333d55;--ink:#f5f8ff;--sub:#a8b3ca;--line:#3f4a67;--accent:#b8f545;--accent-d:#8fd415;--accent-ink:#141a26;--soft:#38435f;--blue:#6b98ff;--warn-bg:#372c1d;--warn-bd:#655433;--warn-ink:#ffdf9a;--card:#293246;--r:20px}
@@ -593,27 +603,34 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 /* ── 홈 섹션들 ── */
 .subjgrid{display:flex;flex-direction:column;gap:12px;margin-top:14px}
 /* 배경 이미지 과목 카드 (전체 펼침) */
-.subjacc{position:relative;border-radius:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--sc) 50%,#455274);min-height:210px;display:flex;align-items:flex-end;background:#141b2a}
+.subjacc{position:relative;border-radius:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--sc) 50%,#455274);min-height:220px;display:flex;align-items:flex-end;background:#141b2a}
+.subjacc::after{content:"";position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(to top,rgba(6,9,16,.72),rgba(6,9,16,.28) 55%,transparent);z-index:1;pointer-events:none}
 .sa-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:saturate(1.12) contrast(1.04)}
-.sa-glass{position:relative;z-index:2;width:100%;margin:10px;padding:13px 15px 14px;border-radius:14px;background:rgba(10,14,24,.74);backdrop-filter:blur(9px) saturate(1.2);-webkit-backdrop-filter:blur(9px) saturate(1.2);border:1px solid rgba(255,255,255,.09);box-shadow:0 8px 26px rgba(0,0,0,.4)}
+.sa-glass{position:relative;z-index:2;width:100%;padding:16px 16px 15px;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;border:none;box-shadow:none}
 .sa-head{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
-.sa-idx{font-size:11px;font-weight:800;color:var(--sc);font-variant-numeric:tabular-nums;letter-spacing:1px}
-.sa-name{font-size:23px;font-weight:900;letter-spacing:-.9px;color:var(--sc);line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.6)}
-.sa-en{font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:#c9d3e6}
-.sa-glass p{font-size:12.8px;color:#f0f4ff;line-height:1.7;margin:0 0 10px;border-left:3px solid var(--sc);padding-left:11px}
+.sa-idx{font-size:11px;font-weight:800;color:var(--sc);font-variant-numeric:tabular-nums;letter-spacing:1px;text-shadow:0 1px 4px #000,0 0 10px rgba(0,0,0,.9)}
+.sa-name{font-size:25px;font-weight:900;letter-spacing:-.9px;color:var(--sc);line-height:1;text-shadow:0 2px 4px #000,0 0 12px rgba(0,0,0,.95),0 0 24px rgba(0,0,0,.7)}
+.sa-en{font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:#fff;text-shadow:0 1px 4px #000,0 0 10px rgba(0,0,0,.9)}
+.sa-glass p{font-size:13px;color:#fff;line-height:1.7;margin:0 0 10px;border-left:3px solid var(--sc);padding-left:11px;font-weight:600;text-shadow:0 1px 3px #000,0 1px 10px rgba(0,0,0,.95),0 0 20px rgba(0,0,0,.8)}
 .sa-lvs{display:flex;gap:6px}
-.sa-lvs span{font-size:11px;font-weight:800;color:#0d1220;background:var(--sc);border:none;padding:4px 12px;border-radius:999px}
+.sa-lvs span{font-size:11px;font-weight:900;color:#0d1220;background:var(--sc);border:none;padding:4px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .goal3{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
-.goalcard{background:var(--panel2);border:1px solid #455274;border-radius:16px;padding:16px}
-.goalcard .gic{font-size:24px;margin-bottom:6px}
-.goalcard b{font-size:14.5px;color:var(--ink)}
-.goalcard p{font-size:13px!important;color:var(--sub)!important;margin-top:5px}
+.goalcard{position:relative;border:1px solid #455274;border-radius:16px;overflow:hidden;min-height:150px;display:flex;align-items:flex-end;background:#141b2a}
+.gc-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:saturate(1.1) contrast(1.03)}
+.goalcard::after{content:"";position:absolute;left:0;right:0;bottom:0;height:70%;background:linear-gradient(to top,rgba(6,9,16,.8),rgba(6,9,16,.3) 55%,transparent);z-index:1;pointer-events:none}
+.gc-in{position:relative;z-index:2;padding:16px;width:100%}
+.goalcard .gic{font-size:26px;margin-bottom:6px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8))}
+.goalcard b{font-size:15.5px;color:#fff;text-shadow:0 2px 6px #000,0 0 14px rgba(0,0,0,.9)}
+.goalcard p{font-size:13px!important;color:#eaf0fb!important;margin-top:5px;font-weight:600;text-shadow:0 1px 5px #000,0 1px 12px rgba(0,0,0,.95)}
 .procrow{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
-.procstep{background:var(--panel2);border:1px solid #455274;border-radius:16px;padding:14px;position:relative}
+.procstep{position:relative;border:1px solid #455274;border-radius:16px;overflow:hidden;min-height:145px;display:flex;align-items:flex-end;background:#141b2a}
+.ps-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:saturate(1.1) contrast(1.03)}
+.procstep::before{content:"";position:absolute;left:0;right:0;bottom:0;height:75%;background:linear-gradient(to top,rgba(6,9,16,.84),rgba(6,9,16,.32) 55%,transparent);z-index:1;pointer-events:none}
+.ps-in{position:relative;z-index:2;padding:13px;width:100%}
 .procstep::after{display:none}
-.procstep .pn{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:900;font-size:12.5px;align-items:center;justify-content:center;margin-bottom:7px}
-.procstep b{display:block;font-size:13.5px;color:var(--ink)}
-.procstep p{font-size:12px!important;color:var(--sub)!important;margin-top:3px}
+.procstep .pn{display:inline-flex;width:27px;height:27px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:900;font-size:13px;align-items:center;justify-content:center;margin-bottom:7px;box-shadow:0 3px 10px rgba(0,0,0,.55)}
+.procstep b{display:block;font-size:14.5px;color:#fff;text-shadow:0 2px 6px #000,0 0 14px rgba(0,0,0,.9)}
+.procstep p{font-size:12px!important;color:#eaf0fb!important;margin-top:3px;font-weight:600;line-height:1.6;text-shadow:0 1px 5px #000,0 1px 12px rgba(0,0,0,.95)}
 .quoteband{background:linear-gradient(135deg,#2f3c5b,#242e42);border:1px solid var(--line);border-radius:var(--r);padding:24px 18px;margin:14px 0;text-align:center}
 .quoteband h2{font-size:16px;font-weight:800;line-height:1.5;color:var(--ink);word-break:keep-all}
 .quoteband .uline{color:var(--accent);border-bottom:2px solid var(--accent)}
@@ -623,9 +640,10 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .howto h2{font-size:16.5px;font-weight:800;margin-bottom:10px}
 .steps3{display:grid;grid-template-columns:1fr;gap:9px}
 .s3{background:var(--panel2);border-radius:14px;padding:13px 14px;display:flex;gap:12px;align-items:flex-start}
+.s3b{flex:1;min-width:0}
 .s3n{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center}
-.s3t{font-size:14px;font-weight:800;color:var(--ink)}
-.s3d{font-size:12.5px;color:var(--sub);margin-top:2px}
+.s3t{font-size:14px;font-weight:800;color:var(--ink);line-height:1.4;word-break:keep-all}
+.s3d{font-size:12.5px;color:var(--sub);margin-top:3px;line-height:1.6;word-break:keep-all}
 .lgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}
 .lgrid a{background:var(--panel2);border:1px solid #455274;border-radius:14px;padding:13px 14px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:700}
 .lgrid a small{display:block;font-size:11px;color:var(--sub);font-weight:600;margin-top:2px}
@@ -679,6 +697,18 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .inqsubmit{width:100%;background:var(--accent);color:var(--accent-ink);border:none;border-radius:999px;font-size:15px;font-weight:900;padding:15px;cursor:pointer;margin-top:6px;font-family:inherit}
 .inqcall{display:block;text-align:center;margin-top:10px;color:var(--sub);font-size:12.5px}
 .inqnote{font-size:12px;margin-top:9px;text-align:center;color:var(--sub)}
+/* 문의 완료 모달 */
+.thxback{position:fixed;inset:0;background:rgba(8,11,20,.8);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.thxback.on{display:flex;animation:thxFade .2s ease}
+@keyframes thxFade{from{opacity:0}to{opacity:1}}
+.thxbox{background:var(--panel);border:1px solid var(--line);border-radius:22px;max-width:340px;width:100%;padding:30px 24px 24px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.55);animation:thxPop .25s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes thxPop{from{transform:scale(.9) translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.thxic{font-size:46px;line-height:1;margin-bottom:12px}
+.thxbox h3{font-size:22px;font-weight:900;color:var(--accent);margin-bottom:10px;letter-spacing:-.5px}
+.thxbox p{font-size:14px;color:#dbe2f0;line-height:1.75;margin-bottom:20px}
+.thxbox p b{color:var(--ink)}
+.thxcall{display:block;background:var(--accent);color:var(--accent-ink);font-size:15px;font-weight:900;padding:14px;border-radius:999px;text-decoration:none;margin-bottom:9px}
+.thxok{width:100%;background:transparent;color:var(--sub);border:1px solid var(--line);border-radius:999px;font-size:14px;font-weight:700;padding:12px;cursor:pointer;font-family:inherit}
 
 img,table{max-width:100%}
 *{overflow-wrap:anywhere;word-break:keep-all}
@@ -958,7 +988,7 @@ function pageHome(){
 
   // 메인 FAQ
   const homeFaqs=[
-    ["우리동네 잘가르치는 과외는 어떤 사이트인가요?","전국 지역별·과목별 과외 정보를 한곳에 모아 안내하는 정보 제공 사이트입니다. 동네 이름으로 우리 아이에게 맞는 과외를 쉽게 찾을 수 있습니다."],
+    ["우리동네 과외는 어떤 사이트인가요?","전국 지역별·과목별 과외 정보를 한곳에 모아 안내하는 정보 제공 사이트입니다. 동네 이름으로 우리 아이에게 맞는 과외를 쉽게 찾을 수 있습니다."],
     ["우리 동네 과외는 어떻게 찾나요?","상단 또는 아래 '지역으로 찾기'에서 시·도를 선택하고, 시군구와 동네를 차례로 고르면 해당 지역의 과목별·학년별 과외 정보를 볼 수 있습니다."],
     ["교습비와 수업 시간도 나와 있나요?","교습비와 수업 시간은 지역·과목·학생 상황에 따라 다르므로 사이트에는 표시하지 않습니다. 자세한 사항은 각 과외에 방문상담으로 확인하실 수 있습니다."],
     ["상담은 어떻게 받나요?","페이지의 전화 버튼으로 바로 통화하시거나, 문의하기 버튼으로 학생 정보와 궁금한 점을 남기시면 안내를 받으실 수 있습니다."]
@@ -967,22 +997,22 @@ function pageHome(){
   const faqLd=JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":homeFaqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))});
 
   const springHoles = Array.from({length:9},(_,i)=>`<span style="top:${36+i*64}px"></span>`).join("");
-  const body=`<div class="hero"><div class="springbar">${springHoles}</div><span class="deco d1">📚</span><span class="deco d2">🎓</span><span class="deco d3">📐</span><div class="herobadge">🏡 동네별 과외 찾기</div><h1>동네에서 검증된 과외만<br><span class="accent">우리동네 잘가르치는 과외</span><span class="pencil">🏡</span><span class="sub2">지역·과목·학년으로 바로 찾기</span></h1><p>우리 동네 이름으로 검색해 아이 학년과 과목에 맞는 과외를 확인하세요. 인근 학교 내신 정보까지 함께 안내합니다.</p><div class="stat"><div><b>${totalDong}</b>동네</div><div><b>${SUBJECTS.length}</b>과목</div><div><b>${sidos.length}</b>시·도</div></div><div class="herobtns"><a class="hcall" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="hinq" onclick="openInq()">✉️ 문의하기</button></div></div>
+  const body=`<div class="hero"><div class="springbar">${springHoles}</div><span class="deco d1">📚</span><span class="deco d2">🎓</span><span class="deco d3">📐</span><div class="herobadge">🏡 동네별 과외 찾기</div><h1>동네에서 검증된 과외만<br><span class="accent">우리동네 과외</span><span class="pencil">🏡</span><span class="sub2">지역·과목·학년으로 바로 찾기</span></h1><p>우리 동네 이름으로 검색해 아이 학년과 과목에 맞는 과외를 확인하세요. 인근 학교 내신 정보까지 함께 안내합니다.</p><div class="stat"><div><b>${totalDong}</b>동네</div><div><b>${SUBJECTS.length}</b>과목</div><div><b>${sidos.length}</b>시·도</div></div><div class="herobtns"><a class="hcall" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="hinq" onclick="openInq()">✉️ 문의하기</button></div></div>
 
 <section class="sec"><h2>📚 과목별 과외</h2><p class="subt">국어·영어·수학·과학·사회, 초·중·고 전 과목 과외 정보를 안내합니다.</p><div class="subjgrid">${subjCards}</div></section>
 <section class="sec"><h2>🎯 이런 힘을 길러 드립니다</h2><p class="subt">점수보다 오래 남는 세 가지를 목표로 합니다.</p>
 <div class="goal3">
-<div class="goalcard"><div class="gic">🧭</div><b>단계별 개별 지도</b><p>핵심 개념 이해부터 응용·서술형까지, 아이의 단계에 맞춰 차근차근 올라갑니다.</p></div>
-<div class="goalcard"><div class="gic">🧠</div><b>생각하는 힘</b><p>원리를 이해한 뒤 스스로 풀어 보며 사고의 폭을 넓혀 갑니다.</p></div>
-<div class="goalcard"><div class="gic">🌱</div><b>자기주도 학습 습관</b><p>맞춤 학습 코칭으로 공부 동기와 지속하는 힘을 키웁니다.</p></div>
+<div class="goalcard"><img class="gc-bg" src="${IMG_BASE}222.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}222.jpg'"><div class="gc-in"><div class="gic">🧭</div><b>단계별 개별 지도</b><p>핵심 개념 이해부터 응용·서술형까지, 아이의 단계에 맞춰 차근차근 올라갑니다.</p></div></div>
+<div class="goalcard"><img class="gc-bg" src="${IMG_BASE}223.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}223.jpg'"><div class="gc-in"><div class="gic">🧠</div><b>생각하는 힘</b><p>원리를 이해한 뒤 스스로 풀어 보며 사고의 폭을 넓혀 갑니다.</p></div></div>
+<div class="goalcard"><img class="gc-bg" src="${IMG_BASE}224.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}224.jpg'"><div class="gc-in"><div class="gic">🌱</div><b>자기주도 학습 습관</b><p>맞춤 학습 코칭으로 공부 동기와 지속하는 힘을 키웁니다.</p></div></div>
 </div></section>
 
 <section class="sec"><h2>🔄 학습이 진행되는 순서</h2><p class="subt">동네 과외에서 이런 흐름으로 아이를 관리합니다.</p>
 <div class="procrow">
-<div class="procstep"><span class="pn">1</span><b>진단</b><p>현재 실력과 성취도를 먼저 살핍니다.</p></div>
-<div class="procstep"><span class="pn">2</span><b>분석</b><p>과목별 강점과 약한 부분을 찾아냅니다.</p></div>
-<div class="procstep"><span class="pn">3</span><b>계획</b><p>학년·수준에 맞는 학습 계획을 세웁니다.</p></div>
-<div class="procstep"><span class="pn">4</span><b>훈련·점검</b><p>약한 개념을 집중 보완하고 다시 확인합니다.</p></div>
+<div class="procstep"><img class="ps-bg" src="${IMG_BASE}333.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}333.jpg'"><div class="ps-in"><span class="pn">1</span><b>진단</b><p>현재 실력과 성취도를 먼저 살핍니다.</p></div></div>
+<div class="procstep"><img class="ps-bg" src="${IMG_BASE}334.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}334.jpg'"><div class="ps-in"><span class="pn">2</span><b>분석</b><p>과목별 강점과 약한 부분을 찾아냅니다.</p></div></div>
+<div class="procstep"><img class="ps-bg" src="${IMG_BASE}335.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}335.jpg'"><div class="ps-in"><span class="pn">3</span><b>계획</b><p>학년·수준에 맞는 학습 계획을 세웁니다.</p></div></div>
+<div class="procstep"><img class="ps-bg" src="${IMG_BASE}336.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}336.jpg'"><div class="ps-in"><span class="pn">4</span><b>훈련·점검</b><p>약한 개념을 집중 보완하고 다시 확인합니다.</p></div></div>
 </div></section>
 
 <div class="quoteband"><h2>우리는 '점수만 좋은 아이'가 아니라<br><span class="uline">'혼자서도 공부할 줄 아는 아이'</span>를 목표로 합니다.</h2>
@@ -990,9 +1020,9 @@ function pageHome(){
 
 
 <section class="howto"><h2>이렇게 찾으세요</h2><div class="steps3">
-<div class="s3"><div class="s3n">1</div><div class="s3t">지역 선택</div><div class="s3d">시·도 → 시군구 → 동네 순으로 우리 동네를 찾습니다.</div></div>
-<div class="s3"><div class="s3n">2</div><div class="s3t">과목·학년 선택</div><div class="s3d">초·중·고 학년과 과목을 골라 맞는 과외 정보를 봅니다.</div></div>
-<div class="s3"><div class="s3n">3</div><div class="s3t">전화·문의 상담</div><div class="s3d">전화나 문의하기로 학습 상담을 받아보세요.</div></div>
+<div class="s3"><div class="s3n">1</div><div class="s3b"><div class="s3t">지역 선택</div><div class="s3d">시·도 → 시군구 → 동네 순으로 우리 동네를 찾습니다.</div></div></div>
+<div class="s3"><div class="s3n">2</div><div class="s3b"><div class="s3t">과목·학년 선택</div><div class="s3d">초·중·고 학년과 과목을 골라 맞는 과외 정보를 봅니다.</div></div></div>
+<div class="s3"><div class="s3n">3</div><div class="s3b"><div class="s3t">전화·문의 상담</div><div class="s3d">전화나 문의하기로 학습 상담을 받아보세요.</div></div></div>
 </div></section>
 
 
