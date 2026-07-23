@@ -363,7 +363,7 @@ ${INQUIRY_MODAL}
 }
 
 // 로고 SVG (둥근 사각 + 흰 세모)
-const LOGO_SVG = `<svg class="logoimg" width="30" height="30" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#b8f545"/><path d="M10 29V12l10 9 10-9v17" fill="none" stroke="#0c0f16" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LOGO_SVG = `<svg class="logoimg" width="38" height="38" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#b8f545"/><path d="M10 29V12l10 9 10-9v17" fill="none" stroke="#0c0f16" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const LOGO_SVG_SM = `<svg width="18" height="18" viewBox="0 0 40 40" style="vertical-align:-3px"><rect width="40" height="40" rx="12" fill="#b8f545"/><path d="M10 29V12l10 9 10-9v17" fill="none" stroke="#0c0f16" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 // 플로팅 버튼 (전화/문자/문의)
@@ -379,22 +379,22 @@ const INQUIRY_MODAL = `<div class="inqback" id="inqBack" onclick="if(event.targe
 <button class="inqx" onclick="closeInq()" aria-label="닫기">×</button>
 <h3>문의 남기기</h3>
 <p class="inqdesc">아래 내용을 남겨 주시면 빠르게 안내해 드립니다. (문의내용 외 모두 필수)</p>
-<div class="inqfield"><label>학생 이름 <em>*</em></label><input id="iqName" type="text" placeholder="학생 성함"></div>
-<div class="inqfield"><label>연락처 <em>*</em></label><input id="iqPhone" type="tel" placeholder="010-0000-0000"></div>
-<div class="inqfield"><label>주소 (도로명) <em>*</em></label><input id="iqAddr" type="text" placeholder="클릭하여 주소 검색" readonly onclick="searchAddr()" style="cursor:pointer;background:#fff"><input id="iqAddrDetail" type="text" placeholder="상세주소 (동·호수 등)" style="margin-top:8px"></div>
-<div class="inqrow">
-<div class="inqfield"><label>학년 <em>*</em></label><select id="iqGrade">
+<div class="inqrow"><label>학생 이름 <em>*</em></label><input id="iqName" type="text" placeholder="학생 성함"></div>
+<div class="inqrow"><label>연락처 <em>*</em></label><input id="iqPhone" type="tel" placeholder="010-0000-0000"></div>
+<div class="inqrow"><label>주소 (도로명) <em>*</em></label><input id="iqAddr" type="text" placeholder="클릭하여 주소 검색" readonly onclick="searchAddr()" style="cursor:pointer"><input id="iqAddrDetail" type="text" placeholder="상세주소 (동·호수 등)" style="margin-top:8px"></div>
+<div class="inq2col">
+<div class="inqrow"><label>학년 <em>*</em></label><select id="iqGrade">
 <option value="">선택</option>
 <option>초1</option><option>초2</option><option>초3</option><option>초4</option><option>초5</option><option>초6</option>
 <option>중1</option><option>중2</option><option>중3</option>
 <option>고1</option><option>고2</option><option>고3</option>
 </select></div>
-<div class="inqfield"><label>과목 <em>*</em></label><select id="iqSubject">
+<div class="inqrow"><label>과목 <em>*</em></label><select id="iqSubject">
 <option value="">선택</option>
 <option>국어</option><option>영어</option><option>수학</option><option>과학</option><option>사회</option>
 </select></div>
 </div>
-<div class="inqfield"><label>문의 내용</label><textarea id="iqMsg" rows="3" placeholder="궁금하신 점을 적어 주세요 (선택)"></textarea></div>
+<div class="inqrow"><label>문의 내용</label><textarea id="iqMsg" rows="3" placeholder="궁금하신 점을 적어 주세요 (선택)"></textarea></div>
 <button class="inqsubmit" onclick="submitInq()">문의 보내기</button>
 <a href="tel:${PHONE_TEL}" class="inqcall">📞 바로 전화하기 ${PHONE}</a>
 <p class="inqnote" id="iqNote"></p>
@@ -448,13 +448,13 @@ a{color:var(--accent)}
 
 /* ── 헤더: 앱 상단바 ── */
 .hd{background:rgba(30,38,53,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
-.hd .wrap{display:flex;align-items:center;justify-content:space-between;height:56px;gap:10px}
-.logo{font-size:15.5px;font-weight:800;text-decoration:none;letter-spacing:-.5px;display:flex;align-items:center;gap:7px;min-width:0}
+.hd .wrap{display:flex;align-items:center;justify-content:space-between;height:84px;gap:10px}
+.logo{font-size:17px;font-weight:800;text-decoration:none;letter-spacing:-.5px;display:flex;align-items:center;gap:9px;min-width:0}
 .logo .logoimg{flex-shrink:0;border-radius:9px}
 .logo .logotxt{color:var(--ink);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gnav{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .gnav a{color:var(--sub);text-decoration:none;font-size:13.5px;font-weight:700}
-.gnav-call{color:var(--accent-ink)!important;background:var(--accent);padding:8px 13px;border-radius:999px;font-weight:800!important;box-shadow:0 0 18px rgba(184,245,69,.35);white-space:nowrap;font-size:13px}
+.gnav-call{color:var(--accent-ink)!important;background:var(--accent);padding:11px 17px;border-radius:999px;font-weight:800!important;box-shadow:0 0 18px rgba(184,245,69,.35);white-space:nowrap;font-size:14px}
 
 /* ── 브레드크럼 ── */
 .bc{font-size:12px;color:var(--sub);margin:14px 2px 6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
@@ -581,8 +581,6 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 
 /* ── 홈 히어로: 네온 앱 ── */
 .hero{position:relative;background:linear-gradient(160deg,#2c3853 0%,#212a3c 70%);border:1px solid var(--line);color:var(--ink);border-radius:26px;padding:38px 22px;margin-top:16px;margin-bottom:16px;overflow:hidden;text-align:center;box-shadow:0 22px 55px rgba(0,0,0,.5)}
-.hero::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(184,245,69,.22),transparent 65%);top:-160px;right:-120px;pointer-events:none}
-.hero::after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(91,140,255,.18),transparent 65%);bottom:-140px;left:-110px;pointer-events:none}
 .hero .springbar{display:none}
 .hero .deco{position:absolute;font-size:26px;opacity:.18;pointer-events:none;user-select:none;z-index:0}
 .d1{top:18px;left:16px}.d2{top:60px;right:20px}.d3{bottom:22px;left:26px}
@@ -684,10 +682,15 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .inqx{position:absolute;top:14px;right:16px;background:var(--panel2);border:none;color:var(--sub);width:32px;height:32px;border-radius:50%;font-size:15px;cursor:pointer}
 .inqbox h3{font-size:17px;font-weight:900;color:var(--ink);margin-bottom:4px}
 .inqdesc{font-size:12.5px;color:var(--sub);margin-bottom:14px}
-.inqrow{margin-bottom:11px}
-.inqrow label{display:block;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:5px}
-.inqfield,.inqrow input,.inqrow select,.inqrow textarea{width:100%;background:var(--panel2);border:1px solid #49557a;border-radius:12px;color:var(--ink);font-size:14px;padding:12px 13px;font-family:inherit}
-.inqrow textarea{min-height:80px;resize:vertical}
+.inqrow{margin-bottom:12px}
+.inqrow label{display:block;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px}
+.inqrow label em{font-style:normal;color:var(--accent)}
+.inqrow input,.inqrow select,.inqrow textarea{width:100%;background:var(--panel2);border:1px solid #49557a;border-radius:12px;color:var(--ink);font-size:14px;padding:12px 13px;font-family:inherit;appearance:none;-webkit-appearance:none}
+.inqrow input::placeholder,.inqrow textarea::placeholder{color:#7a86a3}
+.inqrow input:focus,.inqrow select:focus,.inqrow textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.inqrow select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a8b3ca' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.inq2col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.inqrow textarea{min-height:84px;resize:vertical}
 .inqsubmit{width:100%;background:var(--accent);color:var(--accent-ink);border:none;border-radius:999px;font-size:15px;font-weight:900;padding:15px;cursor:pointer;margin-top:6px;font-family:inherit}
 .inqcall{display:block;text-align:center;margin-top:10px;color:var(--sub);font-size:12.5px}
 .inqnote{font-size:12px;margin-top:9px;text-align:center;color:var(--sub)}
@@ -772,7 +775,8 @@ function parseFaq(text){
 // 섹션 타입별 렌더링
 const SEC_ICON = {check:"✅",step:"📈",box:"💡",info:"📋",plain:"📝"};
 function renderSec(s,i){
-  const icon = SEC_ICON[s.type]||"";
+  const DEF_IC=["📌","🎯","🧭","🏫","🗂️","🔍","📖","✏️","⏰","🌱"];
+  const icon = SEC_ICON[s.type]||DEF_IC[i%DEF_IC.length];
   const head = `<h2><span class="sicon">${icon}</span>${esc(s.h)}</h2>`;
   let inner = `<p>${esc(s.p)}</p>`;
   if(s.type==="check" && s.items){
@@ -970,7 +974,7 @@ function pageHome(){
 
   // 과목: 대형 타이포 아코디언
   const SUBJ_BLURB={"국어":"독해력과 어휘, 서술형 답안까지. 교과서 지문을 뜯어 읽으며 국어의 기본기를 잡습니다.","영어":"단어·문법·독해·듣기를 균형 있게. 학교 내신과 실전 감각을 함께 가져갑니다.","수학":"개념 이해부터 응용·심화까지. 오답을 다시 잡으며 수학 자신감을 되찾습니다.","과학":"암기가 아닌 원리 이해로. 실험과 탐구 흐름을 따라 개념을 연결합니다.","사회":"역사·지리·일반사회를 하나의 흐름으로. 자료 읽기와 맥락 잡기를 훈련합니다."};
-  const SUBJ_COLOR={"국어":"#ff8a70","영어":"#6db3ff","수학":"#b8f545","과학":"#c39bff","사회":"#ffc44d"};
+  const SUBJ_COLOR={"국어":"#ff2d2d","영어":"#1a6dff","수학":"#22c55e","과학":"#8b2dff","사회":"#ff9500"};
   const SUBJ_EN_LBL={"국어":"KOREAN","영어":"ENGLISH","수학":"MATH","과학":"SCIENCE","사회":"SOCIAL"};
   const subjCards=SUBJECTS.map((s,i)=>{const c=SUBJ_COLOR[s]||"#b8f545";return `<details class="subjacc" style="--sc:${c}"${i===0?" open":""}><summary><span class="sa-idx">0${i+1}</span><span class="sa-name">${esc(s)}</span><span class="sa-en">${SUBJ_EN_LBL[s]||""}</span><span class="sa-plus">+</span></summary><div class="sa-body"><p>${esc(SUBJ_BLURB[s]||s)}</p><div class="sa-lvs"><span>초등</span><span>중학</span><span>고교</span></div></div></details>`;}).join("");
 
