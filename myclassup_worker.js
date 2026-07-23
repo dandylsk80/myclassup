@@ -593,16 +593,16 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 /* ── 홈 섹션들 ── */
 .subjgrid{display:flex;flex-direction:column;gap:12px;margin-top:14px}
 /* 배경 이미지 과목 카드 (전체 펼침) */
-.subjacc{position:relative;border-radius:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--sc) 40%,#455274);background-image:var(--bg);background-size:cover;background-position:center;isolation:isolate}
-.subjacc::before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(18,24,36,.93) 0%,rgba(18,24,36,.86) 45%,rgba(18,24,36,.62) 100%);z-index:-1}
-.sa-head{display:flex;align-items:baseline;gap:11px;padding:15px 16px 0}
+.subjacc{position:relative;border-radius:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--sc) 50%,#455274);min-height:210px;display:flex;align-items:flex-end;background:#141b2a}
+.sa-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:saturate(1.12) contrast(1.04)}
+.sa-glass{position:relative;z-index:2;width:100%;margin:10px;padding:13px 15px 14px;border-radius:14px;background:rgba(10,14,24,.74);backdrop-filter:blur(9px) saturate(1.2);-webkit-backdrop-filter:blur(9px) saturate(1.2);border:1px solid rgba(255,255,255,.09);box-shadow:0 8px 26px rgba(0,0,0,.4)}
+.sa-head{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
 .sa-idx{font-size:11px;font-weight:800;color:var(--sc);font-variant-numeric:tabular-nums;letter-spacing:1px}
-.sa-name{font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--sc);line-height:1;text-shadow:0 2px 10px rgba(0,0,0,.5)}
-.sa-en{font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:#c3cde4;opacity:.85}
-.sa-body{padding:11px 16px 15px}
-.sa-body p{font-size:13px;color:#e2e8f5;line-height:1.75;margin:0 0 11px;border-left:3px solid var(--sc);padding-left:11px;text-shadow:0 1px 6px rgba(0,0,0,.55)}
+.sa-name{font-size:23px;font-weight:900;letter-spacing:-.9px;color:var(--sc);line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.sa-en{font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:#c9d3e6}
+.sa-glass p{font-size:12.8px;color:#f0f4ff;line-height:1.7;margin:0 0 10px;border-left:3px solid var(--sc);padding-left:11px}
 .sa-lvs{display:flex;gap:6px}
-.sa-lvs span{font-size:11px;font-weight:800;color:var(--sc);background:rgba(12,16,26,.55);border:1px solid color-mix(in srgb,var(--sc) 50%,transparent);padding:4px 12px;border-radius:999px}
+.sa-lvs span{font-size:11px;font-weight:800;color:#0d1220;background:var(--sc);border:none;padding:4px 12px;border-radius:999px}
 .goal3{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
 .goalcard{background:var(--panel2);border:1px solid #455274;border-radius:16px;padding:16px}
 .goalcard .gic{font-size:24px;margin-bottom:6px}
@@ -953,7 +953,8 @@ function pageHome(){
   const SUBJ_EN_LBL={"국어":"KOREAN","영어":"ENGLISH","수학":"MATH","과학":"SCIENCE","사회":"SOCIAL"};
   const SUBJ_IMG={"국어":"111.jpg","영어":"112.jpg","수학":"113.jpg","과학":"115.jpg","사회":"114.jpg"};
   const IMG_BASE="https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/";
-  const subjCards=SUBJECTS.map((s,i)=>{const c=SUBJ_COLOR[s]||"#b8f545";const bg=IMG_BASE+(SUBJ_IMG[s]||"123.jpg");return `<div class="subjacc" style="--sc:${c};--bg:url('${bg}')"><div class="sa-head"><span class="sa-idx">0${i+1}</span><span class="sa-name">${esc(s)}</span><span class="sa-en">${SUBJ_EN_LBL[s]||""}</span></div><div class="sa-body"><p>${esc(SUBJ_BLURB[s]||s)}</p><div class="sa-lvs"><span>초등</span><span>중학</span><span>고교</span></div></div></div>`;}).join("");
+  const RAW_BASE="https://raw.githubusercontent.com/dandylsk80/myclassup/main/image/";
+  const subjCards=SUBJECTS.map((s,i)=>{const c=SUBJ_COLOR[s]||"#b8f545";const f=SUBJ_IMG[s]||"123.jpg";return `<div class="subjacc" style="--sc:${c}"><img class="sa-bg" src="${IMG_BASE}${f}" alt="${esc(s)} 과외" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}${f}'"><div class="sa-glass"><div class="sa-head"><span class="sa-idx">0${i+1}</span><span class="sa-name">${esc(s)}</span><span class="sa-en">${SUBJ_EN_LBL[s]||""}</span></div><p>${esc(SUBJ_BLURB[s]||s)}</p><div class="sa-lvs"><span>초등</span><span>중학</span><span>고교</span></div></div></div>`;}).join("");
 
   // 메인 FAQ
   const homeFaqs=[
