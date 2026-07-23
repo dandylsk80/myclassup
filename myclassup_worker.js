@@ -56,6 +56,38 @@ const THUMBS = [
 "pexels-yangjunjun2-3353747-10906759.jpg","pexels-yaroslav-shuraev-9489804.jpg",
 ];
 const THUMB_DIR = "https://cdn.jsdelivr.net/gh/dandylsk80/semogwa@main/image";
+const IMG_BASE = "https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/";
+const RAW_BASE = "https://raw.githubusercontent.com/dandylsk80/myclassup/main/image/";
+function mcImg(cls, file, alt){ return `<img class="${cls}" src="${IMG_BASE}${file}" alt="${alt||""}" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}${file}'">`; }
+// ===== 하위페이지용 이미지 블록 =====
+function blkGoal(rng){
+  const items=[["222.jpg","🧭","단계별 개별 지도","핵심 개념 이해부터 응용·서술형까지, 아이의 단계에 맞춰 차근차근 올라갑니다."],
+               ["223.jpg","🧠","생각하는 힘","원리를 이해한 뒤 스스로 풀어 보며 사고의 폭을 넓혀 갑니다."],
+               ["224.jpg","🌱","자기주도 학습 습관","맞춤 학습 코칭으로 공부 동기와 지속하는 힘을 키웁니다."]];
+  const h=pick(rng,["이런 힘을 길러 드립니다","우리가 목표로 하는 것","점수보다 오래 남는 것"]);
+  return `<section class="sec"><h2>🎯 ${h}</h2><div class="goal3">${items.map(([f,ic,t,d])=>`<div class="goalcard">${mcImg("gc-bg",f,t)}<div class="gc-in"><div class="gic">${ic}</div><b>${t}</b><p>${d}</p></div></div>`).join("")}</div></section>`;
+}
+function blkProc(rng){
+  const items=[["333.jpg","1","진단","현재 실력과 성취도를 먼저 살핍니다."],
+               ["334.jpg","2","분석","과목별 강점과 약한 부분을 찾아냅니다."],
+               ["335.jpg","3","계획","학년·수준에 맞는 학습 계획을 세웁니다."],
+               ["336.jpg","4","훈련·점검","약한 개념을 집중 보완하고 다시 확인합니다."]];
+  const h=pick(rng,["학습이 진행되는 순서","이런 흐름으로 관리합니다","수업은 이렇게 진행됩니다"]);
+  return `<section class="sec"><h2>🔄 ${h}</h2><div class="procrow">${items.map(([f,n,t,d])=>`<div class="procstep">${mcImg("ps-bg",f,t)}<div class="ps-in"><span class="pn">${n}</span><b>${t}</b><p>${d}</p></div></div>`).join("")}</div></section>`;
+}
+function blkTools(rng){
+  const items=[["444.jpg","🗓️","학습 스케줄"],["445.jpg","📒","학습 플래너"],["446.jpg","📝","오답 노트"],["447.jpg","📊","성적 리포트"]];
+  const h=pick(rng,["학습 관리 도구","이렇게 관리합니다","기록으로 남는 학습"]);
+  const p=pick(rng,["스케줄·플래너·오답노트·리포트로 아이의 학습을 촘촘히 관리합니다.","계획부터 점검까지 기록으로 남겨 흐름을 놓치지 않습니다.","눈에 보이는 기록이 쌓이면 아이의 학습 습관도 자리 잡습니다."]);
+  return `<section class="sec"><h2>🗂️ ${h}</h2><p class="subt">${p}</p><div class="phgrid">${items.map(([f,ic,t])=>`<figure class="phcard">${mcImg("phimg",f,t)}<figcaption>${ic} ${t}</figcaption></figure>`).join("")}</div></section>`;
+}
+// 페이지별로 1~2개만 노출 (유사도 관리)
+function imgBlocks(seedKey){
+  const rng=seedRng(seedKey+"imgblk");
+  const all=shuffle(rng,[blkGoal,blkProc,blkTools]);
+  const k=1+Math.floor(rng()*2);
+  return all.slice(0,k).map(f=>f(rng)).join("");
+}
 function thumbFor(key){
   if(!THUMBS.length) return null;
   const rng = seedRng(key+"thumb");
@@ -653,6 +685,9 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .popchip b{color:var(--ink);font-size:13.5px}
 .popchip span{display:block;color:var(--sub);font-size:11px;margin-top:2px}
 .phgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.phcard{position:relative;margin:0;border-radius:14px;overflow:hidden;border:1px solid #455274;background:#141b2a}
+.phimg{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.phcard figcaption{position:absolute;left:0;right:0;bottom:0;padding:16px 10px 9px;font-size:12px;font-weight:800;color:#fff;background:linear-gradient(to top,rgba(6,9,16,.88),transparent);text-shadow:0 1px 4px #000}
 .phimg{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;border:1px solid #455274}
 .why,.whygrid{display:grid;gap:10px}
 .whyitem{background:var(--panel2);border-radius:14px;padding:14px}
@@ -773,7 +808,7 @@ function pageSubject(slug, subj, lv){
     : `${sgg} ${dong} ${g} ${subj} 과외 정보. 인근 학교 내신 대비와 ${subj} 학습 관리 안내. 자세한 사항은 방문상담으로 확인하세요.`;
   const faqLd = faqs.length ? "</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))}) : "";
   const jsonld = JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":thumbFor(key),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical}) + faqLd;
-  const body = `${thumb}<h1>${esc(kw)}</h1>${dateBar}${aliasBadge}${summary}${toc}${secs}${schoolTbl}${cta}${related}${faqHtml}<div class="note">${bpk(["수업 시간과 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.","정확한 일정과 비용은 상담 시 안내해 드립니다.","과목·학년별 세부 사항은 문의 남겨 주시면 알려 드려요."])}</div>`;
+  const body = `${thumb}<h1>${esc(kw)}</h1>${dateBar}${aliasBadge}${summary}${toc}${secs}${imgBlocks(key)}${schoolTbl}${cta}${related}${faqHtml}<div class="note">${bpk(["수업 시간과 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.","정확한 일정과 비용은 상담 시 안내해 드립니다.","과목·학년별 세부 사항은 문의 남겨 주시면 알려 드려요."])}</div>`;
   const crumb=[{name:"홈",url:"/"},{name:R.sido,url:urlRegion(R.sido)},{name:R.sgg,url:urlSgg(R.sido,R.sgg)},{name:dong,url:urlDong(slug)},{name:kw}];
   const ttl = alias ? `${kw} (${alias}) | ${sgg} ${subj} 과외` : `${kw} | ${sgg} ${subj} 과외 정보`;
   return layout({title:ttl, desc, canonical, jsonld, body, crumb, image:thumbFor(key)});
@@ -939,7 +974,7 @@ function pageDong(slug){
   const subjSec=`<section class="sec"><h2>${esc(dong)} 과목별 과외</h2><p class="subt">과목을 누르면 학년 통합 안내를 볼 수 있습니다.</p><div class="chips">${subjAll}</div></section>`;
   const summary=`<div class="summary"><div class="row"><span class="item">📍 지역<b>${esc(sido)} ${esc(sgg)} ${esc(dong)}</b></span><span class="item">📚 과목<b>${SUBJECTS.length}개</b></span></div><p class="lead">${esc(sgg)} ${esc(dong)} 지역의 과목별·학년별 과외 정보를 안내합니다. 아래에서 학년과 과목을 선택해 자세한 내용을 확인하세요.</p></div>`;
   const __dd=pageDates(`dong|${slug}`); const __dbar=`<div class="dates"><span>📅 발행일 <b>${__dd.publishedKor}</b></span><span>🔄 수정일 <b>${__dd.modifiedKor}</b></span></div>`;
-  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${subjSec}<section class="sec"><h2>${esc(dong)} 과목·학년별 과외</h2>${lvBlocks}</section><div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
+  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)} 과목·학년별 과외</h2>${lvBlocks}</section><div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg,url:urlSgg(sido,sgg)},{name:dong}];
   const desc=`${sido} ${sgg} ${dong} 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
   return layout({title:`${dong} 과외 | ${sgg} 과목별 과외 정보`, desc, canonical:SITE_URL+urlDong(slug), jsonld:"", body, crumb, image:thumbFor(`dong|${slug}`)});
@@ -983,8 +1018,6 @@ function pageHome(){
   const SUBJ_COLOR={"국어":"#ff2d2d","영어":"#1a6dff","수학":"#22c55e","과학":"#8b2dff","사회":"#ff9500"};
   const SUBJ_EN_LBL={"국어":"KOREAN","영어":"ENGLISH","수학":"MATH","과학":"SCIENCE","사회":"SOCIAL"};
   const SUBJ_IMG={"국어":"111.jpg","영어":"112.jpg","수학":"113.jpg","과학":"115.jpg","사회":"114.jpg"};
-  const IMG_BASE="https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/";
-  const RAW_BASE="https://raw.githubusercontent.com/dandylsk80/myclassup/main/image/";
   const subjCards=SUBJECTS.map((s,i)=>{const c=SUBJ_COLOR[s]||"#b8f545";const f=SUBJ_IMG[s]||"123.jpg";return `<div class="subjacc" style="--sc:${c}"><img class="sa-bg" src="${IMG_BASE}${f}" alt="${esc(s)} 과외" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}${f}'"><div class="sa-glass"><div class="sa-head"><span class="sa-idx">0${i+1}</span><span class="sa-name">${esc(s)}</span><span class="sa-en">${SUBJ_EN_LBL[s]||""}</span></div><p>${esc(SUBJ_BLURB[s]||s)}</p><div class="sa-lvs"><span>초등</span><span>중학</span><span>고교</span></div></div></div>`;}).join("");
 
   // 메인 FAQ
@@ -1035,13 +1068,8 @@ function pageHome(){
 ${faqHtml}
 
 
-<section class="sec"><h2>📷 과외 모습</h2><p class="subt">공부하는 공간을 사진으로 확인하세요.</p>
-<div class="phgrid">
-<div class="ph small" data-slot="g1">📷 사진 준비 중</div>
-<div class="ph small" data-slot="g2">📷 사진 준비 중</div>
-<div class="ph small" data-slot="g3">📷 사진 준비 중</div>
-<div class="ph small" data-slot="g4">📷 사진 준비 중</div>
-</div></section>
+<section class="sec"><h2>🗂️ 학습 관리 도구</h2><p class="subt">스케줄·플래너·오답노트·리포트로 아이의 학습을 촘촘히 관리합니다.</p>
+<div class="phgrid"><figure class="phcard"><img class="phimg" src="${IMG_BASE}444.jpg" alt="학습 스케줄" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}444.jpg'"><figcaption>🗓️ 학습 스케줄</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}445.jpg" alt="학습 플래너" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}445.jpg'"><figcaption>📒 학습 플래너</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}446.jpg" alt="오답 노트" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}446.jpg'"><figcaption>📝 오답 노트</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}447.jpg" alt="성적 리포트" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}447.jpg'"><figcaption>📊 성적 리포트</figcaption></figure></div></section>
 <div class="cta"><h2>우리 아이에게 맞는 과외를 찾고 계신가요?</h2><p>전화 또는 문의하기로 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>
 
 <div class="note">전국 과외 정보를 지역·과목별로 안내합니다. 정확한 수업 시간 및 교습비는 각 과외에 방문상담을 통해 확인하시기 바랍니다.</div>`;
@@ -1210,7 +1238,7 @@ function regCommon({title, kw, sub, desc, canonical, crumb, lead, secs, faqs, ch
   const cta=`<div class="cta"><h2>${esc(scopeName)} ${esc(subj)} 과외, 상담받아 보세요</h2><p>전화 또는 문의 남기기로 ${esc(subj)} 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
   const faqLd=faqs&&faqs.length?"</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))}):"";
   const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":thumbFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical})+faqLd;
-  const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}${secHtml}${childHtml||""}${cards||""}${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
+  const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}${secHtml}${imgBlocks(seedKey)}${childHtml||""}${cards||""}${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   return layout({title, desc, canonical, jsonld, body, crumb, image:thumbFor(seedKey)});
 }
 
@@ -1279,7 +1307,7 @@ function pageSgg(gk){
   ];
   const faqHtml=`<section class="sec" id="faq"><h2>자주 묻는 질문</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`;
   const cta=`<div class="cta"><h2>${esc(sgg)} 과외, 상담받아 보세요</h2><p>전화 또는 문의 남기기로 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
-  const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}<div class="summary"><p class="lead">${esc(g.lead)}</p></div>${secHtml}<section class="sec"><h2>${esc(sgg)} 과목별 과외</h2><div class="chips">${subjLinks}</div></section><section class="sec"><h2>${esc(sgg)} 동네별 과외</h2>${chipsFold(dongChips,10)}</section>${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
+  const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}<div class="summary"><p class="lead">${esc(g.lead)}</p></div>${secHtml}${imgBlocks(seedKey)}<section class="sec"><h2>${esc(sgg)} 과목별 과외</h2><div class="chips">${subjLinks}</div></section><section class="sec"><h2>${esc(sgg)} 동네별 과외</h2>${chipsFold(dongChips,10)}</section>${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg}];
   const desc=`${sido} ${sgg} 동네별·과목별 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
   const faqLd="</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))});
