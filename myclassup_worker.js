@@ -604,14 +604,14 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .subjgrid{display:flex;flex-direction:column;gap:12px;margin-top:14px}
 /* 배경 이미지 과목 카드 (전체 펼침) */
 .subjacc{position:relative;border-radius:18px;overflow:hidden;border:1px solid color-mix(in srgb,var(--sc) 50%,#455274);min-height:220px;display:flex;align-items:flex-end;background:#141b2a}
-.subjacc::after{content:"";position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(to top,rgba(6,9,16,.72),rgba(6,9,16,.28) 55%,transparent);z-index:1;pointer-events:none}
+.subjacc::after{display:none}
 .sa-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:saturate(1.12) contrast(1.04)}
 .sa-glass{position:relative;z-index:2;width:100%;padding:16px 16px 15px;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;border:none;box-shadow:none}
 .sa-head{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
-.sa-idx{font-size:11px;font-weight:800;color:var(--sc);font-variant-numeric:tabular-nums;letter-spacing:1px;text-shadow:0 1px 4px #000,0 0 10px rgba(0,0,0,.9)}
-.sa-name{font-size:25px;font-weight:900;letter-spacing:-.9px;color:var(--sc);line-height:1;text-shadow:0 2px 4px #000,0 0 12px rgba(0,0,0,.95),0 0 24px rgba(0,0,0,.7)}
-.sa-en{font-size:9.5px;font-weight:800;letter-spacing:2.5px;color:#fff;text-shadow:0 1px 4px #000,0 0 10px rgba(0,0,0,.9)}
-.sa-glass p{font-size:13px;color:#fff;line-height:1.7;margin:0 0 10px;border-left:3px solid var(--sc);padding-left:11px;font-weight:600;text-shadow:0 1px 3px #000,0 1px 10px rgba(0,0,0,.95),0 0 20px rgba(0,0,0,.8)}
+.sa-idx{font-size:11.5px;font-weight:900;color:var(--sc);font-variant-numeric:tabular-nums;letter-spacing:1px;paint-order:stroke fill;-webkit-text-stroke:3px rgba(6,9,16,.9)}
+.sa-name{font-size:26px;font-weight:900;letter-spacing:-.9px;color:var(--sc);line-height:1;paint-order:stroke fill;-webkit-text-stroke:4px rgba(6,9,16,.92);text-shadow:0 2px 6px #000,0 0 16px rgba(0,0,0,.95)}
+.sa-en{font-size:10px;font-weight:900;letter-spacing:2.5px;color:#fff;paint-order:stroke fill;-webkit-text-stroke:3px rgba(6,9,16,.9)}
+.sa-glass p{font-size:13.5px;color:#fff;line-height:1.7;margin:0 0 10px;border-left:3px solid var(--sc);padding-left:11px;font-weight:700;paint-order:stroke fill;-webkit-text-stroke:3.4px rgba(6,9,16,.9);text-shadow:0 1px 4px #000,0 1px 12px rgba(0,0,0,.95)}
 .sa-lvs{display:flex;gap:6px}
 .sa-lvs span{font-size:11px;font-weight:900;color:#0d1220;background:var(--sc);border:none;padding:4px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .goal3{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
@@ -653,6 +653,7 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .popchip b{color:var(--ink);font-size:13.5px}
 .popchip span{display:block;color:var(--sub);font-size:11px;margin-top:2px}
 .phgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.phimg{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;border:1px solid #455274}
 .why,.whygrid{display:grid;gap:10px}
 .whyitem{background:var(--panel2);border-radius:14px;padding:14px}
 .whyic{font-size:22px}
@@ -1016,7 +1017,7 @@ function pageHome(){
 </div></section>
 
 <div class="quoteband"><h2>우리는 '점수만 좋은 아이'가 아니라<br><span class="uline">'혼자서도 공부할 줄 아는 아이'</span>를 목표로 합니다.</h2>
-<img class="qimg" src="https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/123.jpg" alt="공부하는 아이" loading="lazy"></div>
+<img class="qimg" src="${IMG_BASE}123.jpg" alt="공부하는 아이" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}123.jpg'"></div>
 
 
 <section class="howto"><h2>이렇게 찾으세요</h2><div class="steps3">
