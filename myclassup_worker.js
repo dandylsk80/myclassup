@@ -7,7 +7,7 @@ const PHONE = "010-6834-8080";
 const PHONE_TEL = "01068348080";
 // 문의 저장용 Apps Script 웹앱 주소 (배포 후 여기에 붙여넣기)
 const INQUIRY_ENDPOINT = "https://script.google.com/macros/s/AKfycbwRti9J3kYRRcd0Au7DYgxmMr2G4L1MGHWd4QeUqXu7L7xkFoY4UobIU5zhA2aXkOpzug/exec";
-const INDEXNOW_KEY = "REPLACE_INDEXNOW_KEY_MYCLASSUP"; // 예: "https://script.google.com/macros/s/AKfy.../exec"
+const INDEXNOW_KEY = "cc1751e5774748319f8a8ffca05a3f05";
 
 // 슬러그 역매핑
 let _slug2region = null;
