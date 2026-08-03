@@ -1136,12 +1136,17 @@ function llmsTxt(){ const idx=buildIndex(); const lines=["# "+SITE_NAME,"","> "+
 function robots(){ return new Response(`User-agent: *\nAllow: /\nUser-agent: GPTBot\nAllow: /\nUser-agent: OAI-SearchBot\nAllow: /\nUser-agent: ChatGPT-User\nAllow: /\nUser-agent: PerplexityBot\nAllow: /\nUser-agent: Perplexity-User\nAllow: /\nUser-agent: ClaudeBot\nAllow: /\nUser-agent: Claude-Web\nAllow: /\nUser-agent: anthropic-ai\nAllow: /\nUser-agent: Google-Extended\nAllow: /\nUser-agent: Applebot-Extended\nAllow: /\nUser-agent: CCBot\nAllow: /\nUser-agent: Bytespider\nAllow: /\nUser-agent: Naverbot\nAllow: /\nUser-agent: Yeti\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n#DaumWebMasterTool:8ad0caca88fe9c46231512acb4b586c44dc3a3f0916c074ea6d50f0bfdda26ae:pYR9u40s2miYk+D5NPR7lA==\n`,{headers:{"content-type":"text/plain"}}); }
 
 // IndexNow: 전체 URL을 검색엔진에 즉시 제출
-async function indexnowPing(){
-  const urls=allUrls().slice(0,10000);
+async function indexnowPing(u){
+  const all=allUrls();
+  const start=Math.max(0,parseInt((u&&u.searchParams.get("start"))||"0")||0);
+  const n=Math.min(10000,Math.max(1,parseInt((u&&u.searchParams.get("n"))||"1000")||1000));
+  const urls=all.slice(start,start+n);
+  if(!urls.length) return new Response(`제출할 URL 없음 (전체 ${all.length}개, start=${start})`,{headers:{"content-type":"text/plain; charset=utf-8"}});
   const payload={ host:SITE, key:INDEXNOW_KEY, keyLocation:`${SITE_URL}/${INDEXNOW_KEY}.txt`, urlList:urls };
   try{
     const resp=await fetch("https://api.indexnow.org/indexnow",{ method:"POST", headers:{"Content-Type":"application/json; charset=utf-8"}, body:JSON.stringify(payload) });
-    return new Response(`IndexNow 제출 완료\n제출 URL 수: ${urls.length}\n응답 코드: ${resp.status}`,{headers:{"content-type":"text/plain; charset=utf-8"}});
+    const next=start+urls.length;
+    return new Response(`IndexNow 제출 완료\n범위: ${start} ~ ${next-1}\n제출 URL 수: ${urls.length}\n전체 URL 수: ${all.length}\n응답 코드: ${resp.status}\n다음: ${SITE_URL}/indexnow-ping?start=${next}&n=${n}`,{headers:{"content-type":"text/plain; charset=utf-8"}});
   }catch(e){ return new Response(`IndexNow 제출 실패: ${e.message}`,{status:500,headers:{"content-type":"text/plain; charset=utf-8"}}); }
 }
 function faviconSvg(){
@@ -1358,7 +1363,7 @@ async function handle(request, env){
   { const sm=path.match(/^\/sitemap-(\d+)\.xml$/); if(sm) return sitemapPart(parseInt(sm[1])); }
   if(path==="/rss.xml"||path==="/rss"||path==="/feed") return rss();
   if(path===`/${INDEXNOW_KEY}.txt`) return new Response(INDEXNOW_KEY,{headers:{"content-type":"text/plain"}});
-  if(path==="/indexnow-ping") return indexnowPing();
+  if(path==="/indexnow-ping") return indexnowPing(url);
   if(path==="/favicon.svg") return faviconSvg();
   if(path==="/favicon.ico") return logoPng();
   if(path==="/logo.png") return logoPng();
