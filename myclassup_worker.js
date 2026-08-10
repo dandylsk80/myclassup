@@ -679,6 +679,13 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .lgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}
 .lgrid a{background:var(--panel2);border:1px solid #455274;border-radius:14px;padding:13px 14px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:700}
 .lgrid a small{display:block;font-size:11px;color:var(--sub);font-weight:600;margin-top:2px}
+.ssgrid{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.ssrow{background:var(--panel2);border:1px solid #455274;border-radius:12px;padding:10px 13px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ssrow b{font-size:13.5px;min-width:62px}
+.ssrow b a{color:var(--ink);text-decoration:none}
+.ssrow span{display:flex;flex-wrap:wrap;gap:6px}
+.ssrow span a{font-size:12.5px;color:var(--sub);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 10px;text-decoration:none;font-weight:600}
+.ssrow span a:hover{color:var(--accent);border-color:var(--accent)}
 .lgrid a:hover{border-color:var(--accent)}
 .popgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}
 .popchip{background:var(--panel2);border:1px solid #455274;border-radius:14px;padding:12px 14px;text-decoration:none}
@@ -1004,6 +1011,7 @@ function pageHome(){
   const sidos=Object.keys(idx.bySido).sort((a,b)=>{ const ca=Object.values(idx.bySido[a]).reduce((s,x)=>s+x.length,0); const cb=Object.values(idx.bySido[b]).reduce((s,x)=>s+x.length,0); return cb-ca; });
   const totalDong=REGIONS.length;
   const grid=sidos.map(sido=>{ const dongCnt=Object.values(idx.bySido[sido]).reduce((s,x)=>s+x.length,0); return `<a href="${urlRegion(sido)}">${esc(sido)}<small>${dongCnt}개 지역</small></a>`; });
+  const sidoSubjGrid=sidos.map(sido=>`<div class="ssrow"><b><a href="${urlRegion(sido)}">${esc(sido)}</a></b><span>${SUBJECTS.map(sj=>`<a href="${urlSidoSubject(sido,sj)}">${esc(sj)}</a>`).join("")}</span></div>`).join("");
   const canonical=SITE_URL+"/";
 
   // 인기 지역: 대표 동네 12곳
@@ -1061,7 +1069,8 @@ function pageHome(){
 
 
 
-<section class="sec"><h2>🗺️ 지역으로 찾기</h2><p class="subt">시·도를 선택하면 시군구·동네별 과외 정보를 볼 수 있습니다.</p>${foldGrid(grid,"lgrid",6)}</section>
+<section class="sec"><h2>🗺️ 지역으로 찾기</h2><p class="subt">시·도를 선택하면 시군구·동네별 과외 정보를 볼 수 있습니다.</p>${foldGrid(grid,"lgrid",6)}
+<div class="ssgrid">${sidoSubjGrid}</div></section>
 
 
 
