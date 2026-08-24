@@ -1360,10 +1360,10 @@ function pageSidoSubject(sido, subj){
 }
 
 // ---------- 라우터 ----------
-async function handle(request, env){
+async function handle(request, env, ctx){
   const url=new URL(request.url);
   let path=decodeURIComponent(url.pathname).replace(/\/$/,"")||"/";
-  if(path==="/api/track"&&request.method==="POST"){try{const b=await request.json();const ip=request.headers.get("CF-Connecting-IP")||"";const ua=request.headers.get("User-Agent")||"";const isBot=/bot|crawl|spider|slurp|mediapartners|googlebot|bingbot|yandex|baidu|duckduckbot|facebookexternalhit|semrush|ahrefs|mj12bot|dotbot|petalbot|bytespider|headlesschrome|python-requests|curl|wget/i.test(ua);const ts=new Date().toISOString();if(env&&env.DB&&!(b.type==="view"&&isBot)&&(b.type==="tel"||b.type==="sms"||b.type==="contact"||b.type==="view")){await env.DB.prepare("INSERT INTO events (site,type,page,ref,ip,ts) VALUES (?,?,?,?,?,?)").bind("myclassup",b.type,(b.page||"").slice(0,300),(b.ref||"").slice(0,120),ip,ts).run();}}catch(e){}return new Response(JSON.stringify({ok:true}),{headers:{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}});}
+  if(path==="/api/track"&&request.method==="POST"){try{const b=await request.json();const ip=request.headers.get("CF-Connecting-IP")||"";const ua=request.headers.get("User-Agent")||"";const isBot=/bot|crawl|spider|slurp|mediapartners|googlebot|bingbot|yandex|baidu|duckduckbot|facebookexternalhit|semrush|ahrefs|mj12bot|dotbot|petalbot|bytespider|headlesschrome|python-requests|curl|wget/i.test(ua);const ts=new Date().toISOString();if(!isBot&&TG_LABEL[b.type]){const tgp=tgNotify(b.type,(b.page||"/").slice(0,300),b.ref||"",ua);if(ctx&&ctx.waitUntil)ctx.waitUntil(tgp);else await tgp;}if(env&&env.DB&&!(b.type==="view"&&isBot)&&(b.type==="tel"||b.type==="sms"||b.type==="contact"||b.type==="view")){await env.DB.prepare("INSERT INTO events (site,type,page,ref,ip,ts) VALUES (?,?,?,?,?,?)").bind("myclassup",b.type,(b.page||"").slice(0,300),(b.ref||"").slice(0,120),ip,ts).run();}}catch(e){}return new Response(JSON.stringify({ok:true}),{headers:{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}});}
   if(path==="/api/track"&&request.method==="OPTIONS")return new Response(null,{headers:{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"POST,OPTIONS","Access-Control-Allow-Headers":"Content-Type"}});
   if(path==="/") return html(pageHome());
   if(path==="/robots.txt") return robots();
@@ -1404,4 +1404,104 @@ async function handle(request, env){
   if(m){ const r2=pageDong(m[1]); return r2?html(r2):notFound(); }
   return notFound();
 }
-export default { async fetch(request, env){ try{ return await handle(request, env); }catch(e){ return new Response("Error: "+e.message+"\n"+e.stack,{status:500}); } } };
+
+/* ─── 텔레그램 전환 알림 ───────────────────────────────────────── */
+const TG_TOKEN = '8101954996:AAGNV225WaNL8Zqh9OxtmP1WNzlbquNaq9s';
+const TG_CHAT  = '8649422714';
+const TG_LABEL = { tel: '전화 버튼 클릭', contact: '상담 버튼 클릭' };
+
+const TG_SITE   = '우리동네 과외';
+const TG_DOMAIN = 'myclassup.com';
+const TG_ORIGIN = 'https://myclassup.com';
+
+function tgDescribe(path) {
+  const seg = String(path || '').split('?')[0].split('/').filter(Boolean);
+  if (!seg.length) return '메인';
+  const p0 = seg[0];
+
+  if (p0 === 'contact') return '상담 문의 페이지';
+  if (p0 === 'about' || p0 === 'intro') return '소개 페이지';
+  if (p0 === 'regions') return '전체 지역 목록';
+
+  try {
+    // /region/:sido[/:subj]
+    if (p0 === 'region' && seg[1]) {
+      const sido = slug2sido()[seg[1]];
+      if (!sido) return '일반 페이지';
+      const subj = seg[2] && EN_SUBJ[seg[2]] ? EN_SUBJ[seg[2]] : null;
+      return subj ? sido + ' · ' + subj : sido;
+    }
+    // /gu/:sggslug[/:subj]
+    if (p0 === 'gu' && seg[1]) {
+      const gk = buildIndex().sggBySlug[seg[1]];
+      if (!gk) return '일반 페이지';
+      const base = gk.split('|').join(' ');
+      const subj = seg[2] && EN_SUBJ[seg[2]] ? EN_SUBJ[seg[2]] : null;
+      return subj ? base + ' · ' + subj : base;
+    }
+    // /:dongslug[/:lv-:subj | /:subj]
+    const R = regionOf(p0);
+    if (R) {
+      const base = R.sido + ' ' + R.sgg + ' ' + R.dong;
+      if (!seg[1]) return base;
+      const lm = seg[1].match(/^([a-z]+)-([a-z]+)$/);
+      if (lm && EN_LV[lm[1]] && EN_SUBJ[lm[2]]) return base + ' · ' + EN_LV[lm[1]] + ' · ' + EN_SUBJ[lm[2]];
+      if (EN_SUBJ[seg[1]]) return base + ' · ' + EN_SUBJ[seg[1]];
+      return base;
+    }
+  } catch (e) { }
+
+  return '일반 페이지';
+}
+
+function tgRef(ref) {
+  if (!ref) return '직접 방문 또는 알 수 없음';
+  try {
+    const h = new URL(ref).hostname.replace(/^www\./, '');
+    if (h === TG_DOMAIN || h.endsWith('.' + TG_DOMAIN)) return '사이트 내부 이동';
+    if (h.includes('naver')) return '네이버';
+    if (h.includes('google')) return '구글';
+    if (h.includes('daum')) return '다음';
+    if (h.includes('bing')) return 'Bing';
+    if (h.includes('kakao')) return '카카오';
+    if (h.includes('instagram')) return '인스타그램';
+    if (h.includes('facebook')) return '페이스북';
+    if (h.includes('youtube')) return '유튜브';
+    if (h.includes('tiktok')) return '틱톡';
+    if (h.includes('zum')) return '줌';
+    return h;
+  } catch (e) { return '알 수 없음'; }
+}
+
+function tgTime() {
+  const d = new Date(Date.now() + 9 * 3600000);
+  const z = n => String(n).padStart(2, '0');
+  return d.getUTCFullYear() + '-' + z(d.getUTCMonth() + 1) + '-' + z(d.getUTCDate()) +
+    ' ' + z(d.getUTCHours()) + ':' + z(d.getUTCMinutes());
+}
+
+const TG_BOT_RE = /bot|crawl|spider|slurp|facebookexternalhit|curl|wget|python|axios|headless|lighthouse|pagespeed|semrush|ahrefs|bytespider|applebot|monitor|uptime|scan/i;
+
+async function tgNotify(type, page, ref, ua) {
+  if (!TG_TOKEN || TG_TOKEN.indexOf('PASTE_') === 0) return;
+  if (!TG_CHAT || TG_CHAT.indexOf('PASTE_') === 0) return;
+  const label = TG_LABEL[type];
+  if (!label) return;
+  const L = [];
+  L.push((type === 'tel' ? '📞 ' : '📝 ') + label);
+  L.push('');
+  L.push('사이트: ' + TG_SITE + ' (' + TG_DOMAIN + ')');
+  L.push('페이지: ' + TG_ORIGIN + page);
+  L.push('한글: ' + tgDescribe(page));
+  L.push('유입: ' + tgRef(ref));
+  L.push('기기: ' + (/Mobile|Android|iPhone|iPad/i.test(ua || '') ? '모바일' : 'PC'));
+  L.push('시각: ' + tgTime() + ' (KST)');
+  try {
+    await fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TG_CHAT, text: L.join('\n'), disable_web_page_preview: true })
+    });
+  } catch (e) { }
+}
+
+export default { async fetch(request, env, ctx){ try{ return await handle(request, env, ctx); }catch(e){ return new Response("Error: "+e.message+"\n"+e.stack,{status:500}); } } };
