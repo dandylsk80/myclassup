@@ -1427,7 +1427,7 @@ function tgDescribe(path) {
       const sido = slug2sido()[seg[1]];
       if (!sido) return '일반 페이지';
       const subj = seg[2] && EN_SUBJ[seg[2]] ? EN_SUBJ[seg[2]] : null;
-      return subj ? sido + ' · ' + subj : sido;
+      return (subj ? sido + ' ' + subj : sido) + ' 과외';
     }
     // /gu/:sggslug[/:subj]
     if (p0 === 'gu' && seg[1]) {
@@ -1435,17 +1435,17 @@ function tgDescribe(path) {
       if (!gk) return '일반 페이지';
       const base = gk.split('|').join(' ');
       const subj = seg[2] && EN_SUBJ[seg[2]] ? EN_SUBJ[seg[2]] : null;
-      return subj ? base + ' · ' + subj : base;
+      return (subj ? base + ' ' + subj : base) + ' 과외';
     }
     // /:dongslug[/:lv-:subj | /:subj]
     const R = regionOf(p0);
     if (R) {
       const base = R.sido + ' ' + R.sgg + ' ' + R.dong;
-      if (!seg[1]) return base;
+      if (!seg[1]) return base + ' 과외';
       const lm = seg[1].match(/^([a-z]+)-([a-z]+)$/);
-      if (lm && EN_LV[lm[1]] && EN_SUBJ[lm[2]]) return base + ' · ' + EN_LV[lm[1]] + ' · ' + EN_SUBJ[lm[2]];
-      if (EN_SUBJ[seg[1]]) return base + ' · ' + EN_SUBJ[seg[1]];
-      return base;
+      if (lm && EN_LV[lm[1]] && EN_SUBJ[lm[2]]) return base + ' ' + EN_LV[lm[1]] + ' ' + EN_SUBJ[lm[2]] + ' 과외';
+      if (EN_SUBJ[seg[1]]) return base + ' ' + EN_SUBJ[seg[1]] + ' 과외';
+      return base + ' 과외';
     }
   } catch (e) { }
 
@@ -1491,7 +1491,7 @@ async function tgNotify(env, type, page, ref, ua) {
   L.push('');
   L.push('사이트: ' + TG_SITE + ' (' + TG_DOMAIN + ')');
   L.push('페이지: ' + TG_ORIGIN + page);
-  L.push('한글: ' + tgDescribe(page));
+  L.push('검색 키워드: ' + tgDescribe(page));
   L.push('유입: ' + tgRef(ref));
   L.push('기기: ' + (/Mobile|Android|iPhone|iPad/i.test(ua || '') ? '모바일' : 'PC'));
   L.push('시각: ' + tgTime() + ' (KST)');
