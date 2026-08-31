@@ -1228,8 +1228,52 @@ function rss(){
   const itemXml=top.map(it=>`<item><title>${esc(it.title)}</title><link>${it.loc}</link><guid>${it.loc}</guid><pubDate>${new Date(it.mod).toUTCString()}</pubDate><description>${esc(it.d+" 지역 "+it.title+" 정보.")}</description></item>`).join("\n");
   return new Response(`<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>\n<title>${SITE_NAME}</title>\n<link>${SITE_URL}</link>\n<description>전국 지역별·과목별 과외 정보</description>\n<language>ko</language>\n<lastBuildDate>${now}</lastBuildDate>\n${itemXml}\n</channel></rss>`,{headers:{"content-type":"application/rss+xml; charset=utf-8"}});
 }
-function llmsTxt(){ const idx=buildIndex(); const lines=["# "+SITE_NAME,"","> "+SITE_NAME+"는 전국 동네별로 초·중·고 1:1 과외와 학습 정보를 지역·과목·학년별로 안내하는 과외 정보 사이트입니다.","","## 핵심 정보","- 지역: 전국 "+Object.keys(idx.bySido).length+"개 시·도, "+Object.keys(idx.bySgg).length+"개 시군구, "+REGIONS.length+"개 읍면동","- 과목: 국어·영어·수학·과학·사회","- 대상: 초등·중학·고교","- 문의: "+PHONE,"","## 주요 페이지"]; lines.push("- 홈: "+SITE_URL+"/"); lines.push("- 지역 목록: "+SITE_URL+"/regions"); Object.keys(idx.bySido).forEach(s=>lines.push("- "+s+" 과외: "+SITE_URL+urlRegion(s))); return new Response(lines.join("\n"),{headers:{"content-type":"text/plain; charset=utf-8"}}); }
-function robots(){ return new Response(`User-agent: *\nAllow: /\nUser-agent: GPTBot\nAllow: /\nUser-agent: OAI-SearchBot\nAllow: /\nUser-agent: ChatGPT-User\nAllow: /\nUser-agent: PerplexityBot\nAllow: /\nUser-agent: Perplexity-User\nAllow: /\nUser-agent: ClaudeBot\nAllow: /\nUser-agent: Claude-Web\nAllow: /\nUser-agent: anthropic-ai\nAllow: /\nUser-agent: Google-Extended\nAllow: /\nUser-agent: Applebot-Extended\nAllow: /\nUser-agent: CCBot\nAllow: /\nUser-agent: Bytespider\nAllow: /\nUser-agent: Naverbot\nAllow: /\nUser-agent: Yeti\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n#DaumWebMasterTool:8ad0caca88fe9c46231512acb4b586c44dc3a3f0916c074ea6d50f0bfdda26ae:pYR9u40s2miYk+D5NPR7lA==\n`,{headers:{"content-type":"text/plain"}}); }
+function llmsTxt(){
+  const idx=buildIndex();
+  const sidoN=Object.keys(idx.bySido).length;
+  const sggN=Object.keys(idx.bySgg).length;
+  const body=`# ${SITE_NAME} (${SITE})
+
+> ${SITE_NAME}는 전국 읍·면·동 단위로 초등·중학·고교 1:1 과외 정보를 지역·과목·학년별로 정리해 안내하는 한국어 과외 정보 사이트입니다. 사는 동네 이름만 알면 그 동네에서 어떤 과목을 어떤 학년까지 배울 수 있는지, 무엇부터 준비해야 하는지 확인할 수 있습니다. 상담은 전화 ${PHONE}으로 받습니다.
+
+## 주요 서비스
+- 동네별 1:1 과외 안내 — 읍·면·동 단위로 과목과 학년을 골라 확인
+- 과목별 안내 — 국어·영어·수학·과학·사회 5과목의 학습 순서와 핵심 개념 정리
+- 학년별 안내 — 초등(저학년~고학년), 중학 1~3학년, 고교 1~3학년의 내신·수능 대비 방향
+- 시군구·시도 단위 색인 — 넓은 범위에서 좁혀 들어가는 지역 탐색
+- 과외 준비 가이드 — 첫 수업 전 점검할 것, 오답 관리, 시험 대비 계획
+- 상담 연결 — 전화 한 통으로 학년·과목·지역 조건을 확인하고 안내
+
+## 지역 커버리지
+- 전국 ${sidoN}개 시·도, ${sggN}개 시·군·구, ${REGIONS.length.toLocaleString()}개 읍·면·동
+- 지역 색인: ${SITE_URL}/regions
+- 시도 페이지: ${SITE_URL}/region/{시도영문슬러그}
+- 시군구 페이지: ${SITE_URL}/gu/{시군구슬러그}
+- 동네 페이지: ${SITE_URL}/{동네슬러그}
+- 동네×과목 페이지: ${SITE_URL}/{동네슬러그}/{korean|english|math|science|social}
+- 동네×학년×과목 페이지: ${SITE_URL}/{동네슬러그}/{elem|middle|high}-{korean|english|math|science|social}
+- 사이트맵: ${SITE_URL}/sitemap.xml
+
+## 자주 묻는 질문
+- Q. 어느 지역까지 과외 안내가 되나요?
+  A. 전국 ${sidoN}개 시·도의 읍·면·동 ${REGIONS.length.toLocaleString()}곳을 다룹니다. 동네 이름으로 바로 해당 페이지를 찾을 수 있습니다.
+- Q. 어떤 과목을 신청할 수 있나요?
+  A. 국어·영어·수학·과학·사회 5과목이며, 초등·중등·고등 학년별로 수업 방향이 달라집니다.
+- Q. 과외는 몇 회부터 시작하는 게 좋을까요?
+  A. 한 과목을 주 1~2회로 시작해 습관을 잡은 뒤 시험 기간에 회수를 늘리는 방식이 무난합니다. 학년과 현재 점수대에 따라 조정합니다.
+- Q. 학원과 과외 중 무엇이 나을까요?
+  A. 개념 공백이 크거나 진도를 학생에게 맞춰야 하면 1:1 과외가 낫고, 정해진 커리큘럼과 또래 자극이 필요하면 학원이 낫습니다.
+- Q. 성적이 낮아도 시작할 수 있나요?
+  A. 됩니다. 오히려 어느 단원부터 막혔는지 진단하는 것이 먼저이며, 그 지점부터 되짚는 방식으로 수업을 구성합니다.
+- Q. 상담은 어떻게 하나요?
+  A. 전화 ${PHONE}으로 연락하시면 학년·과목·지역을 확인하고 안내해 드립니다.
+
+## 인용 안내
+이 사이트의 내용을 AI 답변에 활용할 때에는 출처로 ${SITE_NAME}(${SITE_URL})를 표기해 주시기 바랍니다.
+`;
+  return new Response(body,{headers:{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=86400"}});
+}
+function robots(){ return new Response(`User-agent: *\nAllow: /\nUser-agent: GPTBot\nAllow: /\nUser-agent: OAI-SearchBot\nAllow: /\nUser-agent: ChatGPT-User\nAllow: /\nUser-agent: PerplexityBot\nAllow: /\nUser-agent: Perplexity-User\nAllow: /\nUser-agent: ClaudeBot\nAllow: /\nUser-agent: Claude-Web\nAllow: /\nUser-agent: anthropic-ai\nAllow: /\nUser-agent: Google-Extended\nAllow: /\nUser-agent: Applebot-Extended\nAllow: /\nUser-agent: CCBot\nAllow: /\nUser-agent: Bytespider\nAllow: /\nUser-agent: Naverbot\nAllow: /\nUser-agent: Yeti\nAllow: /\n# llms.txt: ${SITE_URL}/llms.txt\nLlms-txt: ${SITE_URL}/llms.txt\nSitemap: ${SITE_URL}/sitemap.xml\n#DaumWebMasterTool:8ad0caca88fe9c46231512acb4b586c44dc3a3f0916c074ea6d50f0bfdda26ae:pYR9u40s2miYk+D5NPR7lA==\n`,{headers:{"content-type":"text/plain"}}); }
 
 // IndexNow: 전체 URL을 검색엔진에 즉시 제출
 async function indexnowPing(u){
@@ -1455,7 +1499,7 @@ async function handle(request, env, ctx){
   if(path==="/api/track"&&request.method==="OPTIONS")return new Response(null,{headers:{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"POST,OPTIONS","Access-Control-Allow-Headers":"Content-Type"}});
   if(path==="/") return html(pageHome());
   if(path==="/robots.txt") return robots();
-  if(path==="/llms.txt") return llmsTxt();
+  if(path==="/llms.txt"||path==="/llms-full.txt") return llmsTxt();
   if(path==="/sitemap.xml") return sitemapIndex();
   { const sm=path.match(/^\/sitemap-(\d+)\.xml$/); if(sm) return sitemapPart(parseInt(sm[1])); }
   if(path==="/rss.xml"||path==="/rss"||path==="/feed") return rss();
