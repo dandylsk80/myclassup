@@ -1135,6 +1135,22 @@ function dongProse(dong,sgg,sido,alias,chere){
   return dpStyle(html);
 }
 function dpStyle(x){ var m=[["좋습니다","좋아요"],["좋은 ","괜찮은 "],["중요합니다","중요해요"],["필요합니다","필요해요"],["됩니다","돼요"],["있습니다","있어요"],["없습니다","없어요"],["바랍니다","바라요"],["이어집니다","이어져요"],["갑니다","가요"],["집니다","져요"],["킵니다","켜요"],["줍니다","줘요"],["옵니다","와요"],["납니다","나요"],["칩니다","쳐요"],["학생","아이"],["무엇보다","제일"],["이러한","이런"],["그러한","그런"],["첫걸음이","시작이"],["수월합니다","편해요"],["권합니다","권해요"],["살펴보는 것이","살펴보는 게"],["정하는 것이","정하는 게"],["고르는 것이","고르는 게"],["하는 것이","하는 게"],["두는 것이","두는 게"],["것이 좋","게 좋"],["것도 ","것도요 "],["아이에게 맞는","우리 아이에게 딱 맞는"],["아이의","우리 아이의"],["아이가","우리 아이가"],["지역입니다","동네예요"],["지역의","동네의"],["이 지역","우리 동네"],["편입니다","편이에요"],["같습니다","같아요"],["됩니","돼요. "],["보세요","봐요"],["확인해","살펴봐"],["도움이 됩니다","도움이 돼요"],["도움이","보탬이"],["안내합니다","안내해요"],["정리했습니다","모아 뒀어요"],["다룹니다","다뤄요"],["다루고 있습니다","다뤄요"],["이루어집니다","이뤄져요"],["지도합니다","가르쳐요"],["나뉩니다","나뉘어요"],["자랍니다","자라요"],["만듭니다","만들어요"],["달라집니다","달라져요"],["좋습","좋아요. "],["합니다","해요"]];for(var i=0;i<m.length;i++){x=x.split(m[i][0]).join(m[i][1]);}return x; }
+/* 주변 지역: 같은 시·군·구를 먼저 채우고 모자라면 같은 시·도의 다른 시·군·구로 넓힌다 */
+function nearbyRegions(R, limit){
+  const idx=buildIndex(); const out=[], seen=new Set([R.slug]);
+  const take=arr=>{ for(const sl of (arr||[])){ if(seen.has(sl)) continue; seen.add(sl); const r=regionOf(sl); if(!r) continue; out.push(r); if(out.length>=limit) return true; } return false; };
+  const gk=R.sido+"|"+R.sgg;
+  if(take(((idx.bySgg||{})[gk]||{}).dongs)) return out;
+  const bys=idx.bySido[R.sido]||{};
+  for(const g of Object.keys(bys).sort()){ if(g===R.sgg) continue; if(take(bys[g])) break; }
+  return out;
+}
+function nearbyBlock(R){
+  const list=nearbyRegions(R,12);
+  if(!list.length) return "";
+  const links=list.map(r=>`<a href="${urlDong(r.slug)}">${esc(r.dong)}<small>${esc(r.sgg)}</small></a>`).join("");
+  return `<section class="sec"><h2>주변 지역</h2><p class="subt">${esc(R.sido)}의 다른 동네도 확인해 보세요.</p><div class="lgrid">${links}</div></section>`;
+}
 function pageDong(slug){
   const R=regionOf(slug); if(!R) return null;
   const dong=R.dong, sgg=R.sgg, sido=R.sido;
@@ -1145,7 +1161,7 @@ function pageDong(slug){
   const subjSec=`<section class="sec"><h2>${esc(dong)} 과목별 과외</h2><p class="subt">과목을 누르면 학년 통합 안내를 볼 수 있습니다.</p><div class="chips">${subjAll}</div></section>`;
   const summary=`<div class="summary"><div class="row"><span class="item">📍 지역<b>${esc(sido)} ${esc(sgg)} ${esc(dong)}</b></span><span class="item">📚 과목<b>${SUBJECTS.length}개</b></span></div><p class="lead">${esc(sgg)} ${esc(dong)} 지역의 과목별·학년별 과외 정보를 안내합니다. 아래에서 학년과 과목을 선택해 자세한 내용을 확인하세요.</p></div>`;
   const __dd=pageDates(`dong|${slug}`); const __dbar=`<div class="dates"><span>📅 발행일 <b>${__dd.publishedKor}</b></span><span>🔄 수정일 <b>${__dd.modifiedKor}</b></span></div>`;
-  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)} 과목·학년별 과외</h2>${lvBlocks}</section><div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
+  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)} 과목·학년별 과외</h2>${lvBlocks}</section>${nearbyBlock(R)}<div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg,url:urlSgg(sido,sgg)},{name:dong}];
   const desc=`${sido} ${sgg} ${dong} 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
   return layout({title:`${dong} 과외 | ${sgg} 과목별 과외 정보`, desc, canonical:SITE_URL+urlDong(slug), jsonld:"", body, crumb, image:thumbFor(`dong|${slug}`)});
