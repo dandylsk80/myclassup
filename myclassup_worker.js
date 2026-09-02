@@ -1335,6 +1335,12 @@ function smLastmod(key){
   const periods = Math.floor((Date.now()/SM_DAY - off)/SM_PERIOD);
   return new Date((periods*SM_PERIOD + off)*SM_DAY).toISOString().slice(0,10);
 }
+/* RSS 정렬용 날짜: URL 마다 60일 주기로 밀린다. 매일 다른 1/60 묶음이 최신이 된다. */
+function rssRankDate(u){
+  const off = smHash(u) % 60;
+  const periods = Math.floor((Date.now()/SM_DAY - off)/60);
+  return new Date((periods*60 + off)*SM_DAY);
+}
 /* <loc> 뒤에 lastmod 가 없으면 채워 넣는다 (loc → lastmod → changefreq → priority 순서 유지) */
 function smAddLastmod(xml){
   return String(xml).replace(/<loc>([^<]+)<\/loc>(?!<lastmod>)/g, function(m, l){
@@ -1372,7 +1378,8 @@ function atomFromRss(xml, selfUrl){
 }
 function rss(){
   const items=[]; 
-  REGIONS.slice(0,200).forEach(r=>{ SUBJECTS.forEach(s=>{ const k=`${r.slug}|${s}|중등`; const dt=pageDates(k); items.push({d:r.dong,loc:SITE_URL+urlPage(r.slug,s,"중등"),mod:dt.modified,title:`${r.dong} 중학${s}과외`}); }); });
+  /* 앞 200개 지역만 고정으로 쓰던 것을 전국으로 넓히고, 매일 도는 갱신일로 정렬한다 */
+  REGIONS.forEach(r=>{ SUBJECTS.forEach(s=>{ const loc=SITE_URL+urlPage(r.slug,s,"중등"); items.push({d:r.dong,loc:loc,mod:rssRankDate(loc).getTime(),title:`${r.dong} 중학${s}과외`}); }); });
   items.sort((a,b)=>b.mod-a.mod);
   const top=items.slice(0,50); const now=new Date().toUTCString();
   const itemXml=top.map(it=>`<item><title>${esc(it.title)}</title><link>${it.loc}</link><guid>${it.loc}</guid><pubDate>${new Date(it.mod).toUTCString()}</pubDate><description>${esc(it.d+" 지역 "+it.title+" 정보.")}</description></item>`).join("\n");
