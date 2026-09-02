@@ -1756,4 +1756,13 @@ async function tgNotify(env, type, page, ref, ua) {
   } catch (e) { }
 }
 
-export default { async fetch(request, env, ctx){ try{ return await handle(request, env, ctx); }catch(e){ return new Response("Error: "+e.message+"\n"+e.stack,{status:500}); } } };
+export default {
+  /* 매일 1회 IndexNow 자동 제출. URL 이 많아 하루 1,000개씩 돌아가며 보낸다 */
+  async scheduled(event, env, ctx){
+    const total=allUrls().length, PER=1000;
+    const day=Math.floor(Date.now()/86400000);
+    const start=total?((day*PER)%total):0;
+    ctx.waitUntil(indexnowPing(new URL(SITE_URL+"/indexnow-ping?start="+start+"&n="+PER)));
+  },
+  async fetch(request, env, ctx){ try{ return await handle(request, env, ctx); }catch(e){ return new Response("Error: "+e.message+"\n"+e.stack,{status:500}); } }
+};
