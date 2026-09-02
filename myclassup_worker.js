@@ -877,9 +877,9 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 /* ── 플로팅: 오른쪽 세로 스택 ── */
 .floating{position:fixed;right:10px;bottom:74px;z-index:60;display:flex;flex-direction:column;gap:8px;background:none;border:none;padding:0;box-shadow:none;transform:none;left:auto;opacity:.92}
 .floating:hover{opacity:1}
-.fbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;border:none;cursor:pointer;text-decoration:none;font-family:inherit;font-size:9px;font-weight:800;width:46px;height:46px;border-radius:50%;box-shadow:0 6px 18px rgba(0,0,0,.45)}
-.fbtn .fic{font-size:16px;line-height:1}
-.fbtn .flbl{font-size:8.5px;line-height:1.2}
+.fbtn{width:58px;height:58px;border-radius:50%;box-shadow:0 4px 14px rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;border:none;cursor:pointer;text-decoration:none;font-family:inherit;font-size:9px;font-weight:800;width:46px;height:46px;border-radius:50%;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.fbtn .fic{font-size:18px;line-height:1}
+.fbtn .flbl{font-size:10px;font-weight:700;margin-top:2px;line-height:1.2}
 .fcall{background:var(--accent);color:var(--accent-ink)}
 .fsms{background:var(--panel2);color:var(--ink);border:1px solid #49557a!important}
 .finq{background:var(--blue);color:#fff}
