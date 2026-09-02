@@ -535,7 +535,7 @@ ${ldBlocks}
 <main class="wrap">${bc}${body}</main>
 <footer class="ft"><div class="wrap">
 <p class="ftname">${LOGO_SVG_SM} ${SITE_NAME}</p>
-<p class="ftlinks"><a href="/">홈</a> · <a href="/regions">전체 지역</a> · <a href="tel:${PHONE_TEL}">전화문의 ${PHONE}</a></p>
+<p class="ftlinks"><a href="/">홈</a> · <a href="/regions">전체 지역</a> · <a href="/list">전체 목록</a> · <a href="tel:${PHONE_TEL}">전화문의 ${PHONE}</a></p>
 <p style="margin:12px 0"><a href="/regions" style="display:inline-block;background:var(--accent);color:var(--accent-ink);padding:12px 24px;border-radius:999px;font-weight:800;text-decoration:none;font-size:14px">🗺️ 전국 전체 지역 보기</a></p>
 <p class="ftnote">전국 과외 정보를 지역·과목별로 안내하는 정보 제공 사이트입니다. 정확한 수업 시간 및 교습비는 지역별·과목별로 상이할 수 있으므로 각 과외에 방문상담을 통해 확인하시기 바랍니다.</p>
 <p class="ftcopy">© ${SITE_HOST}</p></div></footer>
@@ -1265,6 +1265,25 @@ function pageRegion(sido){
 }
 
 // ---------- 페이지: 지역 인덱스 ----------
+function pageList(){
+  const idx=buildIndex();
+  const sidos=Object.keys(idx.bySido).sort();
+  let secs="";
+  sidos.forEach(sido=>{
+    const sggs=Object.keys(idx.bySido[sido]).sort();
+    const subj=SUBJECTS.map(sj=>`<a href="${urlSidoSubject(sido,sj)}">${esc(sido)} ${esc(sj)}</a>`).join("");
+    const links=sggs.map(g=>`<a href="${urlSgg(sido,g)}">${esc(g)}<small>${idx.bySido[sido][g].length}개 동</small></a>`).join("");
+    secs+=`<h3 style="font-size:15px;font-weight:800;margin:20px 0 10px"><a href="${urlRegion(sido)}">${esc(sido)}</a> <small style="font-weight:500;color:#888">${sggs.length}개 시·군·구</small></h3><div class="lgrid">${subj}${links}</div>`;
+  });
+  const body=`<h1>전체 목록</h1>
+<p class="subt">전국 동네별 과외 안내를 지역·과목별로 정리했습니다. 시·도에서 시·군·구로 좁혀 들어가세요.</p>
+<h2>주요 페이지</h2><div class="lgrid"><a href="/">홈</a><a href="/regions">지역별 안내</a></div>
+<h2>지역별 안내 (${REGIONS.length.toLocaleString()}개 동네)</h2>${secs}`;
+  return layout({title:`전체 목록 | ${SITE_NAME}`, desc:`${SITE_NAME}의 전국 시·도·시·군·구·과목 페이지를 한곳에 모은 전체 목록입니다.`,
+    canonical:SITE_URL+"/list",
+    jsonld:JSON.stringify({"@context":"https://schema.org","@type":"CollectionPage","name":"전체 목록","url":SITE_URL+"/list","isPartOf":{"@type":"WebSite","name":SITE_NAME,"url":SITE_URL}}),
+    body, crumb:[{name:"홈",url:"/"},{name:"전체 목록"}]});
+}
 function pageRegions(){
   const idx=buildIndex();
   const sidos=Object.keys(idx.bySido).sort();
@@ -1275,7 +1294,7 @@ function pageRegions(){
 // ---------- sitemap (인덱스 분할) / robots ----------
 const SM_CHUNK=5000;
 function allUrls(){
-  const idx=buildIndex(); const u=[`${SITE_URL}/`,`${SITE_URL}/regions`];
+  const idx=buildIndex(); const u=[`${SITE_URL}/`,`${SITE_URL}/list`,`${SITE_URL}/regions`];
   Object.keys(idx.bySido).forEach(s=>{ u.push(SITE_URL+urlRegion(s)); SUBJECTS.forEach(sj=>u.push(SITE_URL+urlSidoSubject(s,sj))); });
   Object.values(idx.bySgg).forEach(g=>{ u.push(SITE_URL+urlSgg(g.sido,g.sgg)); SUBJECTS.forEach(sj=>u.push(SITE_URL+urlSggSubject(g.sido,g.sgg,sj))); });
   REGIONS.forEach(r=>{
@@ -1372,7 +1391,7 @@ function llmsTxt(){
 `;
   return new Response(body,{headers:{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=86400"}});
 }
-function robots(){ return new Response(`User-agent: *\nAllow: /\nUser-agent: GPTBot\nAllow: /\nUser-agent: OAI-SearchBot\nAllow: /\nUser-agent: ChatGPT-User\nAllow: /\nUser-agent: PerplexityBot\nAllow: /\nUser-agent: Perplexity-User\nAllow: /\nUser-agent: ClaudeBot\nAllow: /\nUser-agent: Claude-Web\nAllow: /\nUser-agent: anthropic-ai\nAllow: /\nUser-agent: Google-Extended\nAllow: /\nUser-agent: Applebot-Extended\nAllow: /\nUser-agent: CCBot\nAllow: /\nUser-agent: Bytespider\nAllow: /\nUser-agent: Naverbot\nAllow: /\nUser-agent: Yeti\nAllow: /\n# llms.txt: ${SITE_URL}/llms.txt\nLlms-txt: ${SITE_URL}/llms.txt\nSitemap: ${SITE_URL}/sitemap.xml\n#DaumWebMasterTool:8ad0caca88fe9c46231512acb4b586c44dc3a3f0916c074ea6d50f0bfdda26ae:pYR9u40s2miYk+D5NPR7lA==\n`,{headers:{"content-type":"text/plain"}}); }
+function robots(){ return new Response(`User-agent: *\nAllow: /\nUser-agent: GPTBot\nAllow: /\nUser-agent: OAI-SearchBot\nAllow: /\nUser-agent: ChatGPT-User\nAllow: /\nUser-agent: PerplexityBot\nAllow: /\nUser-agent: Perplexity-User\nAllow: /\nUser-agent: ClaudeBot\nAllow: /\nUser-agent: Claude-Web\nAllow: /\nUser-agent: anthropic-ai\nAllow: /\nUser-agent: Google-Extended\nAllow: /\nUser-agent: Applebot-Extended\nAllow: /\nUser-agent: CCBot\nAllow: /\nUser-agent: Bytespider\nAllow: /\nUser-agent: Naverbot\nAllow: /\nUser-agent: Yeti\nAllow: /\n# llms.txt: ${SITE_URL}/llms.txt\nLlms-txt: ${SITE_URL}/llms.txt\n# 전체 목록: ${SITE_URL}/list\nSitemap: ${SITE_URL}/sitemap.xml\n#DaumWebMasterTool:8ad0caca88fe9c46231512acb4b586c44dc3a3f0916c074ea6d50f0bfdda26ae:pYR9u40s2miYk+D5NPR7lA==\n`,{headers:{"content-type":"text/plain"}}); }
 
 // IndexNow: 전체 URL을 검색엔진에 즉시 제출
 async function indexnowPing(u){
@@ -1609,6 +1628,7 @@ async function handle(request, env, ctx){
   if(path==="/favicon.svg") return faviconSvg();
   if(path==="/favicon.ico") return logoPng();
   if(path==="/logo.png") return logoPng();
+  if(path==="/list") return html(pageList());
   if(path==="/regions") return html(pageRegions());
   const idx=buildIndex();
   // /region/:sido/:subj  (시도×과목)
