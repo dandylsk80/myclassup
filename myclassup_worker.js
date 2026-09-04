@@ -1628,7 +1628,8 @@ function pageSggSubject(gk, subj){
   const otherSubj=SUBJECTS.filter(s=>s!==subj).map(s=>`<a class="chip" href="${urlSggSubject(sido,sgg,s)}">${SUBJ_ICON[s]} ${esc(sgg)} ${esc(s)}</a>`).join("");
   const childHtml=`<section class="sec"><h2>${esc(sgg)} 동네별 ${esc(subj)}과외</h2>${chipsFold(dongChips,10)}${otherSubj?`<div class="sectitle" style="margin-top:14px">${esc(sgg)} 다른 과목</div><div class="chips">${otherSubj}</div>`:""}</section>`;
   const cards="";
-  const desc=`${sido} ${sgg} ${subj}과외 정보. ${lvTxtOf(lvs)} ${subj} 수업과 동네별 과외를 확인하세요.`;
+  /* 60자 미만이면 검색결과에 스니펫이 잘려 나온다 — 동네·학년 정보를 붙여 길이를 맞춘다 */
+  const desc=`${sido} ${sgg} ${subj}과외 정보를 한곳에 모았습니다. ${lvTxtOf(lvs)} ${subj} 수업과 ${sgg} 동네별 ${subj}과외, 인근 학교 내신 대비와 학습 관리 방법까지 확인하세요.`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg,url:urlSgg(sido,sgg)},{name:`${subj}과외`}];
   return regCommon({title:`${kw} | ${sido} ${subj} 과외`, kw, sub:`${sido} ${sgg}`, desc, canonical:SITE_URL+urlSggSubject(sido,sgg,subj), crumb, lead:g.lead, secs:g.secs, faqs, childHtml, cards, scopeName:sgg, subj, seedKey});
 }
@@ -1642,7 +1643,8 @@ function pageSidoSubject(sido, subj){
   const ggChips=ggs.map(gk=>{ const sgg=gk.split("|")[1]; return `<a class="chip" href="${urlSggSubject(sido,sgg,subj)}">${esc(sgg)} ${esc(subj)}</a>`; });
   const otherSubj=SUBJECTS.filter(s=>s!==subj).map(s=>`<a class="chip" href="${urlSidoSubject(sido,s)}">${SUBJ_ICON[s]} ${esc(sido)} ${esc(s)}</a>`).join("");
   const childHtml=`<section class="sec"><h2>${esc(sido)} 시군구별 ${esc(subj)}과외</h2>${chipsFold(ggChips,8)}${otherSubj?`<div class="sectitle" style="margin-top:14px">${esc(sido)} 다른 과목</div><div class="chips">${otherSubj}</div>`:""}</section>`;
-  const desc=`${sido} ${subj}과외 정보. 시군구·동네별 ${subj} 과외를 한눈에 확인하세요.`;
+  /* 60자 미만이면 검색결과 스니펫이 잘린다 — 학년·범위를 덧붙여 길이를 맞춘다 */
+  const desc=`${sido} ${subj}과외 정보를 지역별로 정리했습니다. ${sido} 시군구·동네별 ${subj} 과외와 초등·중학·고교 학년별 ${subj} 수업, 인근 학교 내신 대비 방법까지 한눈에 확인하세요.`;
   const crumb=[{name:"홈",url:"/"},{name:"지역별",url:"/regions"},{name:sido,url:urlRegion(sido)},{name:`${subj}과외`}];
   return regCommon({title:`${kw} | ${SITE_NAME}`, kw, sub:sido, desc, canonical:SITE_URL+urlSidoSubject(sido,subj), crumb, lead:g.lead, secs:g.secs, faqs, childHtml, cards:"", scopeName:sido, subj, seedKey});
 }
