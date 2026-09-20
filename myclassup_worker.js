@@ -922,6 +922,8 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 
 /* ── 플로팅: 오른쪽 세로 스택 ── */
 .floating{position:fixed;right:10px;bottom:74px;z-index:60;display:flex;flex-direction:column;gap:8px;background:none;border:none;padding:0;box-shadow:none;transform:none;left:auto;opacity:.92}
+/* 모바일: 하단 우측은 브라우저 툴바·홈 인디케이터·스크롤 동선과 겹쳐 오터치가 난다 → 화면 세로 중앙 우측으로 */
+@media(max-width:768px){.floating{top:50%;bottom:auto;transform:translateY(-50%);gap:12px}}
 .floating:hover{opacity:1}
 .fbtn{width:58px;height:58px;border-radius:50%;box-shadow:0 4px 14px rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;border:none;cursor:pointer;text-decoration:none;font-family:inherit;font-size:9px;font-weight:800;width:46px;height:46px;border-radius:50%;box-shadow:0 6px 18px rgba(0,0,0,.45)}
 .fbtn .fic{font-size:18px;line-height:1}
