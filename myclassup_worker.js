@@ -819,6 +819,8 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .ctaprep{list-style:none;margin:0 0 14px;text-align:left;display:inline-block}
 .ctaprep li{position:relative;padding:5px 0 5px 22px;font-size:13px;font-weight:700;color:var(--accent-ink)}
 .ctaprep li::before{content:"☑";position:absolute;left:0}
+.ctamore{margin-top:12px;font-size:12.5px;font-weight:800}
+.ctamore a{color:var(--accent-ink);text-decoration:underline;opacity:.8}
 .ctabtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .ctabtns a,.ctabtns button{border:none;cursor:pointer;font-size:14px;font-weight:800;padding:13px 20px;border-radius:999px;text-decoration:none;font-family:inherit}
 .cphone{background:var(--accent-ink);color:var(--accent)}
@@ -1167,7 +1169,7 @@ function fiveBlocks(seedKey, dong, subj){
   const b2 = sec("🚫", hUnfit, `<p>${esc(fbFill(pick(rng,FB_P_UNFIT),dong,kwCost))}</p>`
     + `<ul class="checklist">${unfit.map(x=>`<li>${esc(x[0])} — ${esc(x[1])}</li>`).join("")}</ul>`);
   const b3 = sec("💰", hCost, `<p>${esc(fbFill(pick(rng,FB_P_COST),dong,kwCost))}</p>`
-    + ul(cost) + `<p class="subt">${esc(fbFill(pick(rng,FB_P_COST2),dong,kwCost))}</p>`);
+    + ul(cost) + `<p class="subt">${esc(fbFill(pick(rng,FB_P_COST2),dong,kwCost))} <a href="/cost">비용이 정해지는 기준 보기</a></p>`);
   const b4 = sec("🧭", hStep, `<div class="steps">${st.map((d,i)=>`<div class="step"><div class="stepnum">${i+1}</div><div class="stepbody"><b>${esc(stt[i])}</b><span>${esc(d)}</span></div></div>`).join("")}</div>`);
   return b1+b2+b3+b4;
 }
@@ -1179,7 +1181,7 @@ function prepCta(seedKey, dong, subj){
   const h = sj ? `${dong} ${sj}과외 상담 전에 무엇을 준비하나요?` : `${dong} 과외 상담 전에 무엇을 준비하나요?`;
   return `<div class="cta"><h2>${esc(h)}</h2><p>${esc(fbFill(pick(rng,FB_P_CTA),dong,sj?dong+" "+sj+"과외":dong+" 과외"))}</p>`
     + `<ul class="ctaprep">${prep.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`
-    + `<div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 준비되셨으면 전화</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
+    + `<div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 준비되셨으면 전화</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div><div class="ctamore"><a href="/prepare">준비물만 먼저 보기 →</a></div></div>`;
 }
 
 function renderSec(s,i){
@@ -1428,7 +1430,7 @@ function pageHome(){
 <img class="qimg" src="${IMG_BASE}123.webp" alt="공부하는 아이" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}123.webp'" width="900" height="675"></div>
 
 
-<section class="howto"><h2>동네 과외, 어떻게 찾나요?</h2><div class="steps3">
+<section class="sec"><h2>결정하기 전에 무엇을 보면 되나요?</h2><p class="subt">지역과 관계없이 판단에 필요한 내용만 모았습니다.</p><div class="chips">${FP_ORDER.map(k=>`<a class="chip" href="/${k}">${esc(FP_NAV[k])}</a>`).join("")}</div></section><section class="howto"><h2>동네 과외, 어떻게 찾나요?</h2><div class="steps3">
 <div class="s3"><div class="s3n">1</div><div class="s3b"><div class="s3t">지역 선택</div><div class="s3d">시·도 → 시군구 → 동네 순으로 우리 동네를 찾습니다.</div></div></div>
 <div class="s3"><div class="s3n">2</div><div class="s3b"><div class="s3t">과목·학년 선택</div><div class="s3d">초·중·고 학년과 과목을 골라 맞는 과외 정보를 봅니다.</div></div></div>
 <div class="s3"><div class="s3n">3</div><div class="s3b"><div class="s3t">전화·문의 상담</div><div class="s3d">전화나 문의하기로 학습 상담을 받아보세요.</div></div></div>
@@ -1497,7 +1499,7 @@ function pageRegions(){
 // ---------- sitemap (인덱스 분할) / robots ----------
 const SM_CHUNK=5000;
 function allUrls(){
-  const idx=buildIndex(); const u=[`${SITE_URL}/`,`${SITE_URL}/list`,`${SITE_URL}/regions`];
+  const idx=buildIndex(); const u=[`${SITE_URL}/`,`${SITE_URL}/list`,`${SITE_URL}/regions`].concat(FP_ORDER.map(k=>`${SITE_URL}/${k}`));
   Object.keys(idx.bySido).forEach(s=>{ u.push(SITE_URL+urlRegion(s)); SUBJECTS.forEach(sj=>u.push(SITE_URL+urlSidoSubject(s,sj))); });
   Object.values(idx.bySgg).forEach(g=>{ u.push(SITE_URL+urlSgg(g.sido,g.sgg)); SUBJECTS.forEach(sj=>u.push(SITE_URL+urlSggSubject(g.sido,g.sgg,sj))); });
   REGIONS.forEach(r=>{
@@ -1705,6 +1707,15 @@ function llmsTxt(){
 - 동네×과목 페이지: ${SITE_URL}/{동네슬러그}/{korean|english|math|science|social}
 - 동네×학년×과목 페이지: ${SITE_URL}/{동네슬러그}/{elem|middle|high}-{korean|english|math|science|social}
 - 사이트맵: ${SITE_URL}/sitemap.xml
+
+## 안내 페이지 (지역과 무관한 판단 기준)
+- 과외·학원·인강 비교: ${SITE_URL}/compare
+- 1:1 과외 적합성 판단: ${SITE_URL}/fit
+- 과외비를 정하는 요인(금액 비공개): ${SITE_URL}/cost
+- 선생님 선발·검증 3단계: ${SITE_URL}/trust
+- 학년·과목별 구성 예시(실제 사례 아님): ${SITE_URL}/cases
+- 상담 FAQ: ${SITE_URL}/faq
+- 상담 전 준비: ${SITE_URL}/prepare
 
 ## 자주 묻는 질문
 - Q. 어느 지역까지 과외 안내가 되나요?
@@ -1944,6 +1955,246 @@ function pageSidoSubject(sido, subj){
   return regCommon({title:`${kw} | ${SITE_NAME}`, kw, sub:sido, desc, canonical:SITE_URL+urlSidoSubject(sido,subj), crumb, lead:g.lead, secs:g.secs, faqs, childHtml, cards:"", scopeName:sido, subj, seedKey});
 }
 
+/* ── 고정 안내 페이지 7개 ─────────────────────────────────────
+   동네 페이지가 아니라 판단 기준을 담는 곳이다. 지역 슬러그 라우팅보다
+   앞에서 잡아야 한다(/^\/([a-z0-9-]+)$/ 가 전부 삼킨다).
+   숫자는 D1 실측만 쓴다. 없는 데이터는 없다고 적는다. */
+const FP_ORDER = ["compare","fit","cost","trust","cases","faq","prepare"];
+const FP_NAV = {compare:"비교·결정", fit:"적합성", cost:"비용 결정 요인", trust:"선발·검증",
+                cases:"구성 예시", faq:"상담 FAQ", prepare:"상담 전 준비"};
+
+/* D1 실측. 갱신하면 이 블록만 고치면 된다 */
+const FP_STAT = {
+  from:"2026-07-05", to:"2026-09-22", views:5376,
+  subj:[["수학",1598],["사회",891],["영어",807],["과학",750],["국어",662]],
+  subjNone:668,
+  lv:[["중등",1314],["초등",1023],["고등",957]], lvNone:2082,
+  kw:[["마산 양덕동 영어과외",3],["군산수학과외",3],["영주시 국어",2],["영어로남종면",2],
+      ["세종시 과외",2],["봉선동수학과외",2],["봉선동 국어과외",2]]
+};
+function fpStatNote(){
+  return `<p class="subt">${FP_STAT.from} ~ ${FP_STAT.to} · 이 사이트 조회 ${FP_STAT.views.toLocaleString()}건 기준입니다.</p>`;
+}
+function fpTable(rows, head){
+  return `<table class="schooltbl"><tr><th>${esc(head[0])}</th><th>${esc(head[1])}</th></tr>`
+    + rows.map(r=>`<tr><th>${esc(r[0])}</th><td>${esc(String(r[1]))}</td></tr>`).join("") + `</table>`;
+}
+function fpSec(h, inner){ return `<section class="sec"><h2>${esc(h)}</h2>${inner}</section>`; }
+function fpUl(items){ return `<ul class="checklist">${items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`; }
+function fpSteps(steps){
+  return `<div class="steps">${steps.map((st,i)=>`<div class="step"><div class="stepnum">${i+1}</div><div class="stepbody"><b>${esc(st[0])}</b><span>${esc(st[1])}</span></div></div>`).join("")}</div>`;
+}
+function fpNav(cur){
+  const chips = FP_ORDER.filter(k=>k!==cur).map(k=>`<a class="chip" href="/${k}">${esc(FP_NAV[k])}</a>`).join("");
+  return `<section class="sec"><h2>다른 안내도 볼까요?</h2><div class="chips">${chips}</div></section>`;
+}
+/* 구성 예시 6건 — 실제 사례가 아니다. 성적 수치를 넣지 않는다 */
+const FP_CASES = [
+ ["중학교 2학년 · 수학","1학기 중간 이후 진도를 놓쳐 수업 시간에 손을 놓게 된 경우","주 2회 · 한 학기",
+  "빠진 단원을 먼저 찾아내고, 그 단원 개념부터 다시 잡습니다. 학교 진도를 따라붙은 뒤에는 시험 2주 전부터 기출로 범위를 좁힙니다.",
+  "비어 있는 단원이 여러 개면 한 학기로는 모자랍니다. 그럴 땐 학기 목표를 '따라붙기'가 아니라 '구멍 메우기'로 바꿉니다."],
+ ["고등학교 1학년 · 영어","단어는 아는데 지문이 통째로 안 읽히는 경우","주 2회 · 3개월",
+  "긴 문장을 의미 단위로 끊어 읽는 훈련부터 합니다. 지문 유형이 손에 익으면 교과서 본문으로 내신 서술형을 함께 봅니다.",
+  "어휘가 부족한 상태면 구문부터 해도 진도가 안 나갑니다. 이 경우 처음 몇 주는 어휘에만 씁니다."],
+ ["초등학교 5학년 · 수학","연산은 되는데 문장으로 나오면 막히는 경우","주 1회 · 6개월",
+  "문제를 그림이나 표로 옮기는 것부터 시작해 식을 세우고, 마지막에 검산하는 순서를 습관으로 만듭니다.",
+  "주 1회는 학교 진도를 따라가는 정도입니다. 앞 학년 내용까지 다시 보려면 횟수를 늘려야 합니다."],
+ ["중학교 3학년 · 국어","비문학 지문에서 시간이 모자라는 경우","주 1회 · 한 학기",
+  "문단마다 중심 내용을 한 줄로 적고, 답의 근거를 지문에서 찾아 표시하는 연습을 반복합니다. 이후 서술형 답안을 다듬습니다.",
+  "평소 읽는 양이 적으면 속도가 늦게 붙습니다. 수업 밖에서 짧은 글이라도 매일 읽어야 합니다."],
+ ["고등학교 2학년 · 사회","외우기는 했는데 자료 해석 문제에서 틀리는 경우","주 1회 · 3개월",
+  "개념을 흐름과 연표로 묶은 뒤 그래프·통계를 읽는 연습으로 넘어갑니다. 마지막에 기출로 확인합니다.",
+  "선택 과목이 여러 개면 한 과목씩 끊어서 합니다. 동시에 하면 어느 쪽도 정리가 안 됩니다."],
+ ["중학교 1학년 · 과학","초등 때와 내용이 달라져 흥미가 떨어진 경우","주 1회 · 6개월",
+  "원리를 생활 사례와 이어 이해한 뒤 실험 과정과 결과를 연결합니다. 단원이 끝날 때마다 점검 문제로 확인합니다.",
+  "수학 기초가 약하면 물리 단원에서 다시 막힙니다. 그때는 과학만 봐서는 풀리지 않습니다."]
+];
+function fpCaseCards(){
+  return `<div class="steps">` + FP_CASES.map((c,i)=>
+    `<div class="step"><div class="stepnum">${i+1}</div><div class="stepbody"><b>${esc(c[0])}</b>`
+    + `<span><b>출발점</b> ${esc(c[1])}</span>`
+    + `<span><b>기간</b> ${esc(c[2])}</span>`
+    + `<span><b>진행</b> ${esc(c[3])}</span>`
+    + `<span><b>한계</b> ${esc(c[4])}</span></div></div>`).join("") + `</div>`;
+}
+
+function fpBody(slug){
+  const S = [];
+  if(slug==="compare"){
+    S.push(fpSec("1:1 과외는 학원과 무엇이 다른가요?",
+      `<p>가장 큰 차이는 속도를 누가 정하느냐입니다. 학원은 반 전체 진도에 아이를 맞추고, 1:1은 아이 상태에 진도를 맞춥니다. 모르는 지점에서 멈춰 다시 설명받을 수 있다는 것이 1:1의 값이고, 또래와 같이 하는 긴장감과 정해진 커리큘럼이 학원의 값입니다.</p>`
+      + `<p>그래서 "어느 쪽이 낫다"가 아니라 "지금 이 아이에게 무엇이 부족한가"로 골라야 합니다. 진도가 아니라 이해가 막힌 상태라면 1:1이, 혼자 할 줄은 아는데 끌어 줄 사람이 없다면 학원이 맞는 경우가 많습니다.</p>`));
+    S.push(fpSec("인강으로 충분한 경우는 언제인가요?",
+      `<p>스스로 계획을 세우고 지킬 수 있다면 인강이 가장 효율이 좋습니다. 원하는 시간에 원하는 만큼 들을 수 있고, 같은 강의를 여러 번 돌려 볼 수도 있습니다.</p>`
+      + fpUl(["계획을 세우고 실제로 지키는 편일 때","모르는 부분을 스스로 찾아 다시 듣는 편일 때","질문할 곳이 따로 있을 때","한 과목만 짧게 보완하면 될 때"])
+      + `<p>반대로 강의를 틀어 놓고 끝까지 듣지 못한다면, 인강을 더 사는 것보다 옆에서 확인해 줄 사람을 두는 편이 낫습니다.</p>`));
+    S.push(fpSec("과외로 바꿔야 할 신호는 무엇인가요?",
+      fpUl(["학원이나 인강을 한 학기 이상 했는데 같은 단원에서 계속 막힐 때","질문을 못 하고 그냥 넘어가는 일이 반복될 때","문제는 푸는데 틀린 이유를 설명하지 못할 때","숙제를 하긴 하는데 채점만 하고 넘어갈 때","과목마다 편차가 커져서 한 과목이 다른 과목까지 끌어내릴 때"])
+      + `<p>하나만 해당한다고 바로 바꿀 일은 아닙니다. 다만 두세 개가 겹치면 방식 자체를 바꿔야 할 때입니다.</p>`));
+    S.push(fpSec("셋을 같이 쓰면 안 되나요?",
+      `<p>같이 쓰는 경우가 오히려 흔합니다. 다만 셋 다 진도를 나가면 아이가 감당하지 못합니다. 역할을 나눠야 합니다.</p>`
+      + fpUl(["학원이나 인강은 진도, 과외는 막힌 단원만 — 겹치지 않게","과외를 주 1회로 줄이고 점검 역할만 맡기기","시험 기간에만 과외를 붙이고 평소엔 인강으로"])
+      + `<p>세 가지를 동시에 늘리는 것은 대부분 돈과 시간만 쓰고 끝납니다.</p>`));
+    S.push(fpSec("비교할 때 무엇부터 물어봐야 하나요?",
+      `<p>가격보다 먼저 물어야 할 것이 있습니다. 아래 다섯 가지에 대한 답이 분명한 곳이라면, 적어도 무엇을 사는지는 알고 시작하는 셈입니다.</p>`
+      + fpUl(["지금 수준을 어떻게 진단하는지","첫 달에 무엇을 목표로 잡는지","수업 뒤 복습과 점검을 누가 챙기는지","진행 상황을 어떤 주기로 알려 주는지","맞지 않을 때 어떻게 바꿀 수 있는지"])
+      + `<p>무엇을 준비해 가면 되는지는 <a href="/prepare">상담 전 준비</a>에 정리해 두었습니다.</p>`));
+  }
+  if(slug==="cost"){
+    S.push(fpSec("과외비를 가르는 네 가지는 무엇인가요?",
+      `<p>같은 동네, 같은 과목이라도 아래 네 가지가 다르면 금액이 달라집니다. 그래서 이 페이지에는 숫자를 적지 않습니다.</p>`
+      + fpUl(["주 수업 횟수","회당 수업 시간","학년과 과목 범위","오가는 거리와 시간대"])
+      + `<p>네 가지가 정해지면 금액은 거의 자동으로 따라옵니다. 반대로 이게 안 정해진 상태에서 나온 숫자는 의미가 없습니다.</p>`));
+    S.push(fpSec("주 수업 횟수는 비용에 어떻게 반영되나요?",
+      `<p>횟수는 비용에 가장 곧바로 반영됩니다. 다만 횟수를 줄이면 그만큼 아이가 혼자 채워야 하는 양이 늘어납니다.</p>`
+      + `<p>주 1회는 학교 진도를 따라가는 정도, 주 2회부터 빠진 단원을 함께 메울 여유가 생깁니다. 지금 상태가 '따라가기'인지 '되돌아가기'인지에 따라 필요한 횟수가 달라집니다.</p>`));
+    S.push(fpSec("학년과 과목이 올라가면 왜 달라지나요?",
+      `<p>다루는 범위가 넓어지고, 한 시간에 준비해야 할 양이 늘기 때문입니다. 고등 과정은 선택 과목까지 갈라져 과목 하나를 잡는 데 드는 품이 중등과 다릅니다.</p>`
+      + `<p>과목을 두 개 이상 묶는 경우에도 계산이 달라집니다. 한 선생님이 이어서 볼 수 있는지, 과목마다 따로 붙어야 하는지에 따라 나뉩니다.</p>`));
+    S.push(fpSec("오가는 거리와 시간대도 영향이 있나요?",
+      `<p>있습니다. 이동 시간도 결국 누군가의 시간이기 때문입니다. 같은 조건이라도 집 앞과 지하철 두 정거장 거리는 다르게 잡힙니다.</p>`
+      + `<p>시간대도 마찬가지입니다. 평일 낮과 평일 저녁, 주말은 구할 수 있는 선생님의 폭 자체가 다릅니다. 시간대를 넓게 열어 두실수록 선택지가 늘어납니다.</p>`));
+    S.push(fpSec("교재·보강·시험 기간 추가 수업은 어떻게 계산되나요?",
+      fpUl(["교재를 직접 준비하는지, 수업에서 받는지","빠진 수업의 보강을 어떻게 처리하는지","시험 기간에 횟수를 늘리는지","과제 첨삭을 어디까지 하는지","진단 검사가 포함되는지","학습 기록을 어떤 주기로 받는지"])
+      + `<p>이 항목들은 금액에 포함되기도 하고 따로 계산되기도 합니다. 시작 전에 어느 쪽인지 확인해 두시면 나중에 어긋나지 않습니다.</p>`));
+    S.push(fpSec("왜 이 페이지에 금액을 적지 않나요?",
+      `<p>지역·과목·학년·시간대 조합에 따라 실제 금액이 달라지는데, 대표 숫자 하나를 적어 두면 그 숫자가 기준처럼 읽힙니다. 상담에서 조건을 맞춰 보면 다른 금액이 나오고, 그러면 처음 본 숫자가 거짓말이 됩니다.</p>`
+      + `<p>그래서 이 사이트는 금액 대신 <b>금액을 정하는 기준</b>만 공개합니다. 위 항목을 정리해 오시면 상담에서 바로 계산해 드립니다.</p>`));
+  }
+  if(slug==="fit"){
+    S.push(fpSec("어떤 경우에 1:1이 잘 맞나요?",
+      fpUl(["학교 진도를 따라가기 버거울 때","질문을 못 하고 그냥 넘어갈 때","기초 단원이 비어 있을 때","문제는 푸는데 틀린 이유를 모를 때","여러 명이 함께 듣는 수업이 안 맞을 때","혼자 공부할 시간을 못 만들 때"])
+      + `<p>공통점은 '무엇을 모르는지 스스로 짚지 못하는 상태'라는 것입니다. 이럴 때는 옆에서 짚어 주는 사람이 있어야 다음으로 넘어갑니다.</p>`));
+    S.push(fpSec("반대로 과외가 답이 아닌 경우는 언제인가요?",
+      `<p>아래에 해당하면 과외를 권하지 않습니다. 대안을 같이 적습니다.</p>`
+      + fpUl(["이미 계획을 세우고 지키고 있을 때 — 문제집을 늘리는 편이 낫습니다","한 단원만 짧게 메우면 될 때 — 단기 특강이 더 맞습니다","시간표가 이미 꽉 차 있을 때 — 일정부터 덜어내는 게 먼저입니다","과목이 아니라 공부 습관이 문제일 때 — 학습 상담을 먼저 받아 보세요","아이가 수업 자체를 거부할 때 — 이유부터 같이 찾는 게 먼저입니다","시험이 일주일 남았을 때 — 지금은 기출 정리가 빠릅니다"])
+      + `<p>세 가지를 비교해 보고 싶으시면 <a href="/compare">비교·결정</a>을 함께 보세요.</p>`));
+    S.push(fpSec("학년별로 판단 기준이 다른가요?",
+      fpSteps([["초등","무엇을 아는지보다 '앉아서 하는 시간'이 만들어졌는지를 먼저 봅니다. 습관이 안 잡힌 상태에서 진도를 당기면 오래가지 않습니다."],
+               ["중등","단원 사이 연결이 끊긴 곳을 찾는 것이 먼저입니다. 이 시기에 생긴 구멍은 고등에서 그대로 드러납니다."],
+               ["고등","남은 시간과 목표를 놓고 범위를 좁힙니다. 전 범위를 다시 보는 선택이 늘 옳지는 않습니다."]])));
+    S.push(fpSec("과목별로도 다른가요?",
+      `<p>다릅니다. 수학·과학은 앞 단원이 비면 다음이 막히는 구조라 되돌아가는 시간이 필요하고, 국어·영어는 누적된 읽기량이 성과 시점을 좌우합니다. 사회는 개념을 외운 뒤 자료를 읽는 연습이 따로 필요합니다.</p>`
+      + `<p>참고로 이 사이트에서 어떤 과목 페이지가 많이 열렸는지는 아래와 같습니다. 문의가 많은 과목이라기보다 <b>찾아보는 사람이 많은 과목</b>으로 읽어 주세요.</p>`
+      + fpTable(FP_STAT.subj.map(x=>[x[0], x[1].toLocaleString()+"건"]), ["과목","조회"])
+      + fpStatNote()
+      + `<p class="subt">과목이 지정되지 않은 페이지 ${FP_STAT.subjNone.toLocaleString()}건은 위 표에서 뺐습니다.</p>`));
+    S.push(fpSec("지금이 시작할 때인지 어떻게 아나요?",
+      `<p>시기를 정하는 일반 규칙은 없습니다. 다만 아래 두 가지 중 하나라도 해당하면 미룰수록 되돌릴 양이 늘어납니다.</p>`
+      + fpUl(["같은 단원에서 두 번 이상 막혔을 때","한 학기 이상 같은 방식으로 했는데 달라진 게 없을 때"])
+      + `<p>학년별 조회 분포도 참고로 적어 둡니다.</p>`
+      + fpTable(FP_STAT.lv.map(x=>[x[0], x[1].toLocaleString()+"건"]), ["학년","조회"])
+      + `<p class="subt">학년이 지정되지 않은 페이지 ${FP_STAT.lvNone.toLocaleString()}건은 위 표에서 뺐습니다.</p>`));
+  }
+  if(slug==="trust"){
+    S.push(fpSec("선생님은 어떤 절차로 선발되나요?",
+      `<p>세 단계를 거칩니다. 각 단계에서 무엇을 보는지 아래에 적었습니다.</p>`
+      + fpSteps([["1차 서류","전공, 학원 강사 경력, 기존 과외 경력을 확인합니다."],
+                 ["2차 시강·면담","실제로 한 단원을 가르치게 해 보고 면담을 합니다."],
+                 ["3차 매칭 후 첫 수업 피드백","학부모와 매칭한 뒤 첫 수업이 끝나면 양쪽 피드백을 받습니다."]])
+      + `<p>3차까지 마쳐야 계속 수업이 이어집니다. 첫 수업 피드백에서 맞지 않는다고 판단되면 그 시점에 다시 맞춥니다.</p>`));
+    S.push(fpSec("1차 서류에서는 무엇을 확인하나요?",
+      fpUl(["해당 과목 전공 여부","학원 강사 경력","기존 과외 경력"])
+      + `<p>세 가지를 모두 갖춰야 하는 것은 아닙니다. 다만 무엇을 가지고 있고 무엇이 없는지는 서류 단계에서 분명히 해 둡니다. 경력이 짧다면 어떤 학년·과목에서 짧은지까지 봅니다.</p>`));
+    S.push(fpSec("2차 시강과 면담은 어떻게 진행되나요?",
+      `<p>서류로는 가르치는 방식을 알 수 없어서 직접 해 보게 합니다. 한 단원을 정해 시강을 진행하고, 이어서 면담합니다.</p>`
+      + fpUl(["모르는 학생에게 개념을 어떤 순서로 풀어내는지","아이가 못 따라올 때 속도를 조절하는지","질문을 받아내는 방식이 편안한지","수업 뒤 무엇을 확인할 계획인지"])));
+    S.push(fpSec("3차 학부모 매칭 뒤에는 무엇을 하나요?",
+      `<p>매칭은 끝이 아니라 마지막 확인 단계입니다. 첫 수업을 하고 나면 학부모와 선생님 양쪽에서 피드백을 받습니다.</p>`
+      + fpUl(["아이가 수업 중에 질문을 했는지","진단한 수준이 집에서 보는 것과 맞는지","정한 요일·시간이 실제로 지켜질 만한지","다음 수업에 무엇을 하기로 했는지"])
+      + `<p>여기서 어긋나는 부분이 나오면 계획을 고치거나 선생님을 다시 맞춥니다.</p>`));
+    S.push(fpSec("선생님이 맞지 않으면 교체가 되나요?",
+      `<p>됩니다. 교체와 환불 모두 가능하고, 위약금은 없습니다. 자세한 내용은 상담에서 안내드립니다.</p>`));
+  }
+  if(slug==="cases"){
+    S.push(fpSec("이 페이지의 사례는 실제 사례인가요?",
+      `<p><b>아닙니다.</b> 아래는 실제 학생의 기록이 아니라, 이런 상태로 오시면 이렇게 진행한다는 <b>구성 예시</b>입니다.</p>`
+      + `<p>성적이 몇 점에서 몇 점이 되었다는 식의 숫자는 적지 않았습니다. 확인할 방법이 없는 숫자를 적으면 그건 후기가 아니라 광고이기 때문입니다. 대신 출발점·기간·진행 방식·한계를 적었습니다. 특히 한계를 빼지 않았습니다.</p>`));
+    S.push(fpSec("학년·과목별로 어떻게 구성하나요?", fpCaseCards()));
+    S.push(fpSec("이 구성이 안 맞는 경우는 언제인가요?",
+      `<p>여섯 가지 모두 '한 과목에서 막힌 지점이 분명한 경우'를 전제로 합니다. 아래에 해당하면 구성 자체가 달라집니다.</p>`
+      + fpUl(["과목이 아니라 공부 습관이 문제일 때","여러 과목이 동시에 무너져 있을 때","아이가 수업 자체를 거부할 때","시험이 코앞이라 되돌아갈 시간이 없을 때"])
+      + `<p>어느 쪽인지 판단이 서지 않으면 <a href="/fit">적합성</a>을 먼저 보세요.</p>`));
+    S.push(fpSec("구성 예시와 실제는 얼마나 다른가요?",
+      `<p>출발점이 같아 보여도 아이마다 빈 곳이 달라서, 첫 수업 진단 뒤에 거의 항상 조정됩니다. 위 예시는 '대략 이런 순서로 간다'는 뼈대로만 봐 주세요.</p>`
+      + `<p>실제 계획은 상담과 첫 수업을 거쳐 정해집니다. 무엇을 준비해 오시면 되는지는 <a href="/prepare">상담 전 준비</a>에 적어 두었습니다.</p>`));
+  }
+  if(slug==="faq"){
+    S.push(fpSec("처음인데 어디서부터 물어봐야 하나요?",
+      `<p>"얼마인가요"보다 "지금 상태로 무엇부터 해야 하나요"를 먼저 물어 주시는 편이 서로 빠릅니다. 금액은 조건이 정해져야 나옵니다.</p>`
+      + `<p>무엇을 손에 들고 계시면 되는지는 <a href="/prepare">상담 전 준비</a>에, 금액이 어떻게 정해지는지는 <a href="/cost">비용 결정 요인</a>에 적어 두었습니다.</p>`));
+    S.push(fpSec("수업 요일과 시간은 어떻게 정하나요?",
+      `<p>아이 일정을 먼저 받고 거기에 맞출 수 있는 선생님을 찾는 순서입니다. 시간대를 한 칸만 열어 두시면 선택지가 좁아지니, 가능한 시간을 두세 개 알려 주시면 맞추기 쉽습니다.</p>`
+      + `<p>평일 저녁과 주말은 찾는 분이 몰리는 시간대입니다.</p>`));
+    S.push(fpSec("선생님이 바뀌면 진도는 어떻게 되나요?",
+      `<p>그동안 무엇을 어디까지 했는지 기록을 넘깁니다. 새 선생님은 그 기록을 보고 시작하므로 처음부터 다시 하지 않습니다.</p>`
+      + `<p>교체와 환불은 모두 가능하고 위약금은 없습니다. 선발·검증 절차는 <a href="/trust">선발·검증</a>에 있습니다.</p>`));
+    S.push(fpSec("시험 기간에는 수업이 달라지나요?",
+      `<p>달라집니다. 평소에는 빠진 단원을 메우는 쪽에 무게를 두고, 시험 2~3주 전부터는 범위를 좁혀 기출과 오답 위주로 바꿉니다.</p>`
+      + `<p>횟수를 늘릴지 말지는 남은 기간과 범위를 보고 정합니다. 늘 늘려야 하는 것은 아닙니다.</p>`));
+    S.push(fpSec("상담만 받아봐도 되나요?",
+      `<p>됩니다. 상담에서 지금 상태를 짚고 무엇부터 하면 좋을지까지 말씀드립니다. 그 결과가 "지금은 과외가 아니라 다른 방법"일 수도 있습니다. <a href="/fit">적합성</a>에 그런 경우를 적어 두었습니다.</p>`));
+    S.push(fpSec("어떤 검색으로 이 사이트에 들어오시나요?",
+      `<p>상담에서 오간 이야기는 이 사이트에 따로 모으지 않아 집계할 수 없습니다. 대신 검색을 거쳐 들어온 경우의 검색어는 남아 있어 그대로 적습니다.</p>`
+      + fpTable(FP_STAT.kw.map(x=>[x[0], x[1]+"건"]), ["검색어","건수"])
+      + fpStatNote()
+      + `<p class="subt">건수가 적습니다. 경향으로 읽기에는 모자란 수치라는 점을 밝혀 둡니다.</p>`));
+  }
+  if(slug==="prepare"){
+    S.push(fpSec("상담 전에 챙기면 좋은 것은 무엇인가요?",
+      `<p>아래 여섯 가지 중 있는 것만 챙겨 주시면 됩니다. 전부 있어야 하는 것은 아닙니다.</p>`
+      + fpUl(["최근 시험지나 성적표","지금 쓰는 교재와 진도표","가장 어려워하는 단원","원하는 요일과 시간대","이전에 시도해 본 방법과 그 결과","아이가 말한 목표"])
+      + `<p>앞의 세 가지는 '지금 어디에 있는지'를, 뒤의 세 가지는 '어디로 갈지'를 정하는 데 씁니다.</p>`));
+    S.push(fpSec("성적표가 없으면 상담이 안 되나요?",
+      `<p>됩니다. 성적표는 출발점을 빨리 잡기 위한 자료일 뿐입니다. 없으면 어느 단원에서 막히는지 말로 들으면서 짚어 갑니다. 시간이 조금 더 걸릴 뿐 결과는 같습니다.</p>`));
+    S.push(fpSec("아이도 같이 있어야 하나요?",
+      `<p>꼭 그래야 하는 것은 아닙니다. 다만 아이가 한 번이라도 직접 말하면 판단이 훨씬 정확해집니다. 어느 과목이 싫은지, 왜 싫은지는 본인 말이 가장 빠릅니다.</p>`
+      + `<p>아이가 부담스러워하면 보호자만 상담하고, 첫 수업 진단에서 확인해도 됩니다.</p>`));
+    S.push(fpSec("상담은 얼마나 걸리나요?",
+      `<p>정해 둔 시간은 없습니다. 위 준비물이 있으면 짧아지고, 없으면 상황을 여쭙느라 길어집니다. 통화 한 번으로 끝나는 경우도 있고, 자료를 보고 다시 연락드리는 경우도 있습니다.</p>`
+      + `<p class="subt">평균 상담 시간은 따로 기록하지 않아 수치로 말씀드릴 수 없습니다.</p>`));
+    S.push(fpSec("상담 후에는 무엇이 정해지나요?",
+      fpUl(["무엇부터 손볼지 (과목과 단원)","주 몇 회, 회당 몇 분으로 할지","언제 시작할지","첫 수업에서 무엇을 진단할지","조건에 맞춘 금액"])
+      + `<p>금액은 이 단계에서 나옵니다. 어떤 항목이 금액을 가르는지는 <a href="/cost">비용 결정 요인</a>에 미리 적어 두었습니다.</p>`));
+  }
+  return S.join("");
+}
+
+const FP_META = {
+  compare:{t:"과외·학원·인강, 뭐가 다른가요?", h:"과외·학원·인강, 뭐가 다른가요?",
+    d:"1:1 과외와 학원, 인강은 무엇이 다른지 비교했습니다. 과외로 바꿔야 할 신호, 셋을 같이 쓰는 방법, 비교할 때 먼저 물어야 할 다섯 가지를 정리했습니다."},
+  cost:{t:"과외비는 무엇으로 정해지나요?", h:"과외비는 무엇으로 정해지나요?",
+    d:"과외비를 가르는 네 가지 조건과 교재·보강·시험 기간 추가 수업의 계산 방식을 정리했습니다. 조건에 따라 금액이 달라져 이 페이지에는 숫자를 적지 않습니다."},
+  fit:{t:"우리 아이에게 1:1 과외가 맞을까요?", h:"우리 아이에게 1:1 과외가 맞을까요?",
+    d:"1:1 과외가 잘 맞는 경우와 맞지 않는 경우를 대안과 함께 적었습니다. 학년별·과목별 판단 기준과 이 사이트의 실제 조회 분포를 함께 확인하세요."},
+  trust:{t:"선생님은 어떻게 뽑고 검증하나요?", h:"선생님은 어떻게 뽑고 검증하나요?",
+    d:"1차 서류, 2차 시강·면담, 3차 매칭 후 첫 수업 피드백까지 선생님 선발 3단계에서 무엇을 확인하는지 적었습니다. 교체와 환불 기준도 함께 안내합니다."},
+  cases:{t:"다른 집은 어떻게 시작하나요?", h:"다른 집은 어떻게 시작하나요?",
+    d:"학년·과목별 구성 예시 여섯 가지입니다. 실제 사례가 아니라 출발점·기간·진행 방식·한계를 적은 구성 예시이며, 성적 수치는 넣지 않았습니다."},
+  faq:{t:"상담에서 가장 많이 나온 질문", h:"상담에서 가장 많이 나온 질문",
+    d:"수업 요일과 시간, 선생님 교체 시 진도, 시험 기간 수업 변화, 상담만 받는 경우까지 상담에서 자주 나오는 질문을 모았습니다."},
+  prepare:{t:"상담 전에 무엇을 준비하면 되나요?", h:"상담 전에 무엇을 준비하면 되나요?",
+    d:"상담 전에 챙기면 좋은 여섯 가지와, 준비물이 없을 때 어떻게 진행되는지 적었습니다. 상담이 끝나면 무엇이 정해지는지도 함께 확인하세요."}
+};
+
+function pageFixed(slug){
+  const m = FP_META[slug]; if(!m) return null;
+  const secs = fpBody(slug);
+  const dates = pageDates("fixed|"+slug);
+  const dateBar = `<div class="dates"><span>📅 발행일 <b>${dates.publishedKor}</b></span><span>🔄 수정일 <b>${dates.modifiedKor}</b></span></div>`;
+  const thumb = thumbBlock("fixed|"+slug, m.h, SITE_NAME);
+  const qs = [...secs.matchAll(/<h2>([\s\S]*?)<\/h2>/g)].map(x=>x[1].replace(/<[^>]+>/g,"").trim());
+  const toc = `<div class="toc"><h2>이 페이지에서 무엇을 확인할 수 있나요?</h2><ul>${qs.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></div>`;
+  const body = `${thumb}<h1>${esc(m.h)}</h1>${dateBar}<div class="summary"><p class="lead">${esc(m.d)}</p></div>${toc}${secs}${fpNav(slug)}`;
+  const canonical = SITE_URL+"/"+slug;
+  const jsonld = JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":m.h,"image":ogFor("fixed|"+slug),
+    "datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,
+    "author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},
+    "mainEntityOfPage":canonical});
+  const crumb = [{name:"홈",url:"/"},{name:m.h}];
+  return layout({title:`${m.t} | ${SITE_NAME}`, desc:m.d, canonical, jsonld, body, crumb, image:ogFor("fixed|"+slug)});
+}
+
 // ---------- 라우터 ----------
 async function handle(request, env, ctx){
   const url=new URL(request.url);
@@ -1975,6 +2226,8 @@ const ip=request.headers.get("CF-Connecting-IP")||"";const ua=request.headers.ge
   if(path==="/logo.png") return logoPng();
   if(path==="/list") return html(pageList());
   if(path==="/regions") return html(pageRegions());
+  /* 고정 안내 7개. /^\/([a-z0-9-]+)$/ 가 전부 삼키므로 그 위에서 잡는다 */
+  { const fp=path.slice(1); if(FP_META[fp]){ const r=pageFixed(fp); if(r) return html(r); } }
   /* 정보성 글 — 지역 슬러그 판정보다 앞에 둔다 */
   if(path==="/post"||path.startsWith("/post/")){
     if(path==="/post") return html(pagePostList(await loadPosts(env)));
