@@ -267,39 +267,41 @@ function pick(rng,arr){ return arr[Math.floor(rng()*arr.length)]; }
 // ---------- 썸네일 ----------
 // 나중에 image/ 폴더에 넣을 이미지 파일명 30장. 비어있으면 placeholder 표시.
 const THUMBS = [
-"pexels-alfomedeiros-21482854.jpg","pexels-amaria-10990004.jpg","pexels-chipi1189-33964549.jpg",
-"pexels-gu-ko-2150570603-32274998.jpg","pexels-gu-ko-2150570603-35376358.jpg","pexels-ian-panelo-7264404.jpg",
-"pexels-katerina-holmes-5905443.jpg","pexels-ling-app-387368942-14814047.jpg","pexels-long-ba-mui-1130557677-33807234.jpg",
-"pexels-matvei-2160105320-37397514.jpg","pexels-matvei-2160105320-37397517.jpg","pexels-minasenishino-33936499.jpg",
-"pexels-miniperde-33872172.jpg","pexels-ninosouza-716644.jpg","pexels-pixabay-256417.jpg",
-"pexels-pixabay-256491.jpg","pexels-pixabay-256502.jpg","pexels-ron-lach-9871139.jpg",
-"pexels-ronaldo-guiraldelli-2110705-13042101.jpg","pexels-samarmourya-12365550.jpg",
-"pexels-suzyhazelwood-1098656.jpg","pexels-thu-ngan-pham-550524329-18344347.jpg","pexels-tima-miroshnichenko-9572664.jpg",
-"pexels-tokki-papa-1095148033-20689095.jpg","pexels-won-jong-lee-1966375686-29956386.jpg",
-"pexels-yangjunjun2-3353747-10906759.jpg","pexels-yaroslav-shuraev-9489804.jpg",
+"pexels-alfomedeiros-21482854.webp","pexels-amaria-10990004.webp","pexels-chipi1189-33964549.webp",
+"pexels-gu-ko-2150570603-32274998.webp","pexels-gu-ko-2150570603-35376358.webp","pexels-ian-panelo-7264404.webp",
+"pexels-katerina-holmes-5905443.webp","pexels-ling-app-387368942-14814047.webp","pexels-long-ba-mui-1130557677-33807234.webp",
+"pexels-matvei-2160105320-37397514.webp","pexels-matvei-2160105320-37397517.webp","pexels-minasenishino-33936499.webp",
+"pexels-miniperde-33872172.webp","pexels-ninosouza-716644.webp","pexels-pixabay-256417.webp",
+"pexels-pixabay-256491.webp","pexels-pixabay-256502.webp","pexels-ron-lach-9871139.webp",
+"pexels-ronaldo-guiraldelli-2110705-13042101.webp","pexels-samarmourya-12365550.webp",
+"pexels-suzyhazelwood-1098656.webp","pexels-thu-ngan-pham-550524329-18344347.webp","pexels-tima-miroshnichenko-9572664.webp",
+"pexels-tokki-papa-1095148033-20689095.webp","pexels-won-jong-lee-1966375686-29956386.webp",
+"pexels-yangjunjun2-3353747-10906759.webp","pexels-yaroslav-shuraev-9489804.webp",
 ];
-const THUMB_DIR = "https://cdn.jsdelivr.net/gh/dandylsk80/semogwa@main/image";
+const THUMB_DIR = "https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/thumb";
+/* og:image 는 카카오·네이버 크롤러가 webp 를 못 읽는 경우가 있어 jpg 1200x630 을 따로 둔다 */
+const OG_DIR = "https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/og";
 const IMG_BASE = "https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/";
 const RAW_BASE = "https://raw.githubusercontent.com/dandylsk80/myclassup/main/image/";
-function mcImg(cls, file, alt){ return `<img class="${cls}" src="${IMG_BASE}${file}" alt="${alt||""}" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}${file}'">`; }
+function mcImg(cls, file, alt){ return `<img class="${cls}" src="${IMG_BASE}${file}" alt="${alt||""}" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}${file}'" width="600" height="450">`; }
 // ===== 하위페이지용 이미지 블록 =====
 function blkGoal(rng){
-  const items=[["222.jpg","🧭","단계별 개별 지도","핵심 개념 이해부터 응용·서술형까지, 아이의 단계에 맞춰 차근차근 올라갑니다."],
-               ["223.jpg","🧠","생각하는 힘","원리를 이해한 뒤 스스로 풀어 보며 사고의 폭을 넓혀 갑니다."],
-               ["224.jpg","🌱","자기주도 학습 습관","맞춤 학습 코칭으로 공부 동기와 지속하는 힘을 키웁니다."]];
+  const items=[["222.webp","🧭","단계별 개별 지도","핵심 개념 이해부터 응용·서술형까지, 아이의 단계에 맞춰 차근차근 올라갑니다."],
+               ["223.webp","🧠","생각하는 힘","원리를 이해한 뒤 스스로 풀어 보며 사고의 폭을 넓혀 갑니다."],
+               ["224.webp","🌱","자기주도 학습 습관","맞춤 학습 코칭으로 공부 동기와 지속하는 힘을 키웁니다."]];
   const h=pick(rng,["이런 힘을 길러 드립니다","우리가 목표로 하는 것","점수보다 오래 남는 것"]);
   return `<section class="sec"><h2>🎯 ${h}</h2><div class="goal3">${items.map(([f,ic,t,d])=>`<div class="goalcard">${mcImg("gc-bg",f,t)}<div class="gc-in"><div class="gic">${ic}</div><b>${t}</b><p>${d}</p></div></div>`).join("")}</div></section>`;
 }
 function blkProc(rng){
-  const items=[["333.jpg","1","진단","현재 실력과 성취도를 먼저 살핍니다."],
-               ["334.jpg","2","분석","과목별 강점과 약한 부분을 찾아냅니다."],
-               ["335.jpg","3","계획","학년·수준에 맞는 학습 계획을 세웁니다."],
-               ["336.jpg","4","훈련·점검","약한 개념을 집중 보완하고 다시 확인합니다."]];
+  const items=[["333.webp","1","진단","현재 실력과 성취도를 먼저 살핍니다."],
+               ["334.webp","2","분석","과목별 강점과 약한 부분을 찾아냅니다."],
+               ["335.webp","3","계획","학년·수준에 맞는 학습 계획을 세웁니다."],
+               ["336.webp","4","훈련·점검","약한 개념을 집중 보완하고 다시 확인합니다."]];
   const h=pick(rng,["학습이 진행되는 순서","이런 흐름으로 관리합니다","수업은 이렇게 진행됩니다"]);
   return `<section class="sec"><h2>🔄 ${h}</h2><div class="procrow">${items.map(([f,n,t,d])=>`<div class="procstep">${mcImg("ps-bg",f,t)}<div class="ps-in"><span class="pn">${n}</span><b>${t}</b><p>${d}</p></div></div>`).join("")}</div></section>`;
 }
 function blkTools(rng){
-  const items=[["444.jpg","🗓️","학습 스케줄"],["445.jpg","📒","학습 플래너"],["446.jpg","📝","오답 노트"],["447.jpg","📊","성적 리포트"]];
+  const items=[["444.webp","🗓️","학습 스케줄"],["445.webp","📒","학습 플래너"],["446.webp","📝","오답 노트"],["447.webp","📊","성적 리포트"]];
   const h=pick(rng,["학습 관리 도구","이렇게 관리합니다","기록으로 남는 학습"]);
   const p=pick(rng,["스케줄·플래너·오답노트·리포트로 아이의 학습을 촘촘히 관리합니다.","계획부터 점검까지 기록으로 남겨 흐름을 놓치지 않습니다.","눈에 보이는 기록이 쌓이면 아이의 학습 습관도 자리 잡습니다."]);
   return `<section class="sec"><h2>🗂️ ${h}</h2><p class="subt">${p}</p><div class="phgrid">${items.map(([f,ic,t])=>`<figure class="phcard">${mcImg("phimg",f,t)}<figcaption>${ic} ${t}</figcaption></figure>`).join("")}</div></section>`;
@@ -311,11 +313,14 @@ function imgBlocks(seedKey){
   const k=1+Math.floor(rng()*2);
   return all.slice(0,k).map(f=>f(rng)).join("");
 }
-function thumbFor(key){
+function thumbName(key){
   if(!THUMBS.length) return null;
   const rng = seedRng(key+"thumb");
-  return `${THUMB_DIR}/${THUMBS[Math.floor(rng()*THUMBS.length)]}`;
+  return THUMBS[Math.floor(rng()*THUMBS.length)];   /* .webp */
 }
+function thumbFor(key){ const n=thumbName(key); return n?`${THUMB_DIR}/${n}`:null; }
+/* 같은 사진의 og 용 jpg. thumbFor 와 난수 씨앗이 같아 본문 이미지와 짝이 맞는다 */
+function ogFor(key){ const n=thumbName(key); return n?`${OG_DIR}/${n.replace(/\.webp$/,".jpg")}`:null; }
 
 // ---------- 발행일/수정일 ----------
 function fmtDate(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
@@ -1044,11 +1049,11 @@ function pageSubject(slug, subj, lv){
     ? `${sgg} ${dong}(${alias}) ${g} ${subj} 과외 정보. ${alias} ${subj}과외, 인근 학교 내신 대비와 ${subj} 학습 관리 안내.`
     : `${sgg} ${dong} ${g} ${subj} 과외 정보. 인근 학교 내신 대비와 ${subj} 학습 관리 안내. 자세한 사항은 방문상담으로 확인하세요.`;
   const faqLd = faqs.length ? "</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))}) : "";
-  const jsonld = JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":thumbFor(key),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical}) + faqLd;
+  const jsonld = JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(key),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical}) + faqLd;
   const body = `${thumb}<h1>${esc(kw)}</h1>${dateBar}${aliasBadge}${summary}${toc}${secs}${imgBlocks(key)}${schoolTbl}${cta}${related}${faqHtml}<div class="note">${bpk(["수업 시간과 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.","정확한 일정과 비용은 상담 시 안내해 드립니다.","과목·학년별 세부 사항은 문의 남겨 주시면 알려 드려요."])}</div>`;
   const crumb=[{name:"홈",url:"/"},{name:R.sido,url:urlRegion(R.sido)},{name:R.sgg,url:urlSgg(R.sido,R.sgg)},{name:dong,url:urlDong(slug)},{name:kw}];
   const ttl = alias ? `${kw} (${alias}) | ${sgg} ${subj} 과외` : `${kw} | ${sgg} ${subj} 과외 정보`;
-  return layout({title:ttl, desc, canonical, jsonld, body, crumb, image:thumbFor(key)});
+  return layout({title:ttl, desc, canonical, jsonld, body, crumb, image:ogFor(key)});
 }
 
 function parseFaq(text){
@@ -1081,7 +1086,7 @@ function renderSec(s,i){
 function thumbBlock(key, title, sub){
   const src = thumbFor(key); globalThis.__lastThumb = src;
   const inner = src
-    ? `<img src="${esc(src)}" alt="${esc(title)}" loading="eager">`
+    ? `<img src="${esc(src)}" alt="${esc(title)}" loading="eager" width="900" height="675">`
     : `<div class="ph"><span>이미지 준비 중</span></div>`;
   return `<div class="thumb">${inner}<div class="overlay"><div class="ttl">${esc(title)}</div>${sub?`<div class="sub">${esc(sub)}</div>`:""}</div></div>`;
 }
@@ -1230,7 +1235,7 @@ function pageDong(slug){
   const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)} 과목·학년별 과외</h2>${lvBlocks}</section>${nearbyBlock(R)}<div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg,url:urlSgg(sido,sgg)},{name:dong}];
   const desc=`${sido} ${sgg} ${dong} 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
-  return layout({title:`${dong} 과외 | ${sgg} 과목별 과외 정보`, desc, canonical:SITE_URL+urlDong(slug), jsonld:"", body, crumb, image:thumbFor(`dong|${slug}`)});
+  return layout({title:`${dong} 과외 | ${sgg} 과목별 과외 정보`, desc, canonical:SITE_URL+urlDong(slug), jsonld:"", body, crumb, image:ogFor(`dong|${slug}`)});
 }
 
 // ---------- 페이지: 센터 ----------
@@ -1271,8 +1276,8 @@ function pageHome(){
   const SUBJ_BLURB={"국어":"독해력과 어휘, 서술형 답안까지. 교과서 지문을 뜯어 읽으며 국어의 기본기를 잡습니다.","영어":"단어·문법·독해·듣기를 균형 있게. 학교 내신과 실전 감각을 함께 가져갑니다.","수학":"개념 이해부터 응용·심화까지. 오답을 다시 잡으며 수학 자신감을 되찾습니다.","과학":"암기가 아닌 원리 이해로. 실험과 탐구 흐름을 따라 개념을 연결합니다.","사회":"역사·지리·일반사회를 하나의 흐름으로. 자료 읽기와 맥락 잡기를 훈련합니다."};
   const SUBJ_COLOR={"국어":"#ff2d2d","영어":"#1a6dff","수학":"#22c55e","과학":"#8b2dff","사회":"#ff9500"};
   const SUBJ_EN_LBL={"국어":"KOREAN","영어":"ENGLISH","수학":"MATH","과학":"SCIENCE","사회":"SOCIAL"};
-  const SUBJ_IMG={"국어":"111.jpg","영어":"112.jpg","수학":"113.jpg","과학":"115.jpg","사회":"114.jpg"};
-  const subjCards=SUBJECTS.map((s,i)=>{const c=SUBJ_COLOR[s]||"#b8f545";const f=SUBJ_IMG[s]||"123.jpg";return `<div class="subjacc" style="--sc:${c}"><img class="sa-bg" src="${IMG_BASE}${f}" alt="${esc(s)} 과외" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}${f}'"><div class="sa-glass"><div class="sa-head"><span class="sa-idx">0${i+1}</span><span class="sa-name">${esc(s)}</span><span class="sa-en">${SUBJ_EN_LBL[s]||""}</span></div><p>${esc(SUBJ_BLURB[s]||s)}</p><div class="sa-lvs"><span>초등</span><span>중학</span><span>고교</span></div></div></div>`;}).join("");
+  const SUBJ_IMG={"국어":"111.webp","영어":"112.webp","수학":"113.webp","과학":"115.webp","사회":"114.webp"};
+  const subjCards=SUBJECTS.map((s,i)=>{const c=SUBJ_COLOR[s]||"#b8f545";const f=SUBJ_IMG[s]||"123.webp";return `<div class="subjacc" style="--sc:${c}"><img class="sa-bg" src="${IMG_BASE}${f}" alt="${esc(s)} 과외" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}${f}'" width="600" height="450"><div class="sa-glass"><div class="sa-head"><span class="sa-idx">0${i+1}</span><span class="sa-name">${esc(s)}</span><span class="sa-en">${SUBJ_EN_LBL[s]||""}</span></div><p>${esc(SUBJ_BLURB[s]||s)}</p><div class="sa-lvs"><span>초등</span><span>중학</span><span>고교</span></div></div></div>`;}).join("");
 
   // 메인 FAQ
   const homeFaqs=[
@@ -1290,21 +1295,21 @@ function pageHome(){
 <section class="sec"><h2>📚 과목별 과외</h2><p class="subt">국어·영어·수학·과학·사회, 초·중·고 전 과목 과외 정보를 안내합니다.</p><div class="subjgrid">${subjCards}</div></section>
 <section class="sec"><h2>🎯 이런 힘을 길러 드립니다</h2><p class="subt">점수보다 오래 남는 세 가지를 목표로 합니다.</p>
 <div class="goal3">
-<div class="goalcard"><img class="gc-bg" src="${IMG_BASE}222.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}222.jpg'"><div class="gc-in"><div class="gic">🧭</div><b>단계별 개별 지도</b><p>핵심 개념 이해부터 응용·서술형까지, 아이의 단계에 맞춰 차근차근 올라갑니다.</p></div></div>
-<div class="goalcard"><img class="gc-bg" src="${IMG_BASE}223.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}223.jpg'"><div class="gc-in"><div class="gic">🧠</div><b>생각하는 힘</b><p>원리를 이해한 뒤 스스로 풀어 보며 사고의 폭을 넓혀 갑니다.</p></div></div>
-<div class="goalcard"><img class="gc-bg" src="${IMG_BASE}224.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}224.jpg'"><div class="gc-in"><div class="gic">🌱</div><b>자기주도 학습 습관</b><p>맞춤 학습 코칭으로 공부 동기와 지속하는 힘을 키웁니다.</p></div></div>
+<div class="goalcard"><img class="gc-bg" src="${IMG_BASE}222.webp" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}222.webp'" width="600" height="450"><div class="gc-in"><div class="gic">🧭</div><b>단계별 개별 지도</b><p>핵심 개념 이해부터 응용·서술형까지, 아이의 단계에 맞춰 차근차근 올라갑니다.</p></div></div>
+<div class="goalcard"><img class="gc-bg" src="${IMG_BASE}223.webp" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}223.webp'" width="600" height="450"><div class="gc-in"><div class="gic">🧠</div><b>생각하는 힘</b><p>원리를 이해한 뒤 스스로 풀어 보며 사고의 폭을 넓혀 갑니다.</p></div></div>
+<div class="goalcard"><img class="gc-bg" src="${IMG_BASE}224.webp" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}224.webp'" width="600" height="450"><div class="gc-in"><div class="gic">🌱</div><b>자기주도 학습 습관</b><p>맞춤 학습 코칭으로 공부 동기와 지속하는 힘을 키웁니다.</p></div></div>
 </div></section>
 
 <section class="sec"><h2>🔄 학습이 진행되는 순서</h2><p class="subt">동네 과외에서 이런 흐름으로 아이를 관리합니다.</p>
 <div class="procrow">
-<div class="procstep"><img class="ps-bg" src="${IMG_BASE}333.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}333.jpg'"><div class="ps-in"><span class="pn">1</span><b>진단</b><p>현재 실력과 성취도를 먼저 살핍니다.</p></div></div>
-<div class="procstep"><img class="ps-bg" src="${IMG_BASE}334.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}334.jpg'"><div class="ps-in"><span class="pn">2</span><b>분석</b><p>과목별 강점과 약한 부분을 찾아냅니다.</p></div></div>
-<div class="procstep"><img class="ps-bg" src="${IMG_BASE}335.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}335.jpg'"><div class="ps-in"><span class="pn">3</span><b>계획</b><p>학년·수준에 맞는 학습 계획을 세웁니다.</p></div></div>
-<div class="procstep"><img class="ps-bg" src="${IMG_BASE}336.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}336.jpg'"><div class="ps-in"><span class="pn">4</span><b>훈련·점검</b><p>약한 개념을 집중 보완하고 다시 확인합니다.</p></div></div>
+<div class="procstep"><img class="ps-bg" src="${IMG_BASE}333.webp" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}333.webp'" width="600" height="450"><div class="ps-in"><span class="pn">1</span><b>진단</b><p>현재 실력과 성취도를 먼저 살핍니다.</p></div></div>
+<div class="procstep"><img class="ps-bg" src="${IMG_BASE}334.webp" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}334.webp'" width="600" height="450"><div class="ps-in"><span class="pn">2</span><b>분석</b><p>과목별 강점과 약한 부분을 찾아냅니다.</p></div></div>
+<div class="procstep"><img class="ps-bg" src="${IMG_BASE}335.webp" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}335.webp'" width="600" height="450"><div class="ps-in"><span class="pn">3</span><b>계획</b><p>학년·수준에 맞는 학습 계획을 세웁니다.</p></div></div>
+<div class="procstep"><img class="ps-bg" src="${IMG_BASE}336.webp" alt="" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}336.webp'" width="600" height="450"><div class="ps-in"><span class="pn">4</span><b>훈련·점검</b><p>약한 개념을 집중 보완하고 다시 확인합니다.</p></div></div>
 </div></section>
 
 <div class="quoteband"><h2>우리는 '점수만 좋은 아이'가 아니라<br><span class="uline">'혼자서도 공부할 줄 아는 아이'</span>를 목표로 합니다.</h2>
-<img class="qimg" src="${IMG_BASE}123.jpg" alt="공부하는 아이" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}123.jpg'"></div>
+<img class="qimg" src="${IMG_BASE}123.webp" alt="공부하는 아이" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}123.webp'" width="900" height="675"></div>
 
 
 <section class="howto"><h2>이렇게 찾으세요</h2><div class="steps3">
@@ -1324,7 +1329,7 @@ ${faqHtml}
 
 
 <section class="sec"><h2>🗂️ 학습 관리 도구</h2><p class="subt">스케줄·플래너·오답노트·리포트로 아이의 학습을 촘촘히 관리합니다.</p>
-<div class="phgrid"><figure class="phcard"><img class="phimg" src="${IMG_BASE}444.jpg" alt="학습 스케줄" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}444.jpg'"><figcaption>🗓️ 학습 스케줄</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}445.jpg" alt="학습 플래너" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}445.jpg'"><figcaption>📒 학습 플래너</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}446.jpg" alt="오답 노트" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}446.jpg'"><figcaption>📝 오답 노트</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}447.jpg" alt="성적 리포트" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}447.jpg'"><figcaption>📊 성적 리포트</figcaption></figure></div></section>
+<div class="phgrid"><figure class="phcard"><img class="phimg" src="${IMG_BASE}444.webp" alt="학습 스케줄" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}444.webp'" width="600" height="450"><figcaption>🗓️ 학습 스케줄</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}445.webp" alt="학습 플래너" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}445.webp'" width="600" height="450"><figcaption>📒 학습 플래너</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}446.webp" alt="오답 노트" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}446.webp'" width="600" height="450"><figcaption>📝 오답 노트</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}447.webp" alt="성적 리포트" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}447.webp'" width="600" height="450"><figcaption>📊 성적 리포트</figcaption></figure></div></section>
 <div class="cta"><h2>우리 아이에게 맞는 과외를 찾고 계신가요?</h2><p>전화 또는 문의하기로 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>
 
 <div class="note">전국 과외 정보를 지역·과목별로 안내합니다. 정확한 수업 시간 및 교습비는 각 과외에 방문상담을 통해 확인하시기 바랍니다.</div>`;
@@ -1713,9 +1718,9 @@ function regCommon({title, kw, sub, desc, canonical, crumb, lead, secs, faqs, ch
   const faqHtml=faqs&&faqs.length?`<section class="sec" id="faq"><h2>자주 묻는 질문</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`:"";
   const cta=`<div class="cta"><h2>${esc(scopeName)} ${esc(subj)} 과외, 상담받아 보세요</h2><p>전화 또는 문의 남기기로 ${esc(subj)} 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
   const faqLd=faqs&&faqs.length?"</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))}):"";
-  const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":thumbFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical})+faqLd;
+  const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical})+faqLd;
   const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}${secHtml}${imgBlocks(seedKey)}${childHtml||""}${cards||""}${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
-  return layout({title, desc, canonical, jsonld, body, crumb, image:thumbFor(seedKey)});
+  return layout({title, desc, canonical, jsonld, body, crumb, image:ogFor(seedKey)});
 }
 
 function pageDongSubject(slug, subj){
@@ -1787,8 +1792,8 @@ function pageSgg(gk){
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg}];
   const desc=`${sido} ${sgg} 동네별·과목별 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
   const faqLd="</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))});
-  const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":thumbFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":SITE_URL+urlSgg(sido,sgg)})+faqLd;
-  return layout({title:`${sgg} 과외 정보 | ${SITE_NAME}`, desc, canonical:SITE_URL+urlSgg(sido,sgg), jsonld, body, crumb, image:thumbFor(seedKey)});
+  const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":SITE_URL+urlSgg(sido,sgg)})+faqLd;
+  return layout({title:`${sgg} 과외 정보 | ${SITE_NAME}`, desc, canonical:SITE_URL+urlSgg(sido,sgg), jsonld, body, crumb, image:ogFor(seedKey)});
 }
 
 function pageSggSubject(gk, subj){
