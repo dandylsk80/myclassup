@@ -1970,6 +1970,58 @@ function tgTime() {
 const TG_BOT_RE = /bot|crawl|spider|slurp|facebookexternalhit|curl|wget|python|axios|headless|lighthouse|pagespeed|semrush|ahrefs|bytespider|applebot|monitor|uptime|scan/i;
 
 
+
+/* ── 크롤러 기록 (24payshop 에서 이식) ───────────────────────
+   분류하고 싶은 봇만 이름을 붙인다. 위에서부터 먼저 맞는 것을 쓰므로
+   Googlebot·Claude 계열처럼 겹치는 패턴은 순서가 곧 우선순위다. */
+const CRAWLER_BOTS = [
+  [/yeti/i,                                  "Yeti"],        /* 네이버 */
+  [/daumoa|cs\.daum\.net|compatible;\s*daum\//i, "Daum"],
+  [/google-inspectiontool/i,                 "GoogleInspect"],
+  [/googleother/i,                           "GoogleOther"],
+  [/googlebot|mediapartners-google/i,        "Googlebot"],
+  [/bingbot|adidxbot/i,                      "bingbot"],
+  [/yandex/i,                                "YandexBot"],
+  [/petalbot/i,                              "PetalBot"],
+  [/bytespider/i,                            "Bytespider"],
+  [/applebot/i,                              "Applebot"],
+  [/gptbot|oai-searchbot|chatgpt-user/i,     "OpenAI"],
+  [/claude-searchbot/i,                      "Claude-SearchBot"],
+  [/claude-user/i,                           "Claude-User"],
+  [/claudebot|claude-web|anthropic/i,        "ClaudeBot"],
+  [/perplexity/i,                            "PerplexityBot"],
+  [/facebookexternalhit|meta-external/i,     "Facebook"],
+];
+const BOT_UA_RE = /bot|crawl|spider|slurp|mediapartners|googlebot|bingbot|yandex|baidu|duckduckbot|facebookexternalhit|semrush|ahrefs|mj12bot|dotbot|petalbot|bytespider|headlesschrome|python-requests|curl|wget|yeti|daumoa|cs\.daum\.net|compatible;\s*daum\/|lighthouse|pagespeed|inspectiontool|googleother|applebot|amazonbot|archiver|scrapy|node-fetch|okhttp|go-http|libwww|httpclient|dataforseo|serpstat|zoominfo|bubing|linkdex/i;
+/* 이름 붙인 봇이 아니어도 봇이면 "기타봇" 으로 남긴다. 사람은 남기지 않는다
+   (events 와 역할이 겹치고, 양만 수백 배로 늘어난다). */
+function crawlerName(ua){
+  if(!ua) return "";
+  for(const [re,name] of CRAWLER_BOTS) if(re.test(ua)) return name;
+  return BOT_UA_RE.test(ua) ? "기타봇" : "";
+}
+/* 응답을 돌려준 뒤 waitUntil 로 적는다. D1 이 느리거나 실패해도
+   크롤러가 받는 응답에는 영향이 없어야 한다. */
+function logCrawl(env, ctx, request, status){
+  try{
+    if(!env||!env.DB) return;
+    const ua=request.headers.get("user-agent")||"";
+    const bot=crawlerName(ua);
+    if(!bot) return;
+    const u=new URL(request.url);
+    /* 경로를 쿼리째 남기면 키가 로그 테이블에 그대로 박힌다. */
+    const q=(u.pathname+u.search).replace(/([?&]key=)[^&]*/gi,"$1***");
+    const cf=request.cf||{};
+    const pr=env.DB.prepare('INSERT INTO crawl_hits (site,bot,ua,host,path,status,ts,ip,asn,country) VALUES (?,?,?,?,?,?,?,?,?,?)')
+      .bind('myclassup', bot, ua.slice(0,250), u.host.slice(0,80), q.slice(0,300),
+            status|0, new Date().toISOString(), request.headers.get("cf-connecting-ip")||"",
+            cf.asn|0, cf.country||"")
+      .run();
+    const done=Promise.resolve(pr).catch(()=>{});
+    if(ctx&&ctx.waitUntil) ctx.waitUntil(done);
+  }catch(e){}
+}
+
 /* ── 서버 측 연타 방어 ──────────────────────────────────────────
    클라이언트 디바운스는 새 탭·시크릿창·브라우저 재시작으로 초기화된다.
    같은 site+type+page+ip 가 TK_DUP_MS 안에 이미 기록돼 있으면 중복으로 보고 버린다.
@@ -2057,5 +2109,9 @@ export default {
   },
   async fetch(request, env, ctx){
     const __blk = blockScraper(request); if(__blk) return __blk;
-    try{ return await handle(request, env, ctx); }catch(e){ return new Response("Error: "+e.message+"\n"+e.stack,{status:500}); } }
+    let res;
+    try{ res = await handle(request, env, ctx); }
+    catch(e){ res = new Response("Error: "+e.message+"\n"+e.stack,{status:500}); }
+    logCrawl(env, ctx, request, res.status);      /* 실패해도 응답에는 영향 없음 */
+    return res; }
 };
