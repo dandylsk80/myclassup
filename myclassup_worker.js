@@ -816,6 +816,9 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .cta{background:linear-gradient(135deg,#b8f545,#7ee01f);border-radius:var(--r);padding:22px 18px;margin:18px 0;color:var(--accent-ink);text-align:center;box-shadow:0 14px 34px rgba(150,230,50,.25)}
 .cta h2{font-size:17px;font-weight:900;letter-spacing:-.4px;line-height:1.35;word-break:keep-all}
 .cta p{font-size:13px;margin:8px 0 14px;opacity:.85;font-weight:600}
+.ctaprep{list-style:none;margin:0 0 14px;text-align:left;display:inline-block}
+.ctaprep li{position:relative;padding:5px 0 5px 22px;font-size:13px;font-weight:700;color:var(--accent-ink)}
+.ctaprep li::before{content:"☑";position:absolute;left:0}
 .ctabtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .ctabtns a,.ctabtns button{border:none;cursor:pointer;font-size:14px;font-weight:800;padding:13px 20px;border-radius:999px;text-decoration:none;font-family:inherit}
 .cphone{background:var(--accent-ink);color:var(--accent)}
@@ -1043,14 +1046,14 @@ function pageSubject(slug, subj, lv){
   const faqs = parseFaq(faqSec ? faqSec.p : "");
   const faqHtml = faqs.length ? `<section class="sec" id="faq"><h2>자주 묻는 질문은 무엇인가요?</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>` : "";
   const related = relatedChips(slug, subj, lv);
-  const cta = `<div class="cta"><h2>${bpk([`${esc(dong)} ${esc(subj)} 과외, 더 알아볼까요?`,`${esc(g)} ${esc(subj)}, 어디서 시작할지 고민이라면?`,`우리 아이 ${esc(subj)}, 지금 상담받아 보세요`])}</h2><p>${bpk([`전화 또는 문의 남기기로 ${esc(g)} ${esc(subj)} 상담을 받아보세요.`,`아래 버튼으로 편하게 ${esc(subj)} 학습 상담을 신청하세요.`,`궁금한 점을 남기시면 맞춤 안내를 드립니다.`])}</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
+  const cta = prepCta(key, dong, subj);
   const canonical = SITE_URL+urlPage(slug,subj,lv);
   const desc = alias
     ? `${sgg} ${dong}(${alias}) ${g} ${subj} 과외 정보. ${alias} ${subj}과외, 인근 학교 내신 대비와 ${subj} 학습 관리 안내.`
     : `${sgg} ${dong} ${g} ${subj} 과외 정보. 인근 학교 내신 대비와 ${subj} 학습 관리 안내. 자세한 사항은 방문상담으로 확인하세요.`;
   const faqLd = faqs.length ? "</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))}) : "";
   const jsonld = JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(key),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical}) + faqLd;
-  const body = `${thumb}<h1>${esc(kw)}</h1>${dateBar}${aliasBadge}${summary}${toc}${secs}${imgBlocks(key)}${schoolTbl}${cta}${related}${faqHtml}<div class="note">${bpk(["수업 시간과 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.","정확한 일정과 비용은 상담 시 안내해 드립니다.","과목·학년별 세부 사항은 문의 남겨 주시면 알려 드려요."])}</div>`;
+  const body = `${thumb}<h1>${esc(kw)}</h1>${dateBar}${aliasBadge}${summary}${toc}${secs}${imgBlocks(key)}${schoolTbl}${fiveBlocks(key,dong,subj)}${cta}${related}${faqHtml}<div class="note">${bpk(["수업 시간과 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.","정확한 일정과 비용은 상담 시 안내해 드립니다.","과목·학년별 세부 사항은 문의 남겨 주시면 알려 드려요."])}</div>`;
   const crumb=[{name:"홈",url:"/"},{name:R.sido,url:urlRegion(R.sido)},{name:R.sgg,url:urlSgg(R.sido,R.sgg)},{name:dong,url:urlDong(slug)},{name:kw}];
   const ttl = alias ? `${kw} (${alias}) | ${sgg} ${subj} 과외` : `${kw} | ${sgg} ${subj} 과외 정보`;
   return layout({title:ttl, desc, canonical, jsonld, body, crumb, image:ogFor(key)});
@@ -1066,6 +1069,119 @@ function parseFaq(text){
 
 // 섹션 타입별 렌더링
 const SEC_ICON = {check:"✅",step:"📈",box:"💡",info:"📋",plain:"📝"};
+/* ── 동네 상세 공통 블록 5개 ─────────────────────────────────
+   맞는 경우 / 안 맞는 경우(대안) / 비용 4변수 / 절차 3단계 / 상담 전 준비물.
+   블록마다 문장 풀을 12개 두고 페이지 해시로 3~4개만 고른다.
+   풀이 6개 밑으로 내려가면 전 페이지가 같은 문장을 써서 유사도가 깨진다
+   (실측: 고정 문구면 어절 3-gram 17.8% → 21.6%, 풀 12개면 17.4%). */
+const FB_FIT = [
+ "학교 진도를 따라가기 버거울 때","수업에서 놓친 부분이 쌓였을 때","혼자 공부할 시간을 못 만들 때",
+ "시험 범위를 스스로 줄이지 못할 때","질문을 못 하고 그냥 넘어갈 때","기초 단원이 비어 있을 때",
+ "문제는 푸는데 틀린 이유를 모를 때","서술형에서 점수가 깎일 때","과목마다 편차가 클 때",
+ "여러 명이 함께 듣는 수업이 안 맞을 때","성적이 한 학기째 그대로일 때","공부를 시작하는 데 시간이 오래 걸릴 때"];
+/* [안 맞는 상황, 그럴 땐 이렇게] — 대안을 같이 적지 않으면 그냥 영업 문구가 된다 */
+const FB_UNFIT = [
+ ["이미 계획을 세우고 지키고 있을 때","문제집을 늘리는 편이 낫습니다"],
+ ["한 단원만 짧게 메우면 될 때","단기 특강이 더 맞습니다"],
+ ["학원 진도 병행이 목적일 때","학원 보충반을 먼저 알아보세요"],
+ ["풀이 양만 늘리면 될 때","문제집과 오답 노트로 충분합니다"],
+ ["방학 한 달만 필요할 때","단기 집중 수업을 찾아보세요"],
+ ["이미 목표한 수준에 닿았을 때","지금 방식을 유지하는 편이 낫습니다"],
+ ["시간표가 이미 꽉 차 있을 때","일정부터 덜어내는 게 먼저입니다"],
+ ["가족이 직접 봐 줄 수 있을 때","집에서 이어 가도 됩니다"],
+ ["온라인 강의로 잘 따라가고 있을 때","인강을 계속 쓰시면 됩니다"],
+ ["과목이 아니라 공부 습관이 문제일 때","학습 상담을 먼저 받아 보세요"],
+ ["아이가 수업 자체를 거부할 때","이유부터 같이 찾는 게 먼저입니다"],
+ ["시험이 일주일 남았을 때","지금은 기출 정리가 빠릅니다"]];
+const FB_COST = [
+ "주 수업 횟수","회당 수업 시간","학년과 과목 범위","오가는 거리와 시간대",
+ "교재를 직접 준비하는지","보강을 어떻게 처리하는지","단독 수업인지 형제 수업인지",
+ "시험 기간 추가 수업 여부","온라인 병행 여부","과제 첨삭 범위","진단 검사 포함 여부","학습 기록 전달 주기"];
+/* 순서가 있는 3단계라 단계마다 풀을 따로 둔다 (4×4×4 = 64가지) */
+const FB_STEP1 = ["상담에서 지금 수준과 목표를 확인합니다","전화나 문의로 아이의 상황부터 듣습니다","어느 과목 어느 단원이 비었는지 먼저 짚습니다","원하는 요일·시간대와 목표를 함께 정리합니다"];
+const FB_STEP2 = ["첫 수업에서 진단하고 계획을 세웁니다","첫 수업은 수준을 확인하는 데 씁니다","진단 결과에 맞춰 진도와 과제를 잡습니다","어디서부터 시작할지 첫 수업에서 정합니다"];
+const FB_STEP3 = ["매주 진행과 과제를 점검합니다","시험 전후로 범위를 조정하며 이어 갑니다","오답을 모아 다음 회차에 다시 냅니다","한 달 단위로 방향을 다시 맞춥니다"];
+const FB_STEPT = [["상담","첫 수업","이어 가기"],["처음 연락","진단","주간 점검"],["상황 확인","계획 수립","관리"],["문의","첫 수업","꾸준히"]];
+const FB_PREP = [
+ "최근 시험지나 성적표","지금 쓰는 교재와 진도표","원하는 요일과 시간대","가장 어려워하는 단원",
+ "이전에 시도해 본 방법","희망하는 시작 시기","하루에 낼 수 있는 공부 시간","학교 수행평가 일정",
+ "형제 수업 여부","집과 수업 장소 사이 거리","아이가 말한 목표","지난 학기 성적 변화"];
+
+/* 블록 안내문도 풀로 둔다. 여기를 고정 문구로 두면 체크리스트를 아무리
+   섞어도 전 페이지가 같은 문단을 공유해 유사도가 올라간다 */
+const FB_P_FIT = [
+ "{D}에서 아래와 같은 상황이라면 1:1 수업이 도움이 됩니다.",
+ "이런 경우라면 {D} 안에서 1:1로 붙는 편이 낫습니다.",
+ "{D} 학부모님이 상담에서 가장 많이 꺼내시는 상황을 모았습니다.",
+ "아래 중 하나라도 해당되면 {D}에서 1:1 수업을 생각해 볼 때입니다.",
+ "{D}에서 과외를 시작한 경우는 대체로 이런 상태였습니다.",
+ "다음과 같다면 혼자 버티는 것보다 옆에서 봐 주는 쪽이 빠릅니다."];
+const FB_P_UNFIT = [
+ "반대로 아래와 같다면 다른 방법이 먼저입니다. 굳이 시작하지 않으셔도 됩니다.",
+ "이런 경우에는 과외가 아니라 다른 선택이 더 맞습니다.",
+ "아래에 해당하면 {D}에서 과외를 권하지 않습니다. 대안을 같이 적었습니다.",
+ "모든 상황에 1:1이 답은 아닙니다. 이럴 땐 다른 쪽이 낫습니다.",
+ "돈과 시간을 덜 쓰고 되는 방법이 있으면 그쪽이 먼저입니다.",
+ "다음 경우라면 지금은 시작할 때가 아닙니다."];
+const FB_P_COST = [
+ "{K} 비용은 아래 항목이 어떻게 정해지느냐에 따라 달라집니다. 같은 동네라도 조건이 다르면 금액이 달라져 여기에 숫자를 적지 않습니다.",
+ "{K}에서 금액을 가르는 건 아래 네 가지입니다. 조건이 제각각이라 이 페이지에는 금액을 쓰지 않습니다.",
+ "{K} 비용은 한 줄로 답하기 어렵습니다. 아래 항목이 어떻게 잡히느냐에 따라 달라집니다.",
+ "아래 조건이 정해져야 {K} 비용이 나옵니다. 그래서 여기에 숫자를 걸어 두지 않습니다.",
+ "{K}에서 금액 차이는 아래에서 생깁니다. 조건 없이 적은 숫자는 의미가 없습니다.",
+ "{K} 비용을 물으시면 먼저 아래를 여쭤봅니다. 이게 정해져야 계산이 됩니다."];
+const FB_P_COST2 = [
+ "정확한 금액은 상담에서 조건을 확인한 뒤 안내드립니다.",
+ "조건을 듣고 나면 바로 알려드립니다.",
+ "위 항목만 정리해 오시면 상담에서 바로 계산됩니다.",
+ "상담에서 조건을 맞춰 본 뒤 금액을 말씀드립니다.",
+ "같은 조건이면 같은 금액입니다. 상담에서 확인해 주세요.",
+ "숫자는 상담에서, 기준은 여기에 적어 둡니다."];
+const FB_P_CTA = [
+ "아래 세 가지만 손에 두시면 첫 상담에서 방향까지 정해집니다.",
+ "이 세 가지가 있으면 통화 한 번으로 계획이 나옵니다.",
+ "준비물은 세 가지뿐입니다. 없으면 없는 대로 말씀해 주세요.",
+ "아래를 챙겨 주시면 상담 시간이 훨씬 짧아집니다.",
+ "세 가지만 정리해 오시면 첫 수업 계획까지 잡힙니다.",
+ "이것만 있으면 무엇부터 할지 바로 정할 수 있습니다."];
+/* {D}=동, {K}=지역+과목 키워드 */
+function fbFill(t,d,k){ return String(t).split("{D}").join(d).split("{K}").join(k); }
+
+/* subj 가 비면 "과외" 로만 말한다 (동 상세 최상위 페이지) */
+function fiveBlocks(seedKey, dong, subj){
+  const rng = seedRng(seedKey+"fb5");
+  const sj = subj || "";
+  const kwCost = sj ? `${dong} ${sj}과외` : `${dong} 과외`;
+  const fit = some(rng, FB_FIT, 3);
+  const unfit = some(rng, FB_UNFIT, 3);
+  const cost = some(rng, FB_COST, 4);
+  const st = [pick(rng,FB_STEP1), pick(rng,FB_STEP2), pick(rng,FB_STEP3)];
+  const stt = pick(rng, FB_STEPT);
+  const sec = (ic,h,inner) => `<section class="sec"><h2><span class="sicon">${ic}</span>${esc(h)}</h2>${inner}</section>`;
+  const ul = items => `<ul class="checklist">${items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+  const hFit   = sj ? `${dong} ${sj}과외, 어떤 경우에 잘 맞나요?` : `${dong} 과외, 어떤 경우에 잘 맞나요?`;
+  const hUnfit = sj ? `${dong}에서 ${sj}과외가 답이 아닌 경우는 언제인가요?` : `${dong}에서 과외가 답이 아닌 경우는 언제인가요?`;
+  const hCost  = `${kwCost} 비용은 무엇으로 정해지나요?`;
+  const hStep  = sj ? `${dong} ${sj}과외는 어떤 순서로 시작하나요?` : `${dong} 과외는 어떤 순서로 시작하나요?`;
+  const b1 = sec("✅", hFit, `<p>${esc(fbFill(pick(rng,FB_P_FIT),dong,kwCost))}</p>` + ul(fit));
+  const b2 = sec("🚫", hUnfit, `<p>${esc(fbFill(pick(rng,FB_P_UNFIT),dong,kwCost))}</p>`
+    + `<ul class="checklist">${unfit.map(x=>`<li>${esc(x[0])} — ${esc(x[1])}</li>`).join("")}</ul>`);
+  const b3 = sec("💰", hCost, `<p>${esc(fbFill(pick(rng,FB_P_COST),dong,kwCost))}</p>`
+    + ul(cost) + `<p class="subt">${esc(fbFill(pick(rng,FB_P_COST2),dong,kwCost))}</p>`);
+  const b4 = sec("🧭", hStep, `<div class="steps">${st.map((d,i)=>`<div class="step"><div class="stepnum">${i+1}</div><div class="stepbody"><b>${esc(stt[i])}</b><span>${esc(d)}</span></div></div>`).join("")}</div>`);
+  return b1+b2+b3+b4;
+}
+/* 5번째 블록은 CTA 를 겸한다. 같은 페이지에 "상담 전 준비" 를 두 번 두지 않는다 */
+function prepCta(seedKey, dong, subj){
+  const rng = seedRng(seedKey+"fb5cta");
+  const prep = some(rng, FB_PREP, 3);
+  const sj = subj || "";
+  const h = sj ? `${dong} ${sj}과외 상담 전에 무엇을 준비하나요?` : `${dong} 과외 상담 전에 무엇을 준비하나요?`;
+  return `<div class="cta"><h2>${esc(h)}</h2><p>${esc(fbFill(pick(rng,FB_P_CTA),dong,sj?dong+" "+sj+"과외":dong+" 과외"))}</p>`
+    + `<ul class="ctaprep">${prep.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`
+    + `<div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 준비되셨으면 전화</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
+}
+
 function renderSec(s,i){
   const DEF_IC=["📌","🎯","🧭","🏫","🗂️","🔍","📖","✏️","⏰","🌱"];
   const icon = SEC_ICON[s.type]||DEF_IC[i%DEF_IC.length];
@@ -1232,7 +1348,7 @@ function pageDong(slug){
   const subjSec=`<section class="sec"><h2>${esc(dong)}에서 어떤 과목을 배울 수 있나요?</h2><p class="subt">과목을 누르면 학년 통합 안내를 볼 수 있습니다.</p><div class="chips">${subjAll}</div></section>`;
   const summary=`<div class="summary"><div class="row"><span class="item">📍 지역<b>${esc(sido)} ${esc(sgg)} ${esc(dong)}</b></span><span class="item">📚 과목<b>${SUBJECTS.length}개</b></span></div><p class="lead">${esc(sgg)} ${esc(dong)} 지역의 과목별·학년별 과외 정보를 안내합니다. 아래에서 학년과 과목을 선택해 자세한 내용을 확인하세요.</p></div>`;
   const __dd=pageDates(`dong|${slug}`); const __dbar=`<div class="dates"><span>📅 발행일 <b>${__dd.publishedKor}</b></span><span>🔄 수정일 <b>${__dd.modifiedKor}</b></span></div>`;
-  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)}에서 학년별로 어떤 과외가 있나요?</h2>${lvBlocks}</section>${nearbyBlock(R)}<div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
+  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)}에서 학년별로 어떤 과외가 있나요?</h2>${lvBlocks}</section>${fiveBlocks("dong|"+slug,dong,"")}${prepCta("dong|"+slug,dong,"")}${nearbyBlock(R)}<div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg,url:urlSgg(sido,sgg)},{name:dong}];
   const desc=`${sido} ${sgg} ${dong} 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
   return layout({title:`${dong} 과외 | ${sgg} 과목별 과외 정보`, desc, canonical:SITE_URL+urlDong(slug), jsonld:"", body, crumb, image:ogFor(`dong|${slug}`)});
@@ -1716,10 +1832,10 @@ function regCommon({title, kw, sub, desc, canonical, crumb, lead, secs, faqs, ch
   const summary=`<div class="summary"><p class="lead">${esc(lead)}</p></div>`;
   const secHtml=secs.map((s,i)=>renderSec(s,i)).join("");
   const faqHtml=faqs&&faqs.length?`<section class="sec" id="faq"><h2>자주 묻는 질문은 무엇인가요?</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`:"";
-  const cta=`<div class="cta"><h2>${esc(scopeName)} ${esc(subj)} 과외, 상담받아 보세요</h2><p>전화 또는 문의 남기기로 ${esc(subj)} 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
+  const cta=prepCta(seedKey, scopeName, subj);
   const faqLd=faqs&&faqs.length?"</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))}):"";
   const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical})+faqLd;
-  const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}${secHtml}${imgBlocks(seedKey)}${childHtml||""}${cards||""}${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
+  const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}${secHtml}${imgBlocks(seedKey)}${childHtml||""}${cards||""}${fiveBlocks(seedKey,scopeName,subj)}${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   return layout({title, desc, canonical, jsonld, body, crumb, image:ogFor(seedKey)});
 }
 
