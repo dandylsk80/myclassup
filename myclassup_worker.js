@@ -322,6 +322,46 @@ function thumbFor(key){ const n=thumbName(key); return n?`${THUMB_DIR}/${n}`:nul
 /* 같은 사진의 og 용 jpg. thumbFor 와 난수 씨앗이 같아 본문 이미지와 짝이 맞는다 */
 function ogFor(key){ const n=thumbName(key); return n?`${OG_DIR}/${n.replace(/\.webp$/,".jpg")}`:null; }
 
+/* ── 작성자 ──────────────────────────────────────────────────
+   발행일·수정일 옆에 누가 썼는지 같이 둔다. JSON-LD author 와 표기를 맞춘다. */
+const AUTHOR = "우리동네 과외 운영팀";
+function dateBarOf(dates){
+  return `<div class="dates"><span>📅 발행일 <b>${dates.publishedKor}</b></span>`
+       + `<span>🔄 수정일 <b>${dates.modifiedKor}</b></span>`
+       + `<span>✍️ 작성 <b>${AUTHOR}</b></span></div>`;
+}
+
+/* ── 교체·환불 정책 ──────────────────────────────────────────
+   정본은 /trust#policy 한 곳이다. 동네 페이지에는 3줄 요약과 링크만 둔다.
+   같은 내용을 두 군데 길게 적으면 한쪽만 고쳐질 때 서로 어긋난다. */
+const POLICY_ITEMS = [
+  ["선생님 교체", "요청하시면 교체합니다. 횟수 제한을 두지 않습니다."],
+  ["교체 절차", "그동안 무엇을 어디까지 했는지 기록을 넘겨 새 선생님이 이어받습니다. 처음부터 다시 하지 않습니다."],
+  ["환불", "남은 수업에 대해 환불합니다."],
+  ["위약금", "없습니다. 중간에 그만두셔도 따로 무는 돈이 없습니다."],
+  ["요청 창구", "전화나 문의로 말씀해 주시면 됩니다. 사유를 길게 설명하지 않으셔도 됩니다."]
+];
+function policyFull(){
+  return `<section class="sec" id="policy"><h2>선생님 교체와 환불은 어떻게 되나요?</h2>`
+    + `<p>교체와 환불 모두 가능하고, 위약금은 없습니다. 아래가 전부입니다.</p>`
+    + `<table class="schooltbl">${POLICY_ITEMS.map(x=>`<tr><th>${esc(x[0])}</th><td>${esc(x[1])}</td></tr>`).join("")}</table>`
+    + `<p class="subt">구체적인 금액 산정은 수업 조건에 따라 달라져 상담에서 안내드립니다.</p></section>`;
+}
+const POLICY_SHORT = [
+ "선생님 교체와 환불 모두 가능하고 위약금은 없습니다. 교체할 때는 진도 기록을 넘겨 이어받습니다.",
+ "맞지 않으면 선생님을 바꿔 드립니다. 환불도 되고 위약금은 받지 않습니다.",
+ "교체 요청에 횟수 제한을 두지 않습니다. 남은 수업은 환불하고 위약금은 없습니다.",
+ "그만두실 때 무는 돈이 없습니다. 선생님 교체와 남은 수업 환불 모두 가능합니다.",
+ "선생님이 바뀌어도 진도는 기록으로 넘어갑니다. 환불과 교체에 위약금이 붙지 않습니다.",
+ "위약금 조항이 없습니다. 교체든 환불이든 말씀만 주시면 됩니다."];
+const POLICY_LINK = ["자세한 기준 보기 →","교체·환불 기준 전문 →","어떻게 진행되는지 보기 →","정책 전문 확인 →"];
+function policyShort(seedKey){
+  const rng = seedRng((seedKey||"")+"pol");
+  return `<div class="policybox"><b>교체·환불</b>`
+    + `<span>${esc(pick(rng,POLICY_SHORT))}</span>`
+    + `<a href="/trust#policy">${esc(pick(rng,POLICY_LINK))}</a></div>`;
+}
+
 // ---------- 발행일/수정일 ----------
 function fmtDate(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 function fmtKor(d){ return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`; }
@@ -821,6 +861,10 @@ h1{font-size:22px;font-weight:900;letter-spacing:-.6px;line-height:1.3;margin:4p
 .ctaprep li::before{content:"☑";position:absolute;left:0}
 .ctamore{margin-top:12px;font-size:12.5px;font-weight:800}
 .ctamore a{color:var(--accent-ink);text-decoration:underline;opacity:.8}
+.policybox{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:13px 15px;margin:16px 0;font-size:13px;line-height:1.7}
+.policybox b{display:block;color:var(--accent);font-size:12.5px;font-weight:800;margin-bottom:4px}
+.policybox span{color:var(--sub)}
+.policybox a{display:inline-block;margin-top:6px;color:var(--ink);font-weight:700;text-decoration:underline}
 .ctabtns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .ctabtns a,.ctabtns button{border:none;cursor:pointer;font-size:14px;font-weight:800;padding:13px 20px;border-radius:999px;text-decoration:none;font-family:inherit}
 .cphone{background:var(--accent-ink);color:var(--accent)}
@@ -1020,7 +1064,7 @@ function pageSubject(slug, subj, lv){
   const dates = pageDates(key);
   const thumbSub = alias ? `${sgg} ${dong} · ${alias}` : `${sgg} ${dong}`;
   const thumb = thumbBlock(key, kw, thumbSub);
-  const dateBar = `<div class="dates"><span>📅 발행일 <b>${dates.publishedKor}</b></span><span>🔄 수정일 <b>${dates.modifiedKor}</b></span></div>`;
+  const dateBar = dateBarOf(dates);
   const aliasBadge = alias ? `<div class="aliasbar">📌 이 지역은 <b>${esc(alias)}</b> 생활권입니다. <span>${esc(alias)} ${esc(subj)}과외</span>을 찾으신다면 아래 정보를 참고하세요.</div>` : "";
   const summary = `<div class="summary">
 <div class="row">
@@ -1054,8 +1098,8 @@ function pageSubject(slug, subj, lv){
     ? `${sgg} ${dong}(${alias}) ${g} ${subj} 과외 정보. ${alias} ${subj}과외, 인근 학교 내신 대비와 ${subj} 학습 관리 안내.`
     : `${sgg} ${dong} ${g} ${subj} 과외 정보. 인근 학교 내신 대비와 ${subj} 학습 관리 안내. 자세한 사항은 방문상담으로 확인하세요.`;
   const faqLd = faqs.length ? "</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))}) : "";
-  const jsonld = JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(key),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical}) + faqLd;
-  const body = `${thumb}<h1>${esc(kw)}</h1>${dateBar}${aliasBadge}${summary}${toc}${secs}${imgBlocks(key)}${schoolTbl}${fiveBlocks(key,dong,subj)}${cta}${related}${faqHtml}<div class="note">${bpk(["수업 시간과 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.","정확한 일정과 비용은 상담 시 안내해 드립니다.","과목·학년별 세부 사항은 문의 남겨 주시면 알려 드려요."])}</div>`;
+  const jsonld = JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(key),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":AUTHOR},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical}) + faqLd;
+  const body = `${thumb}<h1>${esc(kw)}</h1>${dateBar}${aliasBadge}${summary}${toc}${secs}${imgBlocks(key)}${schoolTbl}${fiveBlocks(key,dong,subj)}${cta}${related}${policyShort(key)}${faqHtml}<div class="note">${bpk(["수업 시간과 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.","정확한 일정과 비용은 상담 시 안내해 드립니다.","과목·학년별 세부 사항은 문의 남겨 주시면 알려 드려요."])}</div>`;
   const crumb=[{name:"홈",url:"/"},{name:R.sido,url:urlRegion(R.sido)},{name:R.sgg,url:urlSgg(R.sido,R.sgg)},{name:dong,url:urlDong(slug)},{name:kw}];
   const ttl = alias ? `${kw} (${alias}) | ${sgg} ${subj} 과외` : `${kw} | ${sgg} ${subj} 과외 정보`;
   return layout({title:ttl, desc, canonical, jsonld, body, crumb, image:ogFor(key)});
@@ -1349,11 +1393,12 @@ function pageDong(slug){
   const subjAll=SUBJECTS.map(s=>`<a class="chip" href="${urlDongSubject(slug,s)}">${SUBJ_ICON[s]} ${esc(dong)} ${esc(s)}</a>`).join("");
   const subjSec=`<section class="sec"><h2>${esc(dong)}에서 어떤 과목을 배울 수 있나요?</h2><p class="subt">과목을 누르면 학년 통합 안내를 볼 수 있습니다.</p><div class="chips">${subjAll}</div></section>`;
   const summary=`<div class="summary"><div class="row"><span class="item">📍 지역<b>${esc(sido)} ${esc(sgg)} ${esc(dong)}</b></span><span class="item">📚 과목<b>${SUBJECTS.length}개</b></span></div><p class="lead">${esc(sgg)} ${esc(dong)} 지역의 과목별·학년별 과외 정보를 안내합니다. 아래에서 학년과 과목을 선택해 자세한 내용을 확인하세요.</p></div>`;
-  const __dd=pageDates(`dong|${slug}`); const __dbar=`<div class="dates"><span>📅 발행일 <b>${__dd.publishedKor}</b></span><span>🔄 수정일 <b>${__dd.modifiedKor}</b></span></div>`;
-  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)}에서 학년별로 어떤 과외가 있나요?</h2>${lvBlocks}</section>${fiveBlocks("dong|"+slug,dong,"")}${prepCta("dong|"+slug,dong,"")}${nearbyBlock(R)}<div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
+  const __dd=pageDates(`dong|${slug}`); const __dbar=dateBarOf(__dd);
+  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)}에서 학년별로 어떤 과외가 있나요?</h2>${lvBlocks}</section>${fiveBlocks("dong|"+slug,dong,"")}${prepCta("dong|"+slug,dong,"")}${policyShort("dong|"+slug)}${nearbyBlock(R)}<div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg,url:urlSgg(sido,sgg)},{name:dong}];
   const desc=`${sido} ${sgg} ${dong} 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
-  return layout({title:`${dong} 과외 | ${sgg} 과목별 과외 정보`, desc, canonical:SITE_URL+urlDong(slug), jsonld:"", body, crumb, image:ogFor(`dong|${slug}`)});
+  const __jld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":`${dong} 과외`,"image":ogFor(`dong|${slug}`),"datePublished":__dd.publishedStr,"dateModified":__dd.modifiedStr,"author":{"@type":"Organization","name":AUTHOR},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":SITE_URL+urlDong(slug)});
+  return layout({title:`${dong} 과외 | ${sgg} 과목별 과외 정보`, desc, canonical:SITE_URL+urlDong(slug), jsonld:__jld, body, crumb, image:ogFor(`dong|${slug}`)});
 }
 
 // ---------- 페이지: 센터 ----------
@@ -1839,14 +1884,14 @@ function regFaq(seedKey, scope, subj){
 function regCommon({title, kw, sub, desc, canonical, crumb, lead, secs, faqs, childHtml, cards, scopeName, subj, seedKey}){
   const dates=pageDates(seedKey);
   const thumb=thumbBlock(seedKey, kw, sub);
-  const dateBar=`<div class="dates"><span>📅 발행일 <b>${dates.publishedKor}</b></span><span>🔄 수정일 <b>${dates.modifiedKor}</b></span></div>`;
+  const dateBar=dateBarOf(dates);
   const summary=`<div class="summary"><p class="lead">${esc(lead)}</p></div>`;
   const secHtml=secs.map((s,i)=>renderSec(s,i)).join("");
   const faqHtml=faqs&&faqs.length?`<section class="sec" id="faq"><h2>자주 묻는 질문은 무엇인가요?</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`:"";
   const cta=prepCta(seedKey, scopeName, subj);
   const faqLd=faqs&&faqs.length?"</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))}):"";
-  const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical})+faqLd;
-  const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}${secHtml}${imgBlocks(seedKey)}${childHtml||""}${cards||""}${fiveBlocks(seedKey,scopeName,subj)}${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
+  const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":AUTHOR},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical})+faqLd;
+  const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}${secHtml}${imgBlocks(seedKey)}${childHtml||""}${cards||""}${fiveBlocks(seedKey,scopeName,subj)}${cta}${policyShort(seedKey)}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   return layout({title, desc, canonical, jsonld, body, crumb, image:ogFor(seedKey)});
 }
 
@@ -1903,7 +1948,7 @@ function pageSgg(gk){
   const seedKey=`${gk}|SGG`; const kw=`${sgg} 과외`;
   const dates=pageDates(seedKey);
   const thumb=thumbBlock(seedKey, kw, `${sido} ${sgg}`);
-  const dateBar=`<div class="dates"><span>📅 발행일 <b>${dates.publishedKor}</b></span><span>🔄 수정일 <b>${dates.modifiedKor}</b></span></div>`;
+  const dateBar=dateBarOf(dates);
   const dongChips=dongs.map(s2=>`<a class="chip" href="${urlDong(s2)}">${esc(regionOf(s2).dong)}</a>`);
   const subjLinks=subjs.map(s=>`<a class="chip" href="${urlSggSubject(sido,sgg,s)}">${SUBJ_ICON[s]} ${sgg} ${esc(s)}</a>`).join("");
   const summary=`<div class="summary"><div class="row"><span class="item">📍 지역<b>${esc(sido)} ${esc(sgg)}</b></span><span class="item">🏘 동네<b>${dongs.length}곳</b></span><span class="item">📚 과목<b>${subjs.length}개</b></span></div><p class="lead">${esc(sgg)} 지역의 동네별·과목별 과외 정보를 안내합니다.</p></div>`;
@@ -1919,7 +1964,7 @@ function pageSgg(gk){
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg}];
   const desc=`${sido} ${sgg} 동네별·과목별 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
   const faqLd="</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))});
-  const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":SITE_URL+urlSgg(sido,sgg)})+faqLd;
+  const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":AUTHOR},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":SITE_URL+urlSgg(sido,sgg)})+faqLd;
   return layout({title:`${sgg} 과외 정보 | ${SITE_NAME}`, desc, canonical:SITE_URL+urlSgg(sido,sgg), jsonld, body, crumb, image:ogFor(seedKey)});
 }
 
@@ -2103,8 +2148,7 @@ function fpBody(slug){
       `<p>매칭은 끝이 아니라 마지막 확인 단계입니다. 첫 수업을 하고 나면 학부모와 선생님 양쪽에서 피드백을 받습니다.</p>`
       + fpUl(["아이가 수업 중에 질문을 했는지","진단한 수준이 집에서 보는 것과 맞는지","정한 요일·시간이 실제로 지켜질 만한지","다음 수업에 무엇을 하기로 했는지"])
       + `<p>여기서 어긋나는 부분이 나오면 계획을 고치거나 선생님을 다시 맞춥니다.</p>`));
-    S.push(fpSec("선생님이 맞지 않으면 교체가 되나요?",
-      `<p>됩니다. 교체와 환불 모두 가능하고, 위약금은 없습니다. 자세한 내용은 상담에서 안내드립니다.</p>`));
+    S.push(policyFull());
   }
   if(slug==="cases"){
     S.push(fpSec("이 페이지의 사례는 실제 사례인가요?",
@@ -2181,7 +2225,7 @@ function pageFixed(slug){
   const m = FP_META[slug]; if(!m) return null;
   const secs = fpBody(slug);
   const dates = pageDates("fixed|"+slug);
-  const dateBar = `<div class="dates"><span>📅 발행일 <b>${dates.publishedKor}</b></span><span>🔄 수정일 <b>${dates.modifiedKor}</b></span></div>`;
+  const dateBar = dateBarOf(dates);
   const thumb = thumbBlock("fixed|"+slug, m.h, SITE_NAME);
   const qs = [...secs.matchAll(/<h2>([\s\S]*?)<\/h2>/g)].map(x=>x[1].replace(/<[^>]+>/g,"").trim());
   const toc = `<div class="toc"><h2>이 페이지에서 무엇을 확인할 수 있나요?</h2><ul>${qs.map(h=>`<li>${esc(h)}</li>`).join("")}</ul></div>`;
@@ -2189,7 +2233,7 @@ function pageFixed(slug){
   const canonical = SITE_URL+"/"+slug;
   const jsonld = JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":m.h,"image":ogFor("fixed|"+slug),
     "datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,
-    "author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},
+    "author":{"@type":"Organization","name":AUTHOR},"publisher":{"@type":"Organization","name":SITE_NAME},
     "mainEntityOfPage":canonical});
   const crumb = [{name:"홈",url:"/"},{name:m.h}];
   return layout({title:`${m.t} | ${SITE_NAME}`, desc:m.d, canonical, jsonld, body, crumb, image:ogFor("fixed|"+slug)});
