@@ -289,7 +289,7 @@ function blkGoal(rng){
   const items=[["222.webp","🧭","단계별 개별 지도","핵심 개념 이해부터 응용·서술형까지, 아이의 단계에 맞춰 차근차근 올라갑니다."],
                ["223.webp","🧠","생각하는 힘","원리를 이해한 뒤 스스로 풀어 보며 사고의 폭을 넓혀 갑니다."],
                ["224.webp","🌱","자기주도 학습 습관","맞춤 학습 코칭으로 공부 동기와 지속하는 힘을 키웁니다."]];
-  const h=pick(rng,["이런 힘을 길러 드립니다","우리가 목표로 하는 것","점수보다 오래 남는 것"]);
+  const h=pick(rng,["과외로 무엇을 길러 드리나요?","우리가 목표로 하는 것은 무엇인가요?","과외에서 점수 말고 무엇이 남나요?"]);
   return `<section class="sec"><h2>🎯 ${h}</h2><div class="goal3">${items.map(([f,ic,t,d])=>`<div class="goalcard">${mcImg("gc-bg",f,t)}<div class="gc-in"><div class="gic">${ic}</div><b>${t}</b><p>${d}</p></div></div>`).join("")}</div></section>`;
 }
 function blkProc(rng){
@@ -297,12 +297,12 @@ function blkProc(rng){
                ["334.webp","2","분석","과목별 강점과 약한 부분을 찾아냅니다."],
                ["335.webp","3","계획","학년·수준에 맞는 학습 계획을 세웁니다."],
                ["336.webp","4","훈련·점검","약한 개념을 집중 보완하고 다시 확인합니다."]];
-  const h=pick(rng,["학습이 진행되는 순서","이런 흐름으로 관리합니다","수업은 이렇게 진행됩니다"]);
+  const h=pick(rng,["과외 수업은 어떤 순서로 진행되나요?","학습은 어떤 흐름으로 관리되나요?","과외는 어떻게 진행되나요?"]);
   return `<section class="sec"><h2>🔄 ${h}</h2><div class="procrow">${items.map(([f,n,t,d])=>`<div class="procstep">${mcImg("ps-bg",f,t)}<div class="ps-in"><span class="pn">${n}</span><b>${t}</b><p>${d}</p></div></div>`).join("")}</div></section>`;
 }
 function blkTools(rng){
   const items=[["444.webp","🗓️","학습 스케줄"],["445.webp","📒","학습 플래너"],["446.webp","📝","오답 노트"],["447.webp","📊","성적 리포트"]];
-  const h=pick(rng,["학습 관리 도구","이렇게 관리합니다","기록으로 남는 학습"]);
+  const h=pick(rng,["학습은 무엇으로 관리하나요?","학생의 기록은 어떻게 남나요?","과외 학습은 어떤 도구로 관리하나요?"]);
   const p=pick(rng,["스케줄·플래너·오답노트·리포트로 아이의 학습을 촘촘히 관리합니다.","계획부터 점검까지 기록으로 남겨 흐름을 놓치지 않습니다.","눈에 보이는 기록이 쌓이면 아이의 학습 습관도 자리 잡습니다."]);
   return `<section class="sec"><h2>🗂️ ${h}</h2><p class="subt">${p}</p><div class="phgrid">${items.map(([f,ic,t])=>`<figure class="phcard">${mcImg("phimg",f,t)}<figcaption>${ic} ${t}</figcaption></figure>`).join("")}</div></section>`;
 }
@@ -381,7 +381,7 @@ const SUBJ = {
 // 2문장짜리 섹션 생성기 (앞문장 + 뒷문장 각각 풀에서)
 function secCriteria(rng,ctx){
   const {dong,subj,g,kws}=ctx; const sj=SUBJ[subj]; const c2=joinKo(some(rng,sj.core,2));
-  const titles=[`${kws}, 어떻게 골라야 할까요?`,`${dong} ${subj}과외 체크 포인트`,`${subj}과외, 이렇게 비교하세요`,`${g} ${subj}과외 고르는 법`];
+  const titles=[`${kws}, 어떻게 골라야 할까요?`,`${dong} ${subj}과외, 무엇부터 비교해야 하나요?`,`${g} ${subj}과외는 어디를 봐야 하나요?`,`${dong}에서 ${subj}과외를 고르는 기준은 무엇인가요?`];
   const a=[`${g} 시기의 ${J(subj,"은","는")} ${J(c2,"을","를")} 고르게 다지는 게 핵심입니다.`,`${dong}에서 ${subj}과외를 볼 때는 ${pick(rng,sj.focus)} 관리가 되는지가 관건입니다.`,`${J(subj,"은","는")} ${J(c2,"이","가")} 밑바탕입니다.`];
   const b=[`아이마다 출발점이 다르니, 지금 수준을 진단하고 약점을 채워 주는 곳인지 먼저 보세요.`,`${g}의 공부 습관까지 챙기는 곳일수록 오래 다닐 수 있습니다.`,`상담에서 학습 계획을 어떻게 잡는지 보면 판단이 섭니다.`];
   const checks=[`지금 수준을 진단하고 약점을 채우는가`,`${pick(rng,sj.focus)} 관리가 되는가`,`학교별 진도·시험 대비를 어떻게 운영하는가`,`수업 뒤 복습·점검까지 이어지는가`,`${g}의 공부 습관까지 챙기는가`];
@@ -390,7 +390,7 @@ function secCriteria(rng,ctx){
 function secGrade(rng,ctx){
   const {subj,lv,kw}=ctx; const sj=SUBJ[subj]; const gl=LGL2[lv];
   const g1=pick(rng,gl), g2=pick(rng,gl.filter(x=>x!==g1))||gl[gl.length-1];
-  const titles=[`학년별 ${subj} 로드맵`,`${LG[lv]} ${subj}, 단계마다 다르게`,`${subj} 단계별 학습 포인트`];
+  const titles=[`${J(subj,"은","는")} 학년마다 무엇이 달라지나요?`,`${LG[lv]} ${subj}, 단계마다 뭐가 다른가요?`,`${subj} 단계별로 무엇을 챙기나요?`];
   const a=[`${g1} 무렵에는 ${pick(rng,sj.verb)} 기초를 다지는 때입니다.`,`${J(subj,"은","는")} 학년이 오를수록 ${pick(rng,sj.core)} 비중이 커집니다.`,`${J(g1,"과","와")} ${J(g2,"은","는")} 목표부터 다릅니다.`];
   const b=[`${g2}에서는 ${pick(rng,sj.focus)} 학습으로 무게가 옮겨 갑니다.`,`앞 단계에서 ${pick(rng,sj.verb)} 토대를 쌓아 두면 다음이 수월합니다.`,`${J(kw,"은","는")} 학년·수준에 맞춰 목표와 과제를 달리 잡습니다.`];
   const steps=[{t:`${g1} 단계`,d:`${pick(rng,sj.verb)} 기초를 다집니다.`},{t:`${g2} 단계`,d:`${pick(rng,sj.focus)} 학습으로 넓힙니다.`},{t:`정리·심화`,d:`${J(pick(rng,sj.tip),"으로","로")} 빈틈을 메웁니다.`}];
@@ -399,7 +399,7 @@ function secGrade(rng,ctx){
 function secSchool(rng,ctx){
   const {dong,subj,g,kws,schools}=ctx; if(!schools.length) return null;
   const sc=shuffle(rng,schools).slice(0,8).join("·");
-  const titles=[`${dong} 학교별 내신 공략`,`${dong} 인근 학교 시험 대비`,`${dong} 주변 학교 맞춤 관리`];
+  const titles=[`${dong} 학교 시험은 어떻게 대비하나요?`,`${dong} 인근 학교 내신은 어떻게 준비하나요?`,`${dong} 주변 학교는 무엇이 다른가요?`];
   const a=[`${J(kws,"은","는")} ${sc} 등 ${J(g,"을","를")} 대상으로 학교별 시험 범위에 맞춰 지도합니다.`,`${sc} 같은 인근 학교는 ${subj} 출제 유형이 제각각입니다.`,`${dong} 일대 ${sc} 등의 학사 일정에 맞춰 ${subj} 진도를 조절합니다.`];
   const b=[`학교마다 출제 경향이 달라 동네 사정을 잘 아는 곳이 내신에 유리합니다.`,`시험 기간에는 학교별 기출을 분석해 집중 대비합니다.`,`평소에는 학교 진도에 맞춰 예습·복습을 병행합니다.`];
   const c=[`내신은 결국 학교 시험에 얼마나 맞춰 준비하느냐로 갈립니다.`,`${dong} 학교들의 출제 패턴을 알고 대비하면 결과로 이어집니다.`,`서술형 비중이 커지는 만큼 답안 작성도 함께 연습합니다.`];
@@ -407,7 +407,7 @@ function secSchool(rng,ctx){
 }
 function secExamC(rng,ctx){
   const {subj,g,kw}=ctx; const sj=SUBJ[subj];
-  const titles=[`${g} ${subj} 시험 대비`,`${subj} 내신·시험 전략`,`${kw} 시험 준비`];
+  const titles=[`${g} ${subj} 시험은 언제부터 준비하나요?`,`${subj} 내신은 어떻게 대비하나요?`,`${kw} 시험 준비, 무엇부터 하나요?`];
   const a=[`시험은 평소 학습을 정리해 확인하는 과정입니다.`,`${J(subj,"은","는")} 시험 2~3주 전부터 범위를 좁혀 집중하는 편이 효과적입니다.`,`기출과 예상 문제를 함께 풀어 보면 출제 감각이 잡힙니다.`];
   const b=[`틀린 문제를 시험 직전 다시 훑는 것만으로도 실수를 크게 줄일 수 있습니다.`,`서술형 비중이 커진 만큼 답안 작성 연습도 병행합니다.`,`${J(pick(rng,sj.tip),"으로","로")} 약한 유형을 집중 점검합니다.`];
   const c=[`시험 후에는 오답을 정리해 다음 시험의 밑거름으로 삼습니다.`,`반복된 실수 유형을 기록해 두면 다음엔 놓치지 않습니다.`,`꾸준히 관리받은 ${g}일수록 시험에서 흔들림이 적습니다.`];
@@ -415,7 +415,7 @@ function secExamC(rng,ctx){
 }
 function secReviewC(rng,ctx){
   const {subj,g,kw}=ctx; const sj=SUBJ[subj];
-  const titles=[`${subj} 복습과 오답 관리`,`반복이 만드는 ${subj} 실력`,`${g} ${subj} 복습 루틴`];
+  const titles=[`${subj} 오답은 어떻게 관리하나요?`,`${subj} 복습은 얼마나 자주 하나요?`,`${g} ${subj} 복습 루틴은 어떻게 잡나요?`];
   const a=[`배운 내용은 복습할 때 비로소 내 것이 됩니다.`,`${J(subj,"은","는")} 반복해서 익힐수록 실수가 줄어듭니다.`,`복습 주기를 짧게 두고 여러 번 보는 것이 효과적입니다.`];
   const b=[`오답 노트를 꾸준히 정리하면 같은 실수를 반복하지 않습니다.`,`틀린 이유를 스스로 설명해 보면 이해가 한층 깊어집니다.`,`${J(pick(rng,sj.tip),"을","를")} 복습에 접목하면 효율이 올라갑니다.`];
   const c=[`복습이 쌓이면 ${g}의 ${subj} 자신감이 붙습니다.`,`반복의 힘이 결국 안정적인 점수로 이어집니다.`,`익숙해진 유형이 늘수록 새 문제도 덜 두렵습니다.`];
@@ -423,7 +423,7 @@ function secReviewC(rng,ctx){
 }
 function secGoalC(rng,ctx){
   const {subj,g,kw}=ctx;
-  const titles=[`${g} ${subj} 목표 세우기`,`목표부터 정하는 ${subj}`,`${kw} 학습 목표`];
+  const titles=[`${g} ${subj} 목표는 어떻게 잡나요?`,`${subj} 목표를 어떻게 세우면 좋을까요?`,`${kw} 학습 목표는 무엇으로 정하나요?`];
   const a=[`막연히 열심히보다 구체적인 목표가 성과를 만듭니다.`,`큰 목표는 작은 단계로 나누면 실천하기 쉬워집니다.`,`이번 달 목표를 정하면 무엇을 할지 또렷해집니다.`];
   const b=[`목표를 눈에 보이게 적어 두면 동기가 유지됩니다.`,`아이와 함께 목표를 정하면 스스로 하려는 마음이 생깁니다.`,`목표에 맞춰 학습량을 조절하면 부담이 줄어듭니다.`];
   const c=[`달성한 목표를 확인하는 경험이 다음 목표의 힘이 됩니다.`,`작은 성취가 모여 ${g}의 공부 태도를 바꿉니다.`,`목표가 뚜렷하면 ${subj} 공부의 이유가 생깁니다.`];
@@ -431,7 +431,7 @@ function secGoalC(rng,ctx){
 }
 function secManage(rng,ctx){
   const {subj,g,kw}=ctx; const sj=SUBJ[subj];
-  const titles=[`${g} ${subj} 학습 관리`,`${subj} 실력을 끌어올리는 법`,`${kw}의 관리 방식`];
+  const titles=[`${g} ${J(subj,"은","는")} 어떻게 관리하나요?`,`${subj} 실력은 어떻게 끌어올리나요?`,`${J(kw,"은","는")} 어떤 방식으로 관리하나요?`];
   const a=[`${J(subj,"은","는")} ${pick(rng,sj.verb)} 꾸준함이 붙어야 실력이 됩니다.`,`${J(kw,"은","는")} ${pick(rng,sj.focus)} 것을 중심에 둡니다.`,`점수는 한 번에 뛰지 않습니다.`];
   const b=[`매일 플래너로 진행을 확인하고, ${J(pick(rng,sj.tip),"으로","로")} 약한 곳을 메웁니다.`,`수준에 맞춰 과제를 나누고 학습량을 단계적으로 올립니다.`,`${J(pick(rng,sj.tip),"을","를")} 되풀이하며 빈틈을 채워 갑니다.`];
   const c=[`작은 성공이 모이면 ${g}의 공부 자신감이 됩니다.`,`매일의 점검이 결국 ${subj} 성적의 토대가 됩니다.`,`빠른 진도보다 정확한 이해가 오래 남습니다.`];
@@ -439,7 +439,7 @@ function secManage(rng,ctx){
 }
 function secSelf(rng,ctx){
   const {dong,subj,g}=ctx;
-  const titles=[`스스로 공부하는 힘 키우기`,`자기주도 학습 코칭`,`${dong}에서의 학습 코칭`];
+  const titles=[`${g} 스스로 ${subj}을 공부하는 힘은 어떻게 기르나요?`,`${subj} 자기주도 학습은 어떻게 코칭하나요?`,`${dong}에서 ${subj} 학습 코칭은 어떻게 하나요?`];
   const a=[`좋은 과외는 답을 던져 주기보다 ${J(g,"이","가")} 직접 계획하고 실행하도록 이끕니다.`,`${subj} 성적의 뿌리는 스스로 하는 공부입니다.`,`수업 시간만으로는 부족합니다.`];
   const b=[`플래너를 쓰고 확인하는 과정을 되풀이하며 ${subj} 공부 태도를 만들어 갑니다.`,`할 일을 정하고 점검받는 흐름 속에서 ${J(g,"은","는")} 공부하는 힘을 키웁니다.`,`${J(g,"이","가")} 집에서도 ${J(subj,"을","를")} 이어 가도록 습관과 동기를 함께 챙깁니다.`];
   const c=[`스스로 공부하는 힘이 붙으면 어떤 과목도 크게 흔들리지 않습니다.`,`스스로 하는 습관은 ${g} 때 잡아 두면 오래 갑니다.`,`과외의 역할은 결국 학생이 혼자 설 수 있게 돕는 것입니다.`];
@@ -447,7 +447,7 @@ function secSelf(rng,ctx){
 }
 function secEnv(rng,ctx){
   const {dong,subj}=ctx;
-  const titles=[`상담부터 시작하기`,`${dong} 과외 상담 안내`,`학습 환경과 분위기`];
+  const titles=[`${dong} ${subj}과외는 어디서부터 시작하나요?`,`${dong} 과외 상담은 어떻게 받나요?`,`${dong} 과외 수업 분위기는 어떤가요?`];
   const a=[`${dong}에서 ${subj} 과외를 고를 때는 분위기와 관리 방식도 같이 살펴야 합니다.`,`처음이라면 방문상담으로 수준을 짚고 학습 방향을 함께 잡는 편이 좋습니다.`,`상담으로 아이의 현재 위치와 목표를 확인한 뒤 시작하면 헤매는 시간을 줄입니다.`];
   const b=[`차분한 환경과 규칙적인 상담이 있는 곳일수록 오래 다닐 수 있습니다.`,`집과 과외가 함께 챙길 때 학습 효과가 커집니다.`,`진행 상황을 정기적으로 공유받을 수 있는지 확인해 보세요.`];
   const c=[`상담만 받아 봐도 아이에게 맞는 방향이 보입니다.`,`부담 없이 문의해 학습 계획을 들어 보세요.`,`첫 상담에서 수준과 목표를 분명히 하면 이후가 수월합니다.`];
@@ -455,7 +455,7 @@ function secEnv(rng,ctx){
 }
 function secArea(rng,ctx){
   const {dong,subj,g,sgg}=ctx;
-  const titles=[`${dong} 통학·학부모 안내`,`${sgg} ${dong} 학습 환경`,`학부모님께 드리는 안내`];
+  const titles=[`${dong}에서 통학 거리는 어떻게 따지나요?`,`${sgg} ${dong}의 학습 환경은 어떤가요?`,`${dong} 과외에서 학부모는 무엇을 챙기면 되나요?`];
   const a=[`${dong}에서 과외를 고를 때는 통학 거리와 안전도 같이 따지게 됩니다.`,`${g}의 ${J(subj,"은","는")} 과외와 가정의 관리가 맞물릴 때 효과가 큽니다.`,`${sgg} ${J(dong,"은","는")} ${J(g,"을","를")} 둔 가정이 많아 선택지가 넓은 편입니다.`];
   const b=[`가까이에서 꾸준히 다닐 수 있는 곳일수록 학습 흐름이 끊기지 않습니다.`,`통학 거리, 관리 방식, 상담 체계를 같이 살펴 아이에게 맞는 곳을 고르세요.`,`정기 상담으로 상황을 공유받으며 가정의 습관 관리와 병행하면 좋습니다.`];
   return {h:pick(rng,titles), p:pick(rng,a)+" "+pick(rng,b)};
@@ -475,7 +475,7 @@ function secGradeDetail(rng,ctx){
   const grades=LEVELS.slice();
   const map={"초등":"초등","중등":"중학","고등":"고교"};
   const gtxt=grades.map(x=>map[x]).join("·");
-  const titles=[`${dong} ${subj} 수업 범위`,`${dong}에서 들을 수 있는 ${subj}`,`${subj} 지도 가능 학년`];
+  const titles=[`${dong} ${subj} 수업 범위는 어디까지인가요?`,`${dong}에서 ${J(subj,"은","는")} 어느 학년까지 되나요?`,`${J(subj,"은","는")} 몇 학년까지 지도하나요?`];
   const a=[`${dong} 과외에서는 ${gtxt} 과정의 ${subj} 수업을 들을 수 있습니다.`,`지금 ${dong}에서는 ${gtxt} 단계 ${J(subj,"을","를")} 지도합니다.`,`${dong} ${subj} 수업은 ${gtxt} 과정이 대상입니다.`];
   const b=[`학년·수준에 따라 반과 진도가 나뉘니, 아이 단계에 맞는 수업을 상담받으면 됩니다.`,`같은 ${subj}라도 학년마다 다루는 내용이 달라 단계에 맞춘 선택이 중요합니다.`,`아이의 학년과 상태에 맞춰 수업을 안내받으시면 됩니다.`];
   return {h:pick(rng,titles), type:"info", p:pick(rng,a)+" "+pick(rng,b)};
@@ -485,7 +485,7 @@ function secCombo(rng,ctx){
   const others=SUBJECTS.filter(s=>s!==subj);
   if(!others.length) return null;
   const otxt=others.join("·");
-  const titles=[`${dong}에서 같이 챙기는 과목`,`${subj} 외 과목 안내`,`여러 과목 함께 관리`];
+  const titles=[`${dong}에서 ${subj} 말고 어떤 과목을 같이 챙기나요?`,`${subj} 외 과목도 같이 되나요?`,`${dong}에서 여러 과목을 함께 관리할 수 있나요?`];
   const a=[`${dong} 과외에서는 ${subj} 말고도 ${otxt} 과목을 함께 챙기는 경우가 있습니다.`,`${J(subj,"과","와")} 더불어 ${otxt}까지 한 곳에서 관리하고 싶다면 ${dong} 과외를 살펴보세요.`,`${dong}에서는 ${J(subj,"을","를")} 포함해 ${otxt} 등 여러 과목을 병행할 수 있습니다.`];
   const b=[`여러 과목을 한 곳에서 챙기면 일정을 묶어 효율적으로 돌릴 수 있습니다.`,`과목별 지도 여부는 과외마다 다르니 상담으로 확인하면 됩니다.`,`주력 과목과 보조 과목을 함께 짜면 전체 성적 관리에 도움이 됩니다.`];
   return {h:pick(rng,titles), type:"info", p:pick(rng,a)+" "+pick(rng,b)};
@@ -507,7 +507,7 @@ function secFaq(rng,ctx){
 function secTip(rng,ctx){
   const {subj,g,dong}=ctx; const sj=SUBJ[subj];
   const ts=some(rng,sj.tip,2);
-  const titles=[`${g} ${subj} 공부법`,`집에서 할 수 있는 ${subj} 학습`,`${subj} 실력 올리는 습관`];
+  const titles=[`${g} ${J(subj,"은","는")} 어떻게 공부하나요?`,`집에서 ${J(subj,"을","를")} 어떻게 이어 가나요?`,`${subj} 실력이 붙는 습관은 무엇인가요?`];
   const a=[
     `${J(subj,"은","는")} 과외 수업과 함께 평소 습관이 중요합니다.`,
     `꾸준한 ${subj} 실력은 작은 습관에서 시작됩니다.`,
@@ -1029,7 +1029,7 @@ function pageSubject(slug, subj, lv){
   const faqSec = gen.secs.find(s=>s.h==="자주 묻는 질문");
   const extra = genRegBody(key+"x", {name:dong, lvs:[lv]}, subj).secs.slice(0,3);
   const textSecs = gen.secs.filter(s=>s.h!=="자주 묻는 질문").concat(extra);
-  const toc = `<div class="toc"><h2>${bpk(["이 페이지에서 다루는 내용","이 글의 목차","아래 내용을 담았습니다","무엇을 확인할 수 있나요"])}</h2><ul>${textSecs.map((s,i)=>`<li><a href="#s${i}">${esc(s.h)}</a></li>`).join("")}<li><a href="#schools">인근 학교</a></li><li><a href="#faq">자주 묻는 질문</a></li></ul></div>`;
+  const toc = `<div class="toc"><h2>${bpk(["이 페이지에서 무엇을 확인할 수 있나요?","이 글에는 무엇이 담겨 있나요?","아래에서 무엇을 다루나요?","무엇을 먼저 보면 되나요?"])}</h2><ul>${textSecs.map((s,i)=>`<li><a href="#s${i}">${esc(s.h)}</a></li>`).join("")}<li><a href="#schools">인근 학교</a></li><li><a href="#faq">자주 묻는 질문</a></li></ul></div>`;
   const secs = textSecs.map((s,i)=>renderSec(s,i)).join("");
   // 학교 표
   let schoolTbl = "";
@@ -1041,7 +1041,7 @@ function pageSubject(slug, subj, lv){
   const cards = "";
   // FAQ 파싱 (Q./답 줄 형식 → 배열)
   const faqs = parseFaq(faqSec ? faqSec.p : "");
-  const faqHtml = faqs.length ? `<section class="sec" id="faq"><h2>자주 묻는 질문</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>` : "";
+  const faqHtml = faqs.length ? `<section class="sec" id="faq"><h2>자주 묻는 질문은 무엇인가요?</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>` : "";
   const related = relatedChips(slug, subj, lv);
   const cta = `<div class="cta"><h2>${bpk([`${esc(dong)} ${esc(subj)} 과외, 더 알아볼까요?`,`${esc(g)} ${esc(subj)}, 어디서 시작할지 고민이라면?`,`우리 아이 ${esc(subj)}, 지금 상담받아 보세요`])}</h2><p>${bpk([`전화 또는 문의 남기기로 ${esc(g)} ${esc(subj)} 상담을 받아보세요.`,`아래 버튼으로 편하게 ${esc(subj)} 학습 상담을 신청하세요.`,`궁금한 점을 남기시면 맞춤 안내를 드립니다.`])}</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
   const canonical = SITE_URL+urlPage(slug,subj,lv);
@@ -1107,7 +1107,7 @@ function relatedChips(slug, subj, lv){
   const R=regionOf(slug); const chips=[];
   SUBJECTS.forEach(s=>{ if(s!==subj) chips.push(`<a class="chip" href="${urlPage(slug,s,lv)}">${SUBJ_ICON[s]} ${esc(R.dong)} ${esc(LG[lv])} ${esc(s)}</a>`); });
   LEVELS.forEach(l=>{ if(l!==lv) chips.push(`<a class="chip" href="${urlPage(slug,subj,l)}">${LV_ICON[l]} ${esc(R.dong)} ${esc(LG[l])} ${esc(subj)}</a>`); });
-  return chips.length?`<section class="sec"><h2>함께 보면 좋은 페이지</h2><div class="chips">${chips.join("")}</div></section>`:"";
+  return chips.length?`<section class="sec"><h2>${esc(R.dong)} ${esc(subj)}과외, 함께 볼 페이지는 어디인가요?</h2><div class="chips">${chips.join("")}</div></section>`:"";
 }
 
 // ---------- 페이지: 동 ----------
@@ -1124,7 +1124,7 @@ function dongProse(dong,sgg,sido,alias,chere){
   const sc="";
   const P=[];
 
-  P.push({h:`${area} 과외, 이렇게 찾으세요`, t:[
+  P.push({h:pick(rng,[`${area} 과외, 어떻게 찾나요?`,`${area}에서 과외를 찾으려면 뭘 보나요?`,`${area} 과외 정보는 어디서 확인하나요?`]), t:[
     P2(rng,[`${sgg} ${dong}에는 현재 ${n}곳의 과외 정보가 등록되어 있습니다.`,`${sgg} ${dong} 일대의 과외를 지역·과목·학년별로 한곳에 모았습니다.`,`${dong}에서 아이에게 맞는 과외를 찾고 있다면 이 페이지가 출발점이 됩니다.`,`${sido} ${sgg} ${dong}의 과외를 한눈에 비교할 수 있도록 정리했습니다.`,`${dong} 주변 과외를 과목과 학년 기준으로 살펴볼 수 있습니다.`,`${dong}에 어떤 과외가 있는지 궁금하다면 아래 정보를 참고해 보세요.`,`${sgg} ${dong}의 과외 선택을 돕기 위해 필요한 내용만 추렸습니다.`]),
     P2(rng,[`${J(dong,"은","는")} ${LG_INTRO(rng)} 학년과 과목에 맞춰 학습을 이어 가기 좋은 지역입니다.`,`${dong}처럼 가까운 거리에서 꾸준히 다닐 수 있는 곳을 고르면 학습이 끊기지 않습니다.`,`${dong} 주변은 학교와 과외가 가까워 이동 부담이 적은 편입니다.`,`${alias?alias+" 생활권을 포함한 ":""}${dong} 일대는 ${lvTxt} 학생이 함께 다니기 좋습니다.`,`${dong}에서는 아이의 동선 안에서 다닐 수 있는 곳이 오래가기 좋습니다.`,`${sgg} ${J(dong,"은","는")} 통학이 편해 학습 습관을 유지하기에 유리합니다.`,`${dong} 안에서도 과외마다 분위기와 관리가 달라 비교가 필요합니다.`]),
     P2(rng,[`${dong}에서 과외를 처음 알아본다면 아이의 현재 수준과 목표를 먼저 정리해 두면 좋습니다.`,`무엇을 보완하고 싶은지 분명히 해 두면 ${dong} 과외 상담에서 방향을 잡기 쉽습니다.`,`아이가 어떤 과목에서 어려움을 느끼는지 ${dong}에서 미리 살펴보면 도움이 됩니다.`,`아래 ${dong} 과목·학년별 안내에서 세부 정보를 확인할 수 있습니다.`,`이 페이지는 ${subjTxt} 과목을 중심으로 ${dong}의 학습 방향을 안내합니다.`,`${dong} 과외 각 과목의 상세 페이지에서 더 구체적인 방법을 볼 수 있습니다.`,`${dong}에서 시작 시기를 고민 중이라면 지금 상황을 점검해 보세요.`])
@@ -1134,51 +1134,51 @@ function dongProse(dong,sgg,sido,alias,chere){
     const info=SUBJ[sj]; const f=info?pick(rng,info.focus):"기초부터 다지는"; const tp=info?pick(rng,info.tip):"꾸준한 반복 학습"; const vb=info?pick(rng,info.verb):"기본기를 다지고";
     return {box:`<b style="color:var(--accent)">${esc(sj)}</b> — ${dong}에서 ${J(sj,"은","는")} ${f} 학습이 필요하며, ${J(tp,"을","를")} 통해 실력을 쌓아 갈 수 있습니다. ${vb} 과정을 반복하면 ${sj} 실력이 자리 잡습니다.`};
   });
-  P.push({h:`${area}에서 배울 수 있는 과목`, t:[
+  P.push({h:pick(rng,[`${area}에서 어떤 과목을 배울 수 있나요?`,`${area} 과외로 가능한 과목은 뭔가요?`,`${area}에서는 무슨 과목을 다루나요?`]), t:[
     P2(rng,[`${dong} 지역 과외에서는 ${subjTxt} 과목을 다루고 있습니다.`,`현재 ${dong}에서는 ${subjTxt} 과목을 중심으로 수업이 이루어집니다.`,`${dong} 과외들은 ${J(subjTxt,"을","를")} ${lvTxt} 과정에 맞춰 지도합니다.`,`${dong}에서 배울 수 있는 과목은 ${J(subjTxt,"으로","로")}, 학년에 따라 반이 나뉩니다.`,`${sgg} ${dong}의 과외는 ${J(subjTxt,"을","를")} 폭넓게 다룹니다.`,`${dong}에서는 주요 과목을 ${lvTxt} 단계별로 안내합니다.`,`${dong} 과외의 ${subjTxt} 수업은 학년별 목표에 맞춰 운영됩니다.`],
           [`같은 과목이라도 학년에 따라 내용과 난이도가 달라, ${dong}에서는 단계에 맞는 반을 고르는 것이 중요합니다.`,`${dong} 과외에서도 학년이 오를수록 개념의 폭과 깊이가 넓어집니다.`,`저학년은 기초와 습관을, 고학년은 응용과 내신·수능 대비로 방향이 나뉩니다.`,`${dong}에서는 아이의 단계에 맞춰 진도와 교재를 조절합니다.`,`무리한 선행보다 지금 학년의 이해를 정확히 하는 편이 오래 남습니다.`,`${dong} 과외마다 반 편성 기준이 달라 상담으로 확인하는 것이 좋습니다.`]),
     ...subjLines,
     P2(rng,[`${dong}에서 여러 과목을 한 곳에서 관리하면 학습 일정을 묶어 효율적으로 운영할 수 있습니다.`,`주력 과목과 보조 과목을 함께 설계하면 ${dong}에서의 전체 성적 관리에 도움이 됩니다.`,`${dong} 과외마다 과목별 지도 여부와 반 편성이 다르므로 상담으로 확인하는 것이 좋습니다.`,`아이가 특히 어려워하는 과목이 있다면 ${dong}에서 그 과목의 기초부터 다시 점검하는 것을 권합니다.`,`${dong}에서 한 과목에 자신감이 붙으면 다른 과목으로도 학습 태도가 이어집니다.`,`과목별로 목표를 나눠 두면 ${dong} 학습의 우선순위를 정하기 쉬워집니다.`])
   ]});
 
-  P.push({h:`${dong} 학년별 학습 방향`, t:[
+  P.push({h:pick(rng,[`${dong} 과외는 학년마다 무엇이 다른가요?`,`${dong}에서 학년이 오르면 뭐가 바뀌나요?`,`${dong} 과외, 학년별로 어디에 무게를 두나요?`]), t:[
     P2(rng,[`${dong}의 초등 단계에서는 학습 습관을 만들고 기초 개념을 탄탄히 다지는 것이 중요합니다.`,`${dong} 초등 시기에는 공부에 대한 흥미를 잃지 않도록 성취 경험을 쌓아 주는 것이 좋습니다.`,`초등 과정은 ${dong}에서 기본기와 바른 학습 태도를 함께 잡아 가는 시기입니다.`,`이때 만들어진 스스로 공부하는 습관은 이후 중·고등 학습의 바탕이 됩니다.`,`${dong}에서 기초가 단단하면 학년이 올라가도 흔들리지 않고 따라갈 수 있습니다.`,`초등 단계에서는 무리한 선행보다 이해 중심의 학습이 오래 남습니다.`]),
     P2(rng,[`${dong} 중학 단계에서는 내신 시험과 서술형 대비가 본격적으로 시작됩니다.`,`중학 과정은 ${dong} 학교 시험 범위에 맞춘 준비와 개념의 응용이 함께 필요한 시기입니다.`,`${dong} 중학 시기에는 과목별로 부족한 부분을 찾아 보완하는 관리가 중요합니다.`,`${dong} 인근 학교의 출제 경향에 맞춰 준비하면 내신 관리에 도움이 됩니다.`,`시험 기간에는 기출 분석과 오답 정리를 병행하는 것이 효과적입니다.`,`중학 성적은 ${dong} 아이의 고등 학습 방향을 정하는 기준이 되기도 합니다.`]),
     P2(rng,[`${dong} 고교 단계에서는 내신과 수능을 함께 고려한 전략적인 학습이 필요합니다.`,`고등 과정은 ${dong}에서 시간 관리와 취약 단원 보완이 성적을 좌우하는 시기입니다.`,`고교 시기에는 목표 대학과 전형에 맞춘 과목별 우선순위 설정이 중요합니다.`,`한정된 시간 안에서 효율적으로 공부하려면 계획과 점검이 뒷받침되어야 합니다.`,`약한 개념을 집중 보완하면서 실전 감각을 함께 길러 가는 것이 좋습니다.`,`꾸준한 자기주도 학습이 결국 ${dong} 고등 성적의 바탕이 됩니다.`])
   ]});
 
-  if(sc){ P.push({h:`${dong} 인근 학교 내신 대비`, t:[
+  if(sc){ P.push({h:pick(rng,[`${dong} 인근 학교 내신은 어떻게 대비하나요?`,`${dong} 주변 학교 시험은 뭘 보고 준비하나요?`,`${dong} 학교별 출제는 어떻게 따라가나요?`]), t:[
     P2(rng,[`${dong} 주변에는 ${sc} 등의 학교가 있어, 학교별 시험 범위와 출제 경향에 맞춘 준비가 필요합니다.`,`${sc} 같은 인근 학교는 과목별 출제 유형이 서로 달라 지역을 잘 아는 곳이 유리합니다.`,`${dong} 일대 ${sc} 등의 학사 일정에 맞춰 진도와 시험 대비를 조절하는 것이 좋습니다.`,`학교마다 진도와 난이도가 달라, ${dong}에서는 다니는 학교에 맞춘 관리가 성적으로 이어집니다.`,`${dong} 학교 시험 일정을 미리 반영해 계획을 세우면 여유 있게 준비할 수 있습니다.`,`같은 ${dong}이라도 학교별 특성을 아는 곳일수록 시험 대비가 촘촘합니다.`]),
     P2(rng,[`시험 기간에는 ${dong} 학교별 기출을 살펴 집중적으로 대비하는 것이 효과적입니다.`,`평소에는 학교 진도에 맞춰 예습과 복습을 병행하는 흐름이 도움이 됩니다.`,`내신은 결국 ${dong} 학교 시험에 얼마나 맞춰 준비하느냐에 따라 결과가 달라집니다.`,`서술형 비중이 높아지는 만큼 답안 작성 연습도 함께 해 두면 좋습니다.`,`${dong} 학교들의 출제 패턴을 파악해 두면 시험이 다가와도 흔들리지 않습니다.`,`중간·기말 전에는 취약 단원을 먼저 점검하는 것이 시간을 아끼는 방법입니다.`])
   ]}); }
 
-  P.push({h:`${dong} 과외의 학습 관리`, t:[
+  P.push({h:pick(rng,[`${dong} 과외는 학습을 어떻게 관리하나요?`,`${dong}에서 진도와 과제는 누가 챙기나요?`,`${dong} 과외, 수업 뒤 점검은 어떻게 하나요?`]), t:[
     P2(rng,[`${dong}의 좋은 과외는 답을 먼저 알려 주기보다 학생이 스스로 계획하고 실천하도록 이끌어 줍니다.`,`성적의 바탕에는 스스로 공부하는 습관이 있고, ${dong}에서는 꾸준한 관리 속에서 이 습관이 자랍니다.`,`수업 시간만으로는 충분하지 않아, ${dong} 과외의 복습과 점검까지 이어지는 관리가 중요합니다.`,`${dong}에서 실력이 오르는 아이들은 대체로 스스로 공부하는 힘이 길러진 경우가 많습니다.`,`관리가 촘촘한 ${dong} 과외일수록 아이가 놓친 부분을 빠르게 찾아 채워 줍니다.`,`${dong} 과외를 고를 때 관리 방식을 먼저 확인하면 실패가 줄어듭니다.`]),
     P2(rng,[`${dong} 과외에서는 학습 플래너로 매일의 진행을 확인하고, 틀린 문제를 다시 짚으며 약점을 채워 갑니다.`,`수준에 맞춰 과제를 나누고 학습량을 조금씩 늘려 가면 부담 없이 실력을 쌓을 수 있습니다.`,`오답 정리와 개념 확인을 반복하며 빈틈을 메우는 과정이 ${dong}에서 성적으로 이어집니다.`,`${dong}에서 계획을 세우고 실행하는 경험이 쌓이면서 아이는 스스로 공부하는 힘을 기릅니다.`,`작은 성취가 모이면 학습 자신감으로 이어지고, 이는 다른 과목으로도 번져 갑니다.`,`진도를 서두르기보다 정확한 이해를 먼저 챙기는 편이 오래 남습니다.`]),
     P2(rng,[`가정과 ${dong} 과외가 함께 챙길 때 학습 효과가 커지므로 진행 상황을 정기적으로 공유받는 것이 좋습니다.`,`아이의 하루와 학습 리듬을 함께 살피는 관리가 결국 꾸준함을 만듭니다.`,`정기 상담을 통해 방향을 점검하면 ${dong}에서의 시행착오를 줄일 수 있습니다.`,`학부모와의 소통이 원활한 ${dong} 과외일수록 아이의 변화를 빠르게 확인할 수 있습니다.`,`집에서의 학습 습관과 ${dong} 과외의 관리가 맞물릴 때 성과가 뚜렷해집니다.`,`아이의 감정과 컨디션까지 살피는 관리가 꾸준한 학습으로 이어집니다.`])
   ]});
 
-  P.push({h:`${dong}에서 과외 상담 시작하기`, t:[
+  P.push({h:pick(rng,[`${dong}에서 과외 상담은 어떻게 시작하나요?`,`${dong} 과외, 첫 연락은 어떻게 하나요?`,`${dong}에서 상담부터 첫 수업까지 어떻게 가나요?`]), t:[
     P2(rng,[`${dong}에서 과외를 고를 때는 수업 내용뿐 아니라 분위기와 관리 체계도 함께 살펴보는 것이 좋습니다.`,`처음이라면 ${dong} 방문상담으로 아이의 현재 수준을 확인하고 학습 방향을 함께 잡아 보세요.`,`상담을 통해 지금 위치와 목표를 정리한 뒤 시작하면 헤매는 시간을 줄일 수 있습니다.`,`${dong} 과외 상담에서는 아이의 강점과 약점을 함께 짚어 보는 것이 좋습니다.`,`처음 ${dong}에서 과외를 알아본다면 두세 곳을 비교 상담해 보길 권합니다.`,`상담 때 ${dong} 학교 일정과 아이의 목표를 함께 이야기하면 방향이 분명해집니다.`]),
     P2(rng,[`통학 거리, 관리 방식, 상담 체계를 함께 비교해 ${dong}에서 아이에게 맞는 곳을 정하면 오래 다닐 수 있습니다.`,`조용한 환경과 꾸준한 상담이 있는 ${dong} 과외일수록 학습이 안정적으로 이어집니다.`,`학습 진행 상황을 정기적으로 공유받을 수 있는지 미리 확인해 두면 좋습니다.`,`${dong} 과외를 알아볼 때는 상담으로 아이에게 맞는 방식을 먼저 확인해 보세요.`,`정확한 수업 시간과 교습비는 지역·과목·학년에 따라 다를 수 있으므로 상담으로 확인하시기 바랍니다.`,`여러 조건을 비교해 본 뒤 아이가 편안해하는 ${dong} 과외를 선택하는 것이 좋습니다.`])
   ]});
 
-  P.push({h:`${dong} 학습 환경과 통학`, t:[
+  P.push({h:pick(rng,[`${dong} 과외의 학습 환경과 통학은 어떤가요?`,`${dong}에서 오가는 거리는 얼마나 되나요?`,`${dong} 일대 학습 분위기는 어떤 편인가요?`]), t:[
     P2(rng,[`${dong}에서 과외를 정할 때는 통학 거리와 안전도 함께 고려하게 됩니다.`,`가까운 거리에서 꾸준히 다닐 수 있는 ${dong} 과외일수록 학습 흐름이 끊기지 않습니다.`,`아이가 스스로 오갈 수 있는 동선 안에 있는 곳이 오래 다니기에 좋습니다.`,`${sgg} ${J(dong,"은","는")} ${lvTxt} 학생을 둔 가정이 많아 과외 선택의 폭이 넓은 편입니다.`,`${dong} 주변에 학교와 편의시설이 가까워 학습과 생활을 함께 챙기기 좋습니다.`,`${alias?alias+" 생활권을 중심으로 ":""}${dong}에 과외가 모여 있어 비교와 선택이 수월합니다.`]),
     P2(rng,[`조용하고 집중할 수 있는 환경인지, 학습 공간이 잘 갖춰져 있는지 ${dong}에서 살펴보는 것이 좋습니다.`,`자습 공간과 질문할 수 있는 분위기가 마련된 ${dong} 과외일수록 학습 효율이 높습니다.`,`아이가 편안하게 머물 수 있는 환경이 결국 꾸준한 등원으로 이어집니다.`,`등·하원 시간과 수업 요일도 아이의 생활 리듬에 맞는지 미리 확인해 두면 좋습니다.`,`무리한 일정보다 꾸준히 지킬 수 있는 ${dong} 시간표가 학습에 도움이 됩니다.`,`통학 부담이 적을수록 아이도 학부모도 오래 유지하기 수월합니다.`])
   ]});
 
-  P.push({h:`${dong} 학부모님께 드리는 안내`, t:[
+  P.push({h:pick(rng,[`${dong} 과외에서 학부모는 무엇을 챙기나요?`,`${dong}에서 집이 도울 수 있는 건 뭔가요?`,`${dong} 과외, 가정에선 뭘 보면 되나요?`]), t:[
     P2(rng,[`아이마다 학습 속도와 성향이 다르므로, ${dong}에서도 남과 비교하기보다 우리 아이의 어제와 오늘을 비교하는 것이 좋습니다.`,`성적은 한 번에 오르지 않으며, ${dong} 과외의 꾸준한 관리가 쌓여 결과로 이어집니다.`,`조급함보다 아이의 속도를 존중하는 태도가 오래가는 학습을 만듭니다.`,`가정에서의 작은 관심과 격려가 ${dong} 아이의 학습 동기에 큰 영향을 줍니다.`,`${dong} 과외와 가정이 같은 방향을 바라볼 때 아이의 변화가 뚜렷해집니다.`,`아이가 스스로 해내는 경험을 쌓도록 기다려 주는 것도 중요합니다.`]),
     P2(rng,[`정기 상담을 통해 ${dong} 아이의 학습 상황을 공유받고, 궁금한 점은 편하게 문의해 보세요.`,`학습 계획이나 진도 고민이 있다면 ${dong} 과외 상담에서 함께 방향을 잡을 수 있습니다.`,`아이의 변화가 느껴질 때 그 부분을 함께 나누는 것도 큰 힘이 됩니다.`,`${dong}에서 아이에게 맞는 과외를 찾는 과정이 스스로 공부하는 힘을 기르는 시작이 되길 바랍니다.`,`이 페이지의 정보가 ${dong} 과외를 고르는 데 도움이 되었으면 합니다.`,`아래 ${dong} 안내에서 과목과 학년을 선택해 더 자세한 내용을 확인해 보세요.`])
   ]});
 
-  P.push({h:`${dong} 과외, 고를 때 살펴볼 점`, t:[
+  P.push({h:pick(rng,[`${dong} 과외, 고를 때 무엇을 살펴보나요?`,`${dong}에서 과외를 비교할 땐 뭘 보나요?`,`${dong} 과외 선택, 기준은 어떻게 잡나요?`]), t:[
     P2(rng,[`먼저 아이의 현재 수준을 정확히 진단하고, ${dong}에서 그에 맞는 단계부터 시작하는 곳인지 확인해 보세요.`,`진단 없이 진도만 나가는 곳보다, ${dong}에서 부족한 부분을 찾아 채워 주는 곳이 오래 도움이 됩니다.`,`아이가 어디서 막히는지 파악하고 그 지점을 보완해 주는 관리가 중요합니다.`,`${dong} 과외를 비교할 때는 반 편성과 진도 관리 방식을 함께 물어보는 것이 좋습니다.`,`아이 수준을 먼저 진단하는 ${dong} 과외일수록 시작이 안정적입니다.`,`${dong}에서 오래 다닐 곳을 찾는다면 관리와 소통 방식을 눈여겨보세요.`]),
     P2(rng,[`수업 뒤 복습과 점검이 이어지는지, 과제와 오답 관리가 이루어지는지도 ${dong}에서 함께 보는 것이 좋습니다.`,`수업만 듣고 끝나는 것이 아니라 스스로 소화하는 과정까지 챙기는 곳이 좋습니다.`,`선생님과 아이의 소통이 편안한지, 질문하기 좋은 분위기인지도 학습에 큰 영향을 줍니다.`,`모르는 것을 편하게 물어볼 수 있는 환경이 학습 태도를 바꿔 놓기도 합니다.`,`학교별 내신 관리와 시험 대비를 어떻게 운영하는지도 ${dong}에서 미리 확인해 두면 좋습니다.`,`같은 조건이라면 아이가 편안해하고 다니고 싶어 하는 ${dong} 과외를 고르는 것이 좋습니다.`])
   ]});
 
-  P.push({h:`${dong} 과외 자주 묻는 질문`, t:[
+  P.push({h:pick(rng,[`${dong} 과외에서 자주 묻는 질문은 무엇인가요?`,`${dong} 과외, 많이 물어보시는 건 뭔가요?`,`${dong}에서 자주 나오는 궁금증은 뭔가요?`]), t:[
     P2(rng,[`${dong}에서 기초가 부족한데 시작해도 괜찮은지 궁금해하는 분이 많습니다.`,`현재 수준을 진단한 뒤 맞는 단계부터 시작하므로, 기초가 부족해도 자기 속도로 학습할 수 있습니다.`,`늦게 시작하더라도 출발점을 정확히 잡으면 충분히 따라갈 수 있습니다.`,`어느 학년부터 다니는 것이 좋은지 묻는 경우도 많습니다.`,`학습 습관을 일찍 잡을수록 이후가 수월하지만, 어느 시기든 시작하는 그때가 가장 빠른 때입니다.`,`아이의 상황에 맞춰 ${dong}에서 시작 시기를 정하면 됩니다.`]),
     P2(rng,[`수업 시간과 교습비가 궁금하다면 ${dong} 방문상담으로 안내받으실 수 있습니다.`,`지역과 과목, 학년에 따라 다르므로 각 과외에 직접 확인하는 것이 정확합니다.`,`상담에서 아이에게 맞는 반과 일정을 함께 정할 수 있습니다.`,`${dong} 과외에 대해 더 알고 싶다면 전화나 문의하기로 편하게 물어보세요.`,`과목별·학년별 상세 안내도 함께 확인하면 선택에 도움이 됩니다.`,`궁금한 점은 전화나 문의하기를 통해 편하게 물어볼 수 있습니다.`])
   ]});
@@ -1220,7 +1220,7 @@ function nearbyBlock(R){
   const list=nearbyRegions(R,12);
   if(!list.length) return "";
   const links=list.map(r=>`<a href="${urlDong(r.slug)}">${esc(r.dong)}<small>${esc(r.sgg)}</small></a>`).join("");
-  return `<section class="sec"><h2>주변 지역</h2><p class="subt">${esc(R.sido)}의 다른 동네도 확인해 보세요.</p><div class="lgrid">${links}</div></section>`;
+  return `<section class="sec"><h2>${esc(R.dong)} 주변에는 어떤 동네가 있나요?</h2><p class="subt">${esc(R.sido)}의 다른 동네도 확인해 보세요.</p><div class="lgrid">${links}</div></section>`;
 }
 function pageDong(slug){
   const R=regionOf(slug); if(!R) return null;
@@ -1229,10 +1229,10 @@ function pageDong(slug){
   const alias=""; 
   const lvBlocks = LEVELS.map(l=>`<div class="sectitle">${LV_ICON[l]} ${esc(LG[l])}</div><div class="chips">${SUBJECTS.map(s=>`<a class="chip" href="${urlPage(slug,s,l)}">${SUBJ_ICON[s]} ${esc(dong)} ${esc(s)}</a>`).join("")}</div>`).join("");
   const subjAll=SUBJECTS.map(s=>`<a class="chip" href="${urlDongSubject(slug,s)}">${SUBJ_ICON[s]} ${esc(dong)} ${esc(s)}</a>`).join("");
-  const subjSec=`<section class="sec"><h2>${esc(dong)} 과목별 과외</h2><p class="subt">과목을 누르면 학년 통합 안내를 볼 수 있습니다.</p><div class="chips">${subjAll}</div></section>`;
+  const subjSec=`<section class="sec"><h2>${esc(dong)}에서 어떤 과목을 배울 수 있나요?</h2><p class="subt">과목을 누르면 학년 통합 안내를 볼 수 있습니다.</p><div class="chips">${subjAll}</div></section>`;
   const summary=`<div class="summary"><div class="row"><span class="item">📍 지역<b>${esc(sido)} ${esc(sgg)} ${esc(dong)}</b></span><span class="item">📚 과목<b>${SUBJECTS.length}개</b></span></div><p class="lead">${esc(sgg)} ${esc(dong)} 지역의 과목별·학년별 과외 정보를 안내합니다. 아래에서 학년과 과목을 선택해 자세한 내용을 확인하세요.</p></div>`;
   const __dd=pageDates(`dong|${slug}`); const __dbar=`<div class="dates"><span>📅 발행일 <b>${__dd.publishedKor}</b></span><span>🔄 수정일 <b>${__dd.modifiedKor}</b></span></div>`;
-  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)} 과목·학년별 과외</h2>${lvBlocks}</section>${nearbyBlock(R)}<div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
+  const body=`${thumb}<h1>${esc(dong)} 과외 정보</h1>${__dbar}${summary}${dongProse(dong,sgg,sido,alias,R)}${imgBlocks("dong|"+slug)}${subjSec}<section class="sec"><h2>${esc(dong)}에서 학년별로 어떤 과외가 있나요?</h2>${lvBlocks}</section>${nearbyBlock(R)}<div class="note">정확한 수업 시간 및 교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg,url:urlSgg(sido,sgg)},{name:dong}];
   const desc=`${sido} ${sgg} ${dong} 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
   return layout({title:`${dong} 과외 | ${sgg} 과목별 과외 정보`, desc, canonical:SITE_URL+urlDong(slug), jsonld:"", body, crumb, image:ogFor(`dong|${slug}`)});
@@ -1286,7 +1286,7 @@ function pageHome(){
     ["교습비와 수업 시간도 나와 있나요?","교습비와 수업 시간은 지역·과목·학생 상황에 따라 다르므로 사이트에는 표시하지 않습니다. 자세한 사항은 각 과외에 방문상담으로 확인하실 수 있습니다."],
     ["상담은 어떻게 받나요?","페이지의 전화 버튼으로 바로 통화하시거나, 문의하기 버튼으로 학생 정보와 궁금한 점을 남기시면 안내를 받으실 수 있습니다."]
   ];
-  const faqHtml=`<section class="sec faqsec"><h2>❓ 자주 묻는 질문</h2><div class="faq">${homeFaqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`;
+  const faqHtml=`<section class="sec faqsec"><h2>❓ 자주 묻는 질문은 무엇인가요?</h2><div class="faq">${homeFaqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`;
   const faqLd=JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":homeFaqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))});
 
   const springHoles = Array.from({length:9},(_,i)=>`<span style="top:${36+i*64}px"></span>`).join("");
@@ -1312,7 +1312,7 @@ function pageHome(){
 <img class="qimg" src="${IMG_BASE}123.webp" alt="공부하는 아이" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}123.webp'" width="900" height="675"></div>
 
 
-<section class="howto"><h2>이렇게 찾으세요</h2><div class="steps3">
+<section class="howto"><h2>동네 과외, 어떻게 찾나요?</h2><div class="steps3">
 <div class="s3"><div class="s3n">1</div><div class="s3b"><div class="s3t">지역 선택</div><div class="s3d">시·도 → 시군구 → 동네 순으로 우리 동네를 찾습니다.</div></div></div>
 <div class="s3"><div class="s3n">2</div><div class="s3b"><div class="s3t">과목·학년 선택</div><div class="s3d">초·중·고 학년과 과목을 골라 맞는 과외 정보를 봅니다.</div></div></div>
 <div class="s3"><div class="s3n">3</div><div class="s3b"><div class="s3t">전화·문의 상담</div><div class="s3d">전화나 문의하기로 학습 상담을 받아보세요.</div></div></div>
@@ -1656,43 +1656,43 @@ function genRegBody(seedKey, scope, subj){
     `${scope.name}에서 ${J(subj,"을","를")} 제대로 잡고 싶은 분들을 위해 핵심만 추렸습니다.`,
     `수업 선택부터 학습 관리까지, ${scope.name} ${subj} 과외의 궁금증을 한 번에 정리했습니다.`,
   ]);
-  const secWhy={h:pick(rng,[`왜 ${scope.name}에서 ${subj} 과외인가`,`${scope.name} ${subj}, 지금 챙겨야 하는 이유`,`동네 ${subj} 과외의 장점`,`가까운 곳에서 배우는 이유`]),
+  const secWhy={h:pick(rng,[`왜 ${scope.name}에서 ${subj} 과외를 찾나요?`,`${scope.name} ${subj}, 지금 챙겨야 하나요?`,`동네에서 ${subj} 과외를 하면 뭐가 좋나요?`,`가까운 곳에서 ${J(subj,"을","를")} 배우면 무엇이 다른가요?`]),
     p:P([`먼 곳까지 오가는 시간을 줄이면 그만큼 공부에 쓸 시간이 늘어납니다.`,`가까운 곳에서 배우면 이동 부담이 적어 꾸준히 다니기 좋습니다.`,`${scope.name} 인근 학교의 시험 범위와 출제 경향을 잘 아는 수업일수록 내신에 유리합니다.`,`같은 생활권 학생들이 모이면 학교별 진도에 맞춘 관리가 수월합니다.`,`아이 상태를 자주 살피며 세밀하게 지도할 수 있다는 점이 1:1 과외의 강점입니다.`,`${J(subj,"은","는")} 한 번 흐름을 놓치면 따라잡기 어려워, 가까이서 자주 점검받는 편이 좋습니다.`,`아이의 성향과 속도에 맞춰 수업을 조율할 수 있어 만족도가 높습니다.`,`저녁 시간이나 방과 후에도 이동이 짧아 일정을 짜기 편합니다.`,`지역 사정을 아는 선생님과는 소통이 빠르고 신뢰가 쌓이기 쉽습니다.`,`집과 가까울수록 아이가 지치지 않고 학습 리듬을 지킬 수 있습니다.`,`동네 안에서 여러 선택지를 비교할 수 있어 결정이 한결 수월합니다.`,`부모가 아이 상태를 자주 확인하고 방향을 함께 잡기에도 좋습니다.`],4)};
-  const secCriteria={h:pick(rng,[`${scope.name} ${subj}과외 고르는 법`,`${subj}과외, 이렇게 비교하세요`,`실패하지 않는 ${subj} 과외 선택`,`좋은 ${subj} 수업의 조건`]), type:"check",
+  const secCriteria={h:pick(rng,[`${scope.name} ${subj}과외는 어떻게 고르나요?`,`${subj}과외는 무엇부터 비교해야 하나요?`,`${subj} 과외 선택에서 무엇을 놓치면 안 되나요?`,`좋은 ${subj} 수업은 무엇이 다른가요?`]), type:"check",
     p:P([`${J(subj,"은","는")} ${J(joinKo(some(rng,sj.core,2)),"을","를")} 고르게 다지는 게 핵심입니다.`,`${scope.name}에서 ${J(subj,"을","를")} 볼 때는 ${pick(rng,sj.focus)} 관리가 되는지가 관건입니다.`,`아이 수준을 정확히 진단하고 약점을 채워 주는 곳인지 먼저 살펴보세요.`,`상담에서 학습 계획을 어떻게 잡아 주는지 들어 보면 판단이 섭니다.`,`처음 몇 주간의 관리 방식만 봐도 오래 다닐 곳인지 가늠할 수 있습니다.`,`숙제와 피드백이 규칙적으로 오가는지도 중요한 기준입니다.`,`아이가 편하게 질문할 수 있는 분위기인지 눈여겨보세요.`],3),
     items:some(rng,[`현재 수준을 진단하고 약점을 먼저 채우는가`,`${pick(rng,sj.focus)} 관리가 수업마다 이어지는가`,`학교별 내신·시험 대비를 어떻게 운영하는가`,`수업 뒤 복습·점검까지 이어지는가`,`아이와 소통이 편안하고 질문하기 좋은 분위기인가`,`진도와 과제량을 아이 속도에 맞춰 조절하는가`,`상담에서 학습 방향을 구체적으로 제시하는가`,`결과를 정기적으로 공유하고 방향을 조정하는가`],4)};
-  const secRoad={h:pick(rng,[`학년별 ${subj} 로드맵`,`${subj}, 단계마다 다르게`,`${subj} 단계별 학습 포인트`,`성장 단계에 맞춘 ${subj}`]), type:"step",
+  const secRoad={h:pick(rng,[`${J(subj,"은","는")} 학년마다 무엇이 달라지나요?`,`${subj}, 단계마다 뭐가 다른가요?`,`${subj} 단계별로 무엇을 챙기나요?`,`성장 단계에 맞춘 ${J(subj,"은","는")} 어떻게 하나요?`]), type:"step",
     p:P([`${J(subj,"은","는")} 학년이 오를수록 ${pick(rng,sj.core)} 비중이 커집니다.`,`같은 ${subj}라도 단계마다 목표와 과제가 다릅니다.`,`기초를 다진 뒤 응용으로 넓혀 가는 흐름이 중요합니다.`,`앞 단계에서 놓친 부분은 다음 단계의 발목을 잡기 쉽습니다.`,`아이의 현재 위치를 알아야 다음 목표가 또렷해집니다.`],3),
     steps:lvs.map(l=>({t:`${LG[l]} ${subj}`,d:`${pick(rng,sj.verb)} ${J(pick(rng,sj.tip),"으로","로")} 다집니다. ${pick(rng,["이 시기에 습관을 잡아 두면 다음 단계가 수월합니다.","기본기를 탄탄히 해 두는 것이 무엇보다 중요합니다.","진도와 함께 복습 루틴을 병행하면 효과가 큽니다.","서두르기보다 이해를 확인하며 넘어가는 게 좋습니다."])}`}))};
-  const secSchool={h:pick(rng,[`${scope.name} 내신·학교 대비`,`학교 시험에 맞춘 ${subj}`,`인근 학교 내신 관리`,`내신을 챙기는 ${subj}`]),
+  const secSchool={h:pick(rng,[`${scope.name} 내신은 어떻게 대비하나요?`,`학교 시험에 맞춘 ${J(subj,"은","는")} 어떻게 하나요?`,`${scope.name} 인근 학교 내신은 어떻게 챙기나요?`,`내신을 챙기는 ${subj} 수업은 어떤 모습인가요?`]),
     p:P([`같은 ${subj}라도 학교마다 시험 범위와 출제 스타일이 다릅니다.`,`${scope.name} 인근 학교의 기출과 서술형 유형을 파악해 두면 대비가 쉬워집니다.`,`내신은 평소 수업에서 학교 진도를 함께 챙길 때 흔들리지 않습니다.`,`시험 2~3주 전에는 학교별 범위에 맞춰 집중 점검이 필요합니다.`,`수행평가와 서술형 비중이 커진 만큼 답안 작성 연습도 병행하는 게 좋습니다.`,`학교 선생님이 강조한 부분을 놓치지 않는 것도 큰 차이를 만듭니다.`,`오답 노트를 시험 전에 다시 훑으면 실수를 크게 줄일 수 있습니다.`],4)};
-  const secTip={h:pick(rng,[`집에서 챙기는 ${subj} 습관`,`${subj} 실력 올리는 공부법`,`${subj} 자기주도 학습`,`혼자서도 되는 ${subj} 루틴`]), type:"box",
+  const secTip={h:pick(rng,[`집에서 ${J(subj,"을","를")} 어떻게 이어 가나요?`,`${subj} 실력이 붙는 공부법은 무엇인가요?`,`${subj} 자기주도 학습은 어떻게 하나요?`,`혼자서도 되는 ${subj} 루틴은 무엇인가요?`]), type:"box",
     p:P([`${J(subj,"은","는")} 수업과 함께 평소 습관이 실력을 좌우합니다.`,`꾸준한 ${subj} 실력은 작은 습관에서 시작됩니다.`,`스스로 공부하는 힘이 붙으면 ${J(subj,"이","가")} 흔들리지 않습니다.`,`정해진 시간에 조금씩 하는 편이 몰아서 하는 것보다 효과적입니다.`],2), items:some(rng,sj.tip,3)};
-  const secManage={h:pick(rng,[`${subj} 학습 관리 방식`,`실력을 끌어올리는 관리`,`${scope.name} ${subj} 관리 포인트`,`꾸준함을 만드는 관리`]),
+  const secManage={h:pick(rng,[`${subj} 학습은 어떻게 관리하나요?`,`${subj} 실력은 어떻게 끌어올리나요?`,`${scope.name} ${subj} 관리에서 무엇을 보나요?`,`${subj} 공부를 꾸준히 하려면 어떻게 하나요?`]),
     p:P([`${J(subj,"은","는")} ${pick(rng,sj.verb)} 꾸준함이 붙어야 실력이 됩니다.`,`점수는 한 번에 뛰지 않으며, 매일의 작은 점검이 쌓여 결과가 됩니다.`,`수준에 맞춘 과제와 규칙적인 점검이 실력의 토대가 됩니다.`,`매일 진행을 확인하고 ${J(pick(rng,sj.tip),"으로","로")} 약한 곳을 메웁니다.`,`오답과 개념 점검을 반복하며 빈틈을 좁혀 갑니다.`,`학습량은 한꺼번에 늘리기보다 단계적으로 올리는 편이 안전합니다.`,`아이가 지치지 않도록 완급을 조절하는 것도 관리의 일부입니다.`],4)};
-  const secStart={h:pick(rng,[`${subj} 과외, 언제 시작하면 좋을까`,`시작 시점이 중요한 이유`,`늦지 않게 시작하기`,`가장 좋은 시작 타이밍`]),
+  const secStart={h:pick(rng,[`${subj} 과외는 언제 시작하면 좋을까요?`,`${subj} 시작 시점이 왜 중요한가요?`,`${subj}, 지금 시작해도 늦지 않나요?`,`${scope.name}에서 ${J(subj,"은","는")} 언제 시작하나요?`]),
     p:P([`${J(subj,"은","는")} 어려워지기 전에 기초를 잡아 두는 편이 부담이 적습니다.`,`성적이 흔들리기 시작할 때가 사실은 가장 빠른 시작 시점입니다.`,`방학은 부족한 단원을 메우고 다음 학기를 준비하기 좋은 기간입니다.`,`이미 격차가 생겼더라도 진단 후 맞는 단계부터 시작하면 충분히 회복할 수 있습니다.`,`시작이 빠를수록 선택할 수 있는 학습 전략의 폭도 넓어집니다.`,`학기 초에 방향을 잡아 두면 한 학기가 훨씬 안정적입니다.`,`고민만 길어지면 격차는 그사이에도 벌어질 수 있습니다.`],4)};
-  const secParent={h:pick(rng,[`학부모가 챙기면 좋은 것`,`가정에서의 지원`,`아이의 ${subj} 자신감 키우기`,`부모가 도울 수 있는 것`]),
+  const secParent={h:pick(rng,[`학부모가 ${subj}에서 챙기면 좋은 것은 무엇인가요?`,`가정에서 ${J(subj,"을","를")} 어떻게 지원하나요?`,`아이의 ${subj} 자신감은 어떻게 키우나요?`,`부모가 ${subj} 공부를 도울 수 있나요?`]),
     p:P([`아이가 작은 성취를 느낄 수 있도록 칭찬과 격려를 아끼지 않는 것이 좋습니다.`,`점수보다 어제보다 나아진 점에 주목해 주면 아이의 동기가 유지됩니다.`,`수업 내용을 가볍게 물어봐 주는 것만으로도 아이의 복습이 됩니다.`,`선생님과 아이의 상태를 주기적으로 공유하면 관리가 촘촘해집니다.`,`조급함을 내려놓고 기다려 주는 태도가 아이의 자신감을 키웁니다.`,`아이가 스스로 계획을 세우도록 곁에서 도와주는 것도 좋습니다.`,`결과를 다그치기보다 과정을 인정해 주는 편이 오래갑니다.`],4)};
-  const secMethod={h:pick(rng,[`1:1 과외는 무엇이 다른가`,`맞춤 수업의 힘`,`${subj} 1:1 수업의 장점`,`아이 한 명에게 맞추는 수업`]),
+  const secMethod={h:pick(rng,[`1:1 ${subj} 과외는 무엇이 다른가요?`,`${subj} 개별 수업은 어떤 점이 좋나요?`,`${subj} 1:1 수업의 장점은 무엇인가요?`,`아이 한 명에게 맞추는 ${subj} 수업은 어떻게 하나요?`]),
     p:P([`여럿이 함께 듣는 수업과 달리 1:1은 아이 한 명에게 온전히 맞춰집니다.`,`모르는 부분에서 바로 멈춰 다시 설명받을 수 있어 이해가 깊어집니다.`,`아이의 이해 속도에 맞춰 진도를 조절하니 빈틈이 생기지 않습니다.`,`질문이 편해지면 아이가 스스로 생각하는 힘도 함께 자랍니다.`,`${subj}처럼 단계가 촘촘한 과목일수록 맞춤 지도의 효과가 큽니다.`,`아이의 약점을 콕 집어 반복하니 시간이 낭비되지 않습니다.`,`한 명에게 집중되는 만큼 작은 변화도 놓치지 않고 챙길 수 있습니다.`],4)};
-  const secArea={h:pick(rng,[`${scope.name} 학습 환경`,`${scope.name}에서 공부한다는 것`,`지역과 학습`,`${scope.name}의 교육 분위기`]),
+  const secArea={h:pick(rng,[`${scope.name}의 학습 환경은 어떤가요?`,`${scope.name}에서 공부한다는 건 어떤 의미인가요?`,`지역이 ${subj} 학습에 영향을 주나요?`,`${scope.name}의 교육 분위기는 어떤가요?`]),
     p:P([`${J(scope.name,"은","는")} 학생들이 많이 모이는 만큼 학습 정보도 활발히 오갑니다.`,`가까운 거리에서 꾸준히 다닐 수 있어 학습 리듬을 유지하기 좋습니다.`,`인근 학교의 시험 일정과 분위기를 공유하는 수업일수록 대비가 수월합니다.`,`익숙한 동네에서 배우면 아이가 심리적으로도 안정감을 느낍니다.`,`같은 지역 안에서 과목별 선택지를 비교하기도 편합니다.`,`동네 학습 분위기가 좋으면 아이도 자연스럽게 자극을 받습니다.`,`이웃 학부모들과 정보를 나누기 쉬운 것도 지역 학습의 장점입니다.`],4)};
-  const secResult={h:pick(rng,[`꾸준함이 만드는 변화`,`작은 습관, 큰 결과`,`${subj} 성적이 오르는 과정`,`변화는 이렇게 찾아옵니다`]),
+  const secResult={h:pick(rng,[`${J(subj,"을","를")} 꾸준히 하면 무엇이 달라지나요?`,`작은 ${subj} 습관이 어떤 결과를 만드나요?`,`${subj} 성적은 어떤 과정을 거쳐 오르나요?`,`${subj} 변화는 언제쯤 보이나요?`]),
     p:P([`성적은 하루아침에 오르지 않지만, 방향이 맞으면 반드시 변합니다.`,`매일 조금씩 쌓인 학습이 어느 순간 눈에 띄는 결과로 나타납니다.`,`틀리던 유형이 익숙해지는 경험이 아이의 자신감을 키웁니다.`,`꾸준히 관리받은 아이일수록 시험에서 흔들림이 적습니다.`,`${J(subj,"은","는")} 특히 누적의 힘이 크게 작용하는 과목입니다.`,`한 번 오른 흐름은 습관이 되면 쉽게 무너지지 않습니다.`,`작은 성공이 반복되면 공부에 대한 태도 자체가 달라집니다.`],4)};
-  const secExam={h:pick(rng,[`${subj} 시험 대비 전략`,`시험 기간 이렇게`,`내신·모의고사 대비`]),
+  const secExam={h:pick(rng,[`${subj} 시험은 어떻게 대비하나요?`,`${subj} 시험 기간에는 무엇을 하나요?`,`${subj} 내신과 모의고사는 어떻게 다른가요?`]),
     p:P([`시험은 평소 학습을 정리해 확인하는 과정입니다.`,`${J(subj,"은","는")} 시험 2~3주 전부터 범위를 좁혀 집중하는 편이 효과적입니다.`,`기출과 예상 문제를 함께 풀어 보면 출제 감각이 잡힙니다.`,`틀린 문제를 시험 직전 다시 훑는 것만으로도 실수를 크게 줄일 수 있습니다.`,`시험 후에는 오답을 정리해 다음 시험의 밑거름으로 삼습니다.`,`긴장하지 않도록 컨디션 관리도 점수의 일부입니다.`],4)};
-  const secWeak={h:pick(rng,[`약점부터 채우는 ${subj}`,`구멍을 메우는 학습`,`부족한 단원 잡기`]),
+  const secWeak={h:pick(rng,[`${subj} 약점은 어떻게 채우나요?`,`${subj}에서 구멍 난 단원은 어떻게 메우나요?`,`부족한 ${subj} 단원은 어떻게 잡나요?`]),
     p:P([`성적이 오르지 않는 이유는 대개 특정 단원의 구멍 때문입니다.`,`${J(subj,"은","는")} 앞 단원이 뒤 단원의 토대가 되므로 빈틈을 먼저 메워야 합니다.`,`진단을 통해 약한 부분을 찾으면 학습 효율이 크게 올라갑니다.`,`잘하는 부분보다 약한 부분에 시간을 더 쓰는 것이 점수로 이어집니다.`,`한 번 메운 구멍은 반복 점검으로 다시 벌어지지 않게 관리합니다.`],4)};
-  const secMotiv={h:pick(rng,[`공부 동기 만들기`,`아이가 스스로 하게`,`${subj}에 흥미 붙이기`]),
+  const secMotiv={h:pick(rng,[`${subj} 공부 동기는 어떻게 만드나요?`,`아이가 ${J(subj,"을","를")} 스스로 하게 하려면 어떻게 하나요?`,`${subj}에 흥미를 어떻게 붙이나요?`]),
     p:P([`작은 성취가 쌓이면 아이는 스스로 하고 싶은 마음이 생깁니다.`,`할 수 있다는 경험이 ${subj}에 대한 두려움을 줄여 줍니다.`,`목표가 또렷하면 공부의 이유가 생겨 집중이 잘됩니다.`,`결과보다 노력을 인정해 주는 말이 동기를 오래 유지시킵니다.`,`좋아하는 주제와 연결하면 어려운 내용도 흥미로워집니다.`],4)};
-  const secTime={h:pick(rng,[`시간 관리와 계획`,`학습 계획 세우기`,`꾸준함을 위한 습관`]),
+  const secTime={h:pick(rng,[`${subj} 학습 시간은 어떻게 관리하나요?`,`${subj} 학습 계획은 어떻게 세우나요?`,`${J(subj,"을","를")} 꾸준히 하는 습관은 어떻게 만드나요?`]),
     p:P([`정해진 시간에 규칙적으로 공부하는 습관이 실력의 바탕입니다.`,`계획은 지킬 수 있을 만큼 작게 세우는 것이 오래갑니다.`,`${J(subj,"은","는")} 매일 조금씩 하는 편이 몰아서 하는 것보다 효과적입니다.`,`하루를 마칠 때 오늘 한 것을 짧게 점검하면 다음 날이 수월합니다.`,`쉬는 시간도 계획에 넣어야 지치지 않고 이어갈 수 있습니다.`],4)};
-  const secConcept={h:pick(rng,[`개념부터 탄탄하게`,`이해 중심 학습`,`${subj} 기본기 다지기`]),
+  const secConcept={h:pick(rng,[`${subj} 개념은 어떻게 다지나요?`,`${J(subj,"을","를")} 이해 중심으로 배우면 뭐가 다른가요?`,`${subj} 기본기는 어떻게 쌓나요?`]),
     p:P([`${J(subj,"은","는")} 개념을 정확히 이해해야 응용으로 넘어갈 수 있습니다.`,`외우기보다 왜 그런지 이해하면 오래 기억에 남습니다.`,`개념을 자기 말로 설명할 수 있으면 제대로 이해한 것입니다.`,`기본기가 흔들리면 어려운 문제에서 무너지기 쉽습니다.`,`한 단계씩 확실히 다지고 넘어가는 편이 결국 빠릅니다.`],4)};
-  const secReview={h:pick(rng,[`복습이 실력을 만든다`,`반복의 힘`,`오답 관리`]),
+  const secReview={h:pick(rng,[`${subj} 복습은 어떻게 하나요?`,`${subj}에서 반복이 왜 중요한가요?`,`${subj} 오답은 어떻게 관리하나요?`]),
     p:P([`배운 내용은 복습할 때 비로소 내 것이 됩니다.`,`${J(subj,"은","는")} 반복해서 익힐수록 실수가 줄어듭니다.`,`오답 노트를 꾸준히 정리하면 같은 실수를 반복하지 않습니다.`,`복습 주기를 짧게 두고 여러 번 보는 것이 효과적입니다.`,`틀린 이유를 스스로 설명해 보면 이해가 한층 깊어집니다.`],4)};
-  const secGoal={h:pick(rng,[`목표를 정하고 시작하기`,`뚜렷한 목표의 힘`,`단계별 목표 설정`]),
+  const secGoal={h:pick(rng,[`${subj} 목표는 어떻게 정하나요?`,`${subj} 목표가 뚜렷하면 뭐가 달라지나요?`,`${subj} 단계별 목표는 어떻게 잡나요?`]),
     p:P([`막연히 열심히보다 구체적인 목표가 성과를 만듭니다.`,`큰 목표는 작은 단계로 나누면 훨씬 실천하기 쉬워집니다.`,`${subj}에서 이번 달 목표를 정하면 무엇을 할지 또렷해집니다.`,`목표를 눈에 보이게 적어 두면 동기가 유지됩니다.`,`달성한 목표를 확인하는 경험이 다음 목표의 힘이 됩니다.`],4)};
   let pool=shuffle(rng,[secWhy,secCriteria,secRoad,secSchool,secTip,secManage,secStart,secParent,secMethod,secArea,secResult,secExam,secWeak,secMotiv,secTime,secConcept,secReview,secGoal]);
   pool=pool.slice(0,10+Math.floor(rng()*4)); // 10~13개 노출(18종 중)
@@ -1715,7 +1715,7 @@ function regCommon({title, kw, sub, desc, canonical, crumb, lead, secs, faqs, ch
   const dateBar=`<div class="dates"><span>📅 발행일 <b>${dates.publishedKor}</b></span><span>🔄 수정일 <b>${dates.modifiedKor}</b></span></div>`;
   const summary=`<div class="summary"><p class="lead">${esc(lead)}</p></div>`;
   const secHtml=secs.map((s,i)=>renderSec(s,i)).join("");
-  const faqHtml=faqs&&faqs.length?`<section class="sec" id="faq"><h2>자주 묻는 질문</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`:"";
+  const faqHtml=faqs&&faqs.length?`<section class="sec" id="faq"><h2>자주 묻는 질문은 무엇인가요?</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`:"";
   const cta=`<div class="cta"><h2>${esc(scopeName)} ${esc(subj)} 과외, 상담받아 보세요</h2><p>전화 또는 문의 남기기로 ${esc(subj)} 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
   const faqLd=faqs&&faqs.length?"</script><script type=\"application/ld+json\">"+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":faqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))}):"";
   const jsonld=JSON.stringify({"@context":"https://schema.org","@type":"Article","headline":kw,"image":ogFor(seedKey),"datePublished":dates.publishedStr,"dateModified":dates.modifiedStr,"author":{"@type":"Organization","name":SITE_NAME},"publisher":{"@type":"Organization","name":SITE_NAME},"mainEntityOfPage":canonical})+faqLd;
@@ -1786,7 +1786,7 @@ function pageSgg(gk){
     [`어떤 과목까지 가능한가요?`,`${subjs.join("·")} 등 주요 과목을 초·중·고 학년별로 안내합니다.`],
     [`수업 시간과 교습비는 어떻게 되나요?`,`지역·과목·학습 상황에 따라 다르므로 문의로 안내받으실 수 있습니다.`],
   ];
-  const faqHtml=`<section class="sec" id="faq"><h2>자주 묻는 질문</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`;
+  const faqHtml=`<section class="sec" id="faq"><h2>자주 묻는 질문은 무엇인가요?</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`;
   const cta=`<div class="cta"><h2>${esc(sgg)} 과외, 상담받아 보세요</h2><p>전화 또는 문의 남기기로 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
   const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}<div class="summary"><p class="lead">${esc(g.lead)}</p></div>${secHtml}${imgBlocks(seedKey)}<section class="sec"><h2>${esc(sgg)} 과목별 과외</h2><div class="chips">${subjLinks}</div></section><section class="sec"><h2>${esc(sgg)} 동네별 과외</h2>${chipsFold(dongChips,10)}</section>${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg}];
