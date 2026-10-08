@@ -615,6 +615,15 @@ function urlDongSubject(slug,subj){ return `/${slug}/${SUBJ_EN[subj]}`; }
 function urlSidoSubject(sido,subj){ return `/region/${SIDO_SLUG[sido]}/${SUBJ_EN[subj]}`; }
 
 // ---------- 레이아웃 ----------
+
+/* 모든 페이지 <title> 을 "설명 | 사이트명" 하나로 정규화 (2026-10-08 사이트명 통일) */
+function siteTitle(t){
+  const N=SITE_NAME; const esc=N.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); const SEP="(?:\\s*[-|·—–:]\\s*)";
+  let s=String(t||"").trim();
+  s=s.replace(new RegExp("^"+esc+SEP),"").replace(new RegExp(SEP+esc+"$"),"");
+  s=s.replace(/\s*\|\s*/g," — ").trim();
+  return (s?s+" | ":"")+N;
+}
 function layout({title,desc,canonical,jsonld,body,crumb,image}){
   const bc = crumb? `<nav class="bc">${crumb.map((c,i)=> c.url?`<a href="${c.url}">${esc(c.name)}</a>`:`<span>${esc(c.name)}</span>`).join(' <i>›</i> ')}</nav>`:"";
   // 브레드크럼 JSON-LD
@@ -625,8 +634,8 @@ function layout({title,desc,canonical,jsonld,body,crumb,image}){
   // 조직 + 로고 JSON-LD (구글·네이버 로고 노출용)
   const orgLd = JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":SITE_NAME,"url":SITE_URL,"logo":SITE_URL+"/logo.png","telephone":"+82-10-6834-8080"});
   /* 검색 결과에 도메인 대신 사이트명이 뜨도록 — WebSite 이름·제목 접미사·application-name 을 함께 준다 */
-  const siteLd = JSON.stringify({"@context":"https://schema.org","@type":"WebSite","name":SITE_NAME,"alternateName":"우리동네과외","url":SITE_URL+"/","inLanguage":"ko-KR"});
-  const fullTitle = title.indexOf(SITE_NAME) >= 0 ? title : title + " - " + SITE_NAME;
+  const siteLd = JSON.stringify({"@context":"https://schema.org","@type":"WebSite","name":SITE_NAME,"url":SITE_URL+"/","inLanguage":"ko-KR"});
+  const fullTitle = siteTitle(title);
   const ldBlocks = [jsonld, bcLd, orgLd, siteLd].filter(Boolean).map(j=>`<script type="application/ld+json">${j}</script>`).join("");
   return `<!DOCTYPE html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
