@@ -270,12 +270,12 @@ const THUMBS = [
 "pexels-alfomedeiros-21482854.webp","pexels-amaria-10990004.webp","pexels-chipi1189-33964549.webp",
 "pexels-gu-ko-2150570603-32274998.webp","pexels-gu-ko-2150570603-35376358.webp","pexels-ian-panelo-7264404.webp",
 "pexels-katerina-holmes-5905443.webp","pexels-ling-app-387368942-14814047.webp","pexels-long-ba-mui-1130557677-33807234.webp",
-"pexels-matvei-2160105320-37397514.webp","pexels-matvei-2160105320-37397517.webp","pexels-minasenishino-33936499.webp",
+"pexels-suzyhazelwood-1098656.webp","pexels-matvei-2160105320-37397517.webp","pexels-minasenishino-33936499.webp",
 "pexels-miniperde-33872172.webp","pexels-ninosouza-716644.webp","pexels-pixabay-256417.webp",
 "pexels-pixabay-256491.webp","pexels-pixabay-256502.webp","pexels-ron-lach-9871139.webp",
 "pexels-ronaldo-guiraldelli-2110705-13042101.webp","pexels-samarmourya-12365550.webp",
 "pexels-suzyhazelwood-1098656.webp","pexels-thu-ngan-pham-550524329-18344347.webp","pexels-tima-miroshnichenko-9572664.webp",
-"pexels-tokki-papa-1095148033-20689095.webp","pexels-won-jong-lee-1966375686-29956386.webp",
+"pexels-tima-miroshnichenko-9572664.webp","pexels-won-jong-lee-1966375686-29956386.webp",
 "pexels-yangjunjun2-3353747-10906759.webp","pexels-yaroslav-shuraev-9489804.webp",
 ];
 const THUMB_DIR = "https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/thumb";
