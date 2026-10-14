@@ -649,11 +649,11 @@ function layout({title,desc,canonical,jsonld,body,crumb,image}){
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(fullTitle)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${esc(canonical)}"><meta property="og:site_name" content="${SITE_NAME}"><meta property="og:image" content="${image||SITE_URL+'/og-image.png'}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 ${ldBlocks}
 <style>${CSS}</style></head><body>
-<header class="hd"><div class="wrap"><a href="/" class="logo">${LOGO_SVG}<span class="logotxt">우리동네 과외</span></a><nav class="gnav"><a href="tel:${PHONE_TEL}" class="gnav-call">📞 ${PHONE}</a></nav></div></header>
+<header class="hd"><div class="wrap"><a href="/" class="logo">${LOGO_SVG}<span class="logotxt">우리동네 과외</span></a><nav class="gnav"><a href="tel:${PHONE_TEL}" class="gnav-call">📞 ${PHONE}</a><span class="telt gnav-telt">📞 ${PHONE}</span></nav></div></header>
 <main class="wrap">${bc}${body}</main>
 <footer class="ft"><div class="wrap">
 <p class="ftname">${LOGO_SVG_SM} ${SITE_NAME}</p>
-<p class="ftlinks"><a href="/">홈</a> · <a href="/post/">과외 정보</a> · <a href="/regions">전체 지역</a> · <a href="/list">전체 목록</a> · <a href="tel:${PHONE_TEL}">전화문의 ${PHONE}</a></p>
+<p class="ftlinks"><a href="/">홈</a> · <a href="/post/">과외 정보</a> · <a href="/regions">전체 지역</a> · <a href="/list">전체 목록</a> · <a href="tel:${PHONE_TEL}">전화문의 ${PHONE}</a><span class="telt">전화문의 ${PHONE}</span></p>
 <p style="margin:12px 0"><a href="/regions" style="display:inline-block;background:var(--accent);color:var(--accent-ink);padding:12px 24px;border-radius:999px;font-weight:800;text-decoration:none;font-size:14px">🗺️ 전국 전체 지역 보기</a></p>
 <p class="ftnote">전국 과외 정보를 지역·과목별로 안내하는 정보 제공 사이트입니다. 정확한 수업 시간 및 교습비는 지역별·과목별로 상이할 수 있으므로 각 과외에 방문상담을 통해 확인하시기 바랍니다.</p>
 <p class="ftcopy">© ${SITE_HOST}</p></div></footer>
@@ -673,7 +673,7 @@ const LOGO_SVG_SM = `<svg width="18" height="18" viewBox="0 0 40 40" style="vert
 
 // 플로팅 버튼 (전화/문자/문의)
 const FLOATING = `<div class="floating">
-<a href="tel:${PHONE_TEL}" class="fbtn fcall" aria-label="전화"><span class="fic">📞</span><span class="flbl">전화</span></a>
+<a href="tel:${PHONE_TEL}" class="fbtn fcall" aria-label="전화"><span class="fic">📞</span><span class="flbl">전화</span></a><span class="telt fbtn-telt">${PHONE}</span>
 <a href="sms:${PHONE_TEL}" class="fbtn fsms" aria-label="문자"><span class="fic">💬</span><span class="flbl">문자</span></a>
 <button class="fbtn finq" onclick="openInq()" aria-label="문의"><span class="fic">✉️</span><span class="flbl">문의</span></button>
 </div>`;
@@ -701,7 +701,7 @@ const INQUIRY_MODAL = `<div class="inqback" id="inqBack" onclick="if(event.targe
 </div>
 <div class="inqrow"><label>문의 내용</label><textarea id="iqMsg" rows="3" placeholder="궁금하신 점을 적어 주세요 (선택)"></textarea></div>
 <button class="inqsubmit" onclick="submitInq()">문의 보내기</button>
-<a href="tel:${PHONE_TEL}" class="inqcall">📞 바로 전화하기 ${PHONE}</a>
+<a href="tel:${PHONE_TEL}" class="inqcall">📞 바로 전화하기 ${PHONE}</a><span class="telt inq-telt">전화 ${PHONE}</span>
 <p class="inqnote" id="iqNote"></p>
 </div></div>
 <div class="thxback" id="thxBack" onclick="if(event.target===this)closeThx()">
@@ -709,7 +709,7 @@ const INQUIRY_MODAL = `<div class="inqback" id="inqBack" onclick="if(event.targe
 <div class="thxic">✅</div>
 <h3>감사합니다</h3>
 <p>문의가 정상적으로 접수되었습니다.<br>확인 후 <b>꼭 연락드리겠습니다.</b></p>
-<a href="tel:${PHONE_TEL}" class="thxcall">📞 지금 바로 통화하기</a>
+<a href="tel:${PHONE_TEL}" class="thxcall">📞 지금 바로 통화하기</a><span class="telt inq-telt">전화 ${PHONE}</span>
 <button class="thxok" onclick="closeThx()">확인</button>
 </div></div>`;
 
@@ -770,6 +770,14 @@ a{color:var(--accent)}
 .gnav{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .gnav a{color:var(--sub);text-decoration:none;font-size:13.5px;font-weight:700}
 .gnav-call{color:var(--accent-ink)!important;background:var(--accent);padding:11px 17px;border-radius:999px;font-weight:800!important;box-shadow:0 0 18px rgba(184,245,69,.35);white-space:nowrap;font-size:14px}
+/* PC(769px~)는 전화를 걸 수 없으니 tel: 버튼을 숨기고 번호를 일반 텍스트로 보인다. 모바일은 그대로 */
+.telt{display:none}
+@media(min-width:769px){a[href^="tel:"]{display:none!important}.telt{display:inline-flex;align-items:center}
+.gnav-telt{color:var(--accent-ink);background:var(--accent);padding:11px 17px;border-radius:999px;font-weight:800;box-shadow:0 0 18px rgba(184,245,69,.35);white-space:nowrap}
+.herobtns .hcall-telt{color:var(--accent);font-weight:800;font-size:16px;padding:15px 6px;white-space:nowrap}
+.floating{align-items:flex-end}.fbtn-telt{background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:13px;padding:8px 13px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.18);white-space:nowrap}
+.cphone-telt{color:var(--accent-ink);font-weight:800;font-size:14px;padding:12px 6px;white-space:nowrap}
+.inq-telt{width:100%;justify-content:center;margin-top:10px;font-weight:800;font-size:14px;color:var(--sub)}}
 
 /* ── 브레드크럼 ── */
 .bc{font-size:12px;color:var(--sub);margin:14px 2px 6px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
@@ -1234,7 +1242,7 @@ function prepCta(seedKey, dong, subj){
   const h = sj ? `${dong} ${sj}과외 상담 전에 무엇을 준비하나요?` : `${dong} 과외 상담 전에 무엇을 준비하나요?`;
   return `<div class="cta"><h2>${esc(h)}</h2><p>${esc(fbFill(pick(rng,FB_P_CTA),dong,sj?dong+" "+sj+"과외":dong+" 과외"))}</p>`
     + `<ul class="ctaprep">${prep.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`
-    + `<div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 준비되셨으면 전화</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div><div class="ctamore"><a href="/prepare">준비물만 먼저 보기 →</a></div></div>`;
+    + `<div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 준비되셨으면 전화</a><span class="telt cphone-telt">전화 ${PHONE}</span><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div><div class="ctamore"><a href="/prepare">준비물만 먼저 보기 →</a></div></div>`;
 }
 
 function renderSec(s,i){
@@ -1462,7 +1470,7 @@ function pageHome(){
   const faqLd=JSON.stringify({"@context":"https://schema.org","@type":"FAQPage","mainEntity":homeFaqs.map(f=>({"@type":"Question","name":f[0],"acceptedAnswer":{"@type":"Answer","text":f[1]}}))});
 
   const springHoles = Array.from({length:9},(_,i)=>`<span style="top:${36+i*64}px"></span>`).join("");
-  const body=`<div class="hero"><div class="springbar">${springHoles}</div><span class="deco d1">📚</span><span class="deco d2">🎓</span><span class="deco d3">📐</span><div class="herobadge">🏡 동네별 과외 찾기</div><h1>동네에서 3단계로 뽑은 과외만<br><span class="accent">우리동네 과외</span><span class="pencil">🏡</span><span class="sub2">지역·과목·학년으로 바로 찾기</span></h1><p>우리 동네 이름으로 검색해 아이 학년과 과목에 맞는 과외를 확인하세요. 인근 학교 내신 정보까지 함께 안내합니다.</p><div class="stat"><div><b>${totalDong}</b>동네</div><div><b>${SUBJECTS.length}</b>과목</div><div><b>${sidos.length}</b>시·도</div></div><div class="herobtns"><a class="hcall" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="hinq" onclick="openInq()">✉️ 문의하기</button></div></div>
+  const body=`<div class="hero"><div class="springbar">${springHoles}</div><span class="deco d1">📚</span><span class="deco d2">🎓</span><span class="deco d3">📐</span><div class="herobadge">🏡 동네별 과외 찾기</div><h1>동네에서 3단계로 뽑은 과외만<br><span class="accent">우리동네 과외</span><span class="pencil">🏡</span><span class="sub2">지역·과목·학년으로 바로 찾기</span></h1><p>우리 동네 이름으로 검색해 아이 학년과 과목에 맞는 과외를 확인하세요. 인근 학교 내신 정보까지 함께 안내합니다.</p><div class="stat"><div><b>${totalDong}</b>동네</div><div><b>${SUBJECTS.length}</b>과목</div><div><b>${sidos.length}</b>시·도</div></div><div class="herobtns"><a class="hcall" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><span class="telt hcall-telt">전화 ${PHONE}</span><button class="hinq" onclick="openInq()">✉️ 문의하기</button></div></div>
 
 <section class="sec"><h2>📚 과목별 과외</h2><p class="subt">국어·영어·수학·과학·사회, 초·중·고 전 과목 과외 정보를 안내합니다.</p><div class="subjgrid">${subjCards}</div></section>
 <section class="sec"><h2>🎯 이런 힘을 길러 드립니다</h2><p class="subt">점수보다 오래 남는 세 가지를 목표로 합니다.</p>
@@ -1502,7 +1510,7 @@ ${faqHtml}
 
 <section class="sec"><h2>🗂️ 학습 관리 도구</h2><p class="subt">스케줄·플래너·오답노트·리포트로 아이의 학습을 촘촘히 관리합니다.</p>
 <div class="phgrid"><figure class="phcard"><img class="phimg" src="${IMG_BASE}444.webp" alt="학습 스케줄" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}444.webp'" width="600" height="450"><figcaption>🗓️ 학습 스케줄</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}445.webp" alt="학습 플래너" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}445.webp'" width="600" height="450"><figcaption>📒 학습 플래너</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}446.webp" alt="오답 노트" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}446.webp'" width="600" height="450"><figcaption>📝 오답 노트</figcaption></figure><figure class="phcard"><img class="phimg" src="${IMG_BASE}447.webp" alt="성적 리포트" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}447.webp'" width="600" height="450"><figcaption>📊 성적 리포트</figcaption></figure></div></section>
-<div class="cta"><h2>우리 아이에게 맞는 과외를 찾고 계신가요?</h2><p>전화 또는 문의하기로 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>
+<div class="cta"><h2>우리 아이에게 맞는 과외를 찾고 계신가요?</h2><p>전화 또는 문의하기로 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><span class="telt cphone-telt">전화 ${PHONE}</span><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>
 
 <div class="note">전국 과외 정보를 지역·과목별로 안내합니다. 정확한 수업 시간 및 교습비는 각 과외에 방문상담을 통해 확인하시기 바랍니다.</div>`;
   return layout({title:`${SITE_NAME} | 전국 지역별·과목별 과외 정보`, desc:"전국 지역별·과목별 과외 정보를 한곳에서. 동네 이름으로 우리 아이에게 맞는 영어·수학·국어·과학·사회 과외를 찾아보세요.", canonical, jsonld:faqLd, body});
@@ -1968,7 +1976,7 @@ function pageSgg(gk){
     [`수업 시간과 교습비는 어떻게 되나요?`,`지역·과목·학습 상황에 따라 다르므로 문의로 안내받으실 수 있습니다.`],
   ];
   const faqHtml=`<section class="sec" id="faq"><h2>자주 묻는 질문은 무엇인가요?</h2><div class="faq">${faqs.map(f=>`<details><summary><span class="q">Q. ${esc(f[0])}</span></summary><div class="a">${esc(f[1])}</div></details>`).join("")}</div></section>`;
-  const cta=`<div class="cta"><h2>${esc(sgg)} 과외, 상담받아 보세요</h2><p>전화 또는 문의 남기기로 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
+  const cta=`<div class="cta"><h2>${esc(sgg)} 과외, 상담받아 보세요</h2><p>전화 또는 문의 남기기로 학습 상담을 받아보세요.</p><div class="ctabtns"><a class="cphone" href="tel:${PHONE_TEL}">📞 ${PHONE}</a><span class="telt cphone-telt">전화 ${PHONE}</span><button class="cinq" onclick="openInq()">✉️ 문의 남기기</button></div></div>`;
   const body=`${thumb}<h1>${esc(kw)}</h1>${dateBar}${summary}<div class="summary"><p class="lead">${esc(g.lead)}</p></div>${secHtml}${imgBlocks(seedKey)}<section class="sec"><h2>${esc(sgg)} 과목별 과외</h2><div class="chips">${subjLinks}</div></section><section class="sec"><h2>${esc(sgg)} 동네별 과외</h2>${chipsFold(dongChips,10)}</section>${cta}${faqHtml}<div class="note">정확한 수업 시간·교습비는 지역·과목·상황에 따라 다를 수 있어요. 자세한 건 문의로 확인해 주세요.</div>`;
   const crumb=[{name:"홈",url:"/"},{name:sido,url:urlRegion(sido)},{name:sgg}];
   const desc=`${sido} ${sgg} 동네별·과목별 과외 정보. 초·중·고 국어·영어·수학·과학·사회 과외를 확인하세요.`;
