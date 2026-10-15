@@ -1,3 +1,17 @@
+/* /img/<파일> — 자기 저장소 image/ 사진 자체 서빙(2026-10-16): jsDelivr 간헐 503 대비. 허용 목록 → Cache API(IMG_VER) → GitHub raw → jsDelivr 폴백 → 1년 immutable */
+const IMG_ORIGIN="https://myclassup.com";
+const IMG_VER="1";
+const IMG_OK=/^([A-Za-z0-9._-]+\/)?[A-Za-z0-9._-]+\.(jpe?g|png|webp|gif|svg)$/;
+async function imgProxy(request,ctx,p){
+  if(!IMG_OK.test(p)) return new Response("not found",{status:404});
+  let repo="myclassup", rest=p;
+  const ext=p.split(".").pop().toLowerCase(); const ct=ext==="png"?"image/png":ext==="webp"?"image/webp":ext==="gif"?"image/gif":ext==="svg"?"image/svg+xml":"image/jpeg";
+  const key=new Request(IMG_ORIGIN+"/img/"+p+"?v="+IMG_VER,{method:"GET"}); const cache=(typeof caches!=="undefined"&&caches.default)?caches.default:null;
+  if(cache){ try{ const hit=await cache.match(key); if(hit) return hit; }catch(e){} }
+  const srcs=["https://raw.githubusercontent.com/dandylsk80/"+repo+"/main/image/"+rest,"https://cdn.jsdelivr.net/gh/dandylsk80/"+repo+"@main/image/"+rest];
+  for(let i=0;i<srcs.length;i++){ try{ const r=await fetch(srcs[i]); if(r.ok){ const body=await r.arrayBuffer(); const res=new Response(body,{headers:{"content-type":ct,"cache-control":"public, max-age=31536000, immutable","x-img-src":i?"jsd":"raw"}}); if(cache&&ctx&&ctx.waitUntil) ctx.waitUntil(cache.put(key,res.clone())); return res; } }catch(e){} }
+  return new Response("image unavailable",{status:502});
+}
 /* ---------- 파비콘 (18개 공통 규격: ico 16·32·48 / favicon-32.png / apple-touch-icon 180) ----------
    ~/sites/powerlandschool/tools/gen.mjs 로 생성. 경로마다 제 형식의 바이트를 돌려준다. */
 const ICON_ICO  = "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";
@@ -279,10 +293,10 @@ const THUMBS = [
 "pexels-tima-miroshnichenko-9572664.webp","pexels-won-jong-lee-1966375686-29956386.webp",
 "pexels-yangjunjun2-3353747-10906759.webp","pexels-yaroslav-shuraev-9489804.webp",
 ];
-const THUMB_DIR = "https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/thumb";
+const THUMB_DIR = IMG_ORIGIN+"/img/thumb";
 /* og:image 는 카카오·네이버 크롤러가 webp 를 못 읽는 경우가 있어 jpg 1200x630 을 따로 둔다 */
-const OG_DIR = "https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/og";
-const IMG_BASE = "https://cdn.jsdelivr.net/gh/dandylsk80/myclassup@main/image/";
+const OG_DIR = IMG_ORIGIN+"/img/og";
+const IMG_BASE = IMG_ORIGIN+"/img/";
 const RAW_BASE = "https://raw.githubusercontent.com/dandylsk80/myclassup/main/image/";
 function mcImg(cls, file, alt){ return `<img class="${cls}" src="${IMG_BASE}${file}" alt="${alt||""}" loading="lazy" onerror="this.onerror=null;this.src='${RAW_BASE}${file}'" width="600" height="450">`; }
 // ===== 하위페이지용 이미지 블록 =====
@@ -2270,6 +2284,7 @@ const ip=request.headers.get("CF-Connecting-IP")||"";const ua=request.headers.ge
             .bind('myclassup', b.type, (b.page||'').slice(0,300), (b.ref||'').slice(0,120), ip, ts, ...tkMeta(request.headers.get('User-Agent')||'', b.ref||'', 'myclassup.com', b.q||"")).run();}}catch(e){ console.log('[track] fail', e&&e.message); } })(); if(ctx&&ctx.waitUntil) ctx.waitUntil(__task); else await __task; }catch(e){}return new Response(JSON.stringify({ok:true}),{headers:{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}});}
   if(path==="/api/track"&&request.method==="OPTIONS")return new Response(null,{headers:{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"POST,OPTIONS","Access-Control-Allow-Headers":"Content-Type"}});
   if(path==="/") return html(pageHome());
+  if(path.indexOf("/img/")===0) return imgProxy(request,ctx,path.slice(5));
   if(path==="/robots.txt") return robots();
   if(path==="/llms.txt"||path==="/llms-full.txt") return llmsTxt();
   if(path.startsWith("/sitemap")||path==="/rss.xml"||path==="/rss"||path==="/feed"||path==="/atom.xml"||path==="/atom") await loadPosts(env);   /* 사이트맵·RSS 는 동기 함수 */
