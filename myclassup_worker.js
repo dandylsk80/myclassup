@@ -2261,13 +2261,13 @@ function pageFixed(slug){
 async function handle(request, env, ctx){
   const url=new URL(request.url);
   let path=decodeURIComponent(url.pathname).replace(/\/$/,"")||"/";
-  if(path==="/api/track"&&request.method==="POST"){try{const b=await request.json();
+  if(path==="/api/track"&&request.method==="POST"){try{const b=await request.json(); const __task=(async()=>{ try{
     /* 같은 방문자가 같은 버튼을 반복해 눌러도 1건만 기록·발송한다 */
     if (await tkDup(env, 'myclassup', b.type, (b.page || '').slice(0, 300), request.headers.get('CF-Connecting-IP') || '')) {
       return new Response(JSON.stringify({ ok: true, dup: 1 }), { headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' } });
     }
 const ip=request.headers.get("CF-Connecting-IP")||"";const ua=request.headers.get("User-Agent")||"";const isBot=/bot|crawl|spider|slurp|mediapartners|googlebot|bingbot|yandex|baidu|duckduckbot|facebookexternalhit|semrush|ahrefs|mj12bot|dotbot|petalbot|bytespider|headlesschrome|python-requests|curl|wget|yeti|daumoa|cs\.daum\.net|compatible;\s*daum\/|lighthouse|pagespeed|inspectiontool|googleother|applebot|amazonbot|archiver|scrapy|node-fetch|okhttp|go-http|libwww|httpclient|dataforseo|serpstat|zoominfo|bubing|linkdex/i.test(ua);const ts=new Date().toISOString();if(!isBot&&TG_LABEL[b.type]){const tgp=tgNotify(env, b.type,(b.page||"/").slice(0,300),b.ref||"",ua, String(b.b || "").slice(0, 40), b.q||"");if(ctx&&ctx.waitUntil)ctx.waitUntil(tgp);else await tgp;}if(env&&env.DB&&!(b.type==="view"&&isBot||(b.type==="view"&&skipViewCf(request, request.headers.get("CF-Connecting-IP")||"")))&&(b.type==="tel"||b.type==="sms"||b.type==="contact"||b.type==="view")){await env.DB.prepare('INSERT INTO events (site,type,page,ref,ip,ts,ua,device,source,keyword) VALUES (?,?,?,?,?,?,?,?,?,?)')
-            .bind('myclassup', b.type, (b.page||'').slice(0,300), (b.ref||'').slice(0,120), ip, ts, ...tkMeta(request.headers.get('User-Agent')||'', b.ref||'', 'myclassup.com', b.q||"")).run();}}catch(e){}return new Response(JSON.stringify({ok:true}),{headers:{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}});}
+            .bind('myclassup', b.type, (b.page||'').slice(0,300), (b.ref||'').slice(0,120), ip, ts, ...tkMeta(request.headers.get('User-Agent')||'', b.ref||'', 'myclassup.com', b.q||"")).run();}}catch(e){ console.log('[track] fail', e&&e.message); } })(); if(ctx&&ctx.waitUntil) ctx.waitUntil(__task); else await __task; }catch(e){}return new Response(JSON.stringify({ok:true}),{headers:{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}});}
   if(path==="/api/track"&&request.method==="OPTIONS")return new Response(null,{headers:{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"POST,OPTIONS","Access-Control-Allow-Headers":"Content-Type"}});
   if(path==="/") return html(pageHome());
   if(path==="/robots.txt") return robots();
