@@ -380,11 +380,12 @@ function policyShort(seedKey){
 // ---------- 발행일/수정일 ----------
 function fmtDate(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 function fmtKor(d){ return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`; }
+/* 발행일·수정일은 실제 날짜 고정값 (2026-10-27). 예전엔 페이지마다 최근 14일 안에서 매일 밀리는 수정일을 냈다(가짜 갱신).
+   SITE_PUB = 사이트 공개일(첫 커밋), FIXED_PUB = 고정 안내 페이지 7개를 올린 날(4354fdf),
+   SITE_MOD = 페이지 내용을 실제로 마지막에 고친 날(276a0ff 전화번호 표기) — 내용을 고치면 이 값만 올린다. */
+const SITE_PUB = "2026-07-05", FIXED_PUB = "2026-09-22", SITE_MOD = "2026-10-14";
 function pageDates(key){
-  const rng = seedRng(key+"date");
-  const now = new Date();
-  const mod = new Date(now); mod.setDate(now.getDate()-Math.floor(rng()*14));
-  const pub = new Date(mod); pub.setDate(mod.getDate()-(30+Math.floor(rng()*150)));
+  const pub = new Date(String(key).indexOf("fixed|")===0 ? FIXED_PUB : SITE_PUB), mod = new Date(SITE_MOD);
   return {published:pub, modified:mod, publishedStr:fmtDate(pub), modifiedStr:fmtDate(mod), publishedKor:fmtKor(pub), modifiedKor:fmtKor(mod)};
 }
 function schoolsFor(c,lv){ return lv==="초등"?c.e:(lv==="중등"?c.m:c.h); }
