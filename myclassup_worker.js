@@ -1588,20 +1588,15 @@ function allUrls(){
 }
 function sitemapIndex(){
   const total=allUrls().length; const n=Math.ceil(total/SM_CHUNK);
-  const today=new Date().toISOString().slice(0,10);
+  const today=inMaxDate();
   const items=[]; for(let i=1;i<=n;i++) items.push(`<sitemap><loc>${SITE_URL}/sitemap-${i}.xml</loc><lastmod>${today}</lastmod></sitemap>`);
   return new Response(`<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${items.join("\n")}\n</sitemapindex>`,{headers:{"content-type":"application/xml; charset=utf-8"}});
 }
-/* ── sitemap lastmod ────────────────────────────────────────
-   URL 마다 다른 날짜를 주고 18일 주기로 갱신한다.
-   전 URL 을 매일 오늘로 찍으면 검색엔진이 신뢰하지 않는다(danmalgi 방식). */
-const SM_DAY = 86400000, SM_PERIOD = 18;
+/* ── sitemap lastmod: 유형별 실제 변경일 (2026-10-27) ─────────
+   예전엔 URL 마다 18일 주기로 날짜를 돌렸다(가짜 갱신). 이제 indexnowDaily 의 지문 비교가 남긴 유형별 변경일(inLastmod). */
+const SM_DAY = 86400000;
 function smHash(str){ let h=5381; const s=String(str); for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))>>>0; return h; }
-function smLastmod(key){
-  const off = smHash(key) % SM_PERIOD;
-  const periods = Math.floor((Date.now()/SM_DAY - off)/SM_PERIOD);
-  return new Date((periods*SM_PERIOD + off)*SM_DAY).toISOString().slice(0,10);
-}
+function smLastmod(key){ return inLastmod(key); }
 /* RSS 정렬용 날짜: URL 마다 60일 주기로 밀린다. 매일 다른 1/60 묶음이 최신이 된다. */
 function rssRankDate(u){
   const off = smHash(u) % 60;
@@ -1816,20 +1811,132 @@ function llmsTxt(){
 }
 function robots(){ return new Response(`User-agent: *\nAllow: /\nUser-agent: GPTBot\nAllow: /\nCrawl-delay: 10\nUser-agent: OAI-SearchBot\nAllow: /\nUser-agent: ChatGPT-User\nAllow: /\nUser-agent: PerplexityBot\nAllow: /\nUser-agent: Perplexity-User\nAllow: /\nUser-agent: ClaudeBot\nAllow: /\nUser-agent: Claude-Web\nAllow: /\nUser-agent: anthropic-ai\nAllow: /\nUser-agent: Claude-SearchBot\nAllow: /\nUser-agent: Claude-User\nAllow: /\nUser-agent: Google-Extended\nAllow: /\nUser-agent: Applebot-Extended\nAllow: /\nUser-agent: CCBot\nAllow: /\nUser-agent: Bytespider\nAllow: /\nUser-agent: Naverbot\nAllow: /\nUser-agent: Yeti\nAllow: /\n\n# SEO 분석 크롤러 — 색인에 도움 안 되므로 차단\nUser-agent: SemrushBot\nDisallow: /\nUser-agent: AhrefsBot\nDisallow: /\nUser-agent: AhrefsSiteAudit\nDisallow: /\nUser-agent: MJ12bot\nDisallow: /\nUser-agent: DotBot\nDisallow: /\nUser-agent: DataForSeoBot\nDisallow: /\nUser-agent: BLEXBot\nDisallow: /\nUser-agent: rogerbot\nDisallow: /\nUser-agent: SEOkicks\nDisallow: /\nUser-agent: Barkrowler\nDisallow: /\nUser-agent: serpstatbot\nDisallow: /\n\n# llms.txt: ${SITE_URL}/llms.txt\nLlms-txt: ${SITE_URL}/llms.txt\n# 전체 목록: ${SITE_URL}/list\nSitemap: ${SITE_URL}/sitemap.xml\n#DaumWebMasterTool:8ad0caca88fe9c46231512acb4b586c44dc3a3f0916c074ea6d50f0bfdda26ae:pYR9u40s2miYk+D5NPR7lA==\n`,{headers:{"content-type":"text/plain"}}); }
 
-// IndexNow: 전체 URL을 검색엔진에 즉시 제출
-async function indexnowPing(u){
-  const all=allUrls();
-  const start=Math.max(0,parseInt((u&&u.searchParams.get("start"))||"0")||0);
-  const n=Math.min(10000,Math.max(1,parseInt((u&&u.searchParams.get("n"))||"1000")||1000));
-  const urls=all.slice(start,start+n);
-  if(!urls.length) return new Response(`제출할 URL 없음 (전체 ${all.length}개, start=${start})`,{headers:{"content-type":"text/plain; charset=utf-8"}});
-  const payload={ host:SITE_HOST, key:INDEXNOW_KEY, keyLocation:`${SITE_URL}/${INDEXNOW_KEY}.txt`, urlList:urls };
-  try{
-    const resp=await indexnowFetch({ method:"POST", headers:{"Content-Type":"application/json; charset=utf-8"}, body:JSON.stringify(payload) });
-    const next=start+urls.length;
-    return new Response(`IndexNow 제출 완료\n범위: ${start} ~ ${next-1}\n제출 URL 수: ${urls.length}\n전체 URL 수: ${all.length}\n응답 코드: ${resp.status}\n네이버: ${resp.naver}\n다음: ${SITE_URL}/indexnow-ping?start=${next}&n=${n}`,{headers:{"content-type":"text/plain; charset=utf-8"}});
-  }catch(e){ return new Response(`IndexNow 제출 실패: ${e.message}`,{status:500,headers:{"content-type":"text/plain; charset=utf-8"}}); }
+/* ── IndexNow: 사이트맵 URL 중 바뀐 유형만 + 새 글 (2026-10-27, allpaystore·24payshop 방식) ─────────
+   예전엔 매일 전체 URL 을 1,000개씩 돌아가며 보냈고, /indexnow-ping 은 키 없이 누구나 제출을 일으킬 수 있었다.
+   ① 7일 내 새 글 ② 사이트맵 <loc> 를 경로 모양으로 유형을 나누고(inTypeKey), 유형별 대표 페이지 HTML 에서 날짜를 뗀
+      지문이 D1 site_state(site='danmalgi', key='in_fp') 저장값과 다르면 그 유형 URL 전부. 하루 1회(cron).
+   저장된 지문이 없으면(첫 실행) 전 유형 1회 전량. D1 읽기 실패면 새 글만. 바뀐 게 없으면 indexnow_log 에 'no-change'.
+   수동: /indexnow-submit?key=<KEY>[&dry=1][&all=1]  (dry 는 계획만 · all 은 지문 무시하고 전량) */
+const IN_SITE = "myclassup", IN_HOST = "myclassup.com", IN_ORIGIN = "https://myclassup.com";
+function inUrls(){
+  const m = {};
+  for (const x of inAllLocs().matchAll(/<loc>([^<]+)<\/loc>/g)) { const u = x[1].replace(/&amp;/g, "&"); const t = inTypeKey(u); if (!t) continue; (m[t] = m[t] || []).push(u); }
+  for (const t in m) m[t] = [...new Set(m[t])];
+  return m;
 }
+/* 날짜(ISO·한국식)만 떼고 해시 — lastmod·"YYYY년 M월 D일" 같은 날짜 때문에 지문이 매일 흔들리지 않게 */
+function inFingerprint(html){
+  const t = String(html || "").replace(/\d{4}-\d{2}-\d{2}(T[0-9:.]+Z?)?/g, "D").replace(/\d{4}\s*[.년]\s*\d{1,2}\s*[.월]\s*\d{1,2}\s*일?/g, "D");
+  let h1 = 5381, h2 = 0x811c9dc5;
+  for (let i = 0; i < t.length; i++) { const c = t.charCodeAt(i); h1 = ((h1 << 5) + h1 + c) >>> 0; h2 = Math.imul(h2 ^ c, 16777619) >>> 0; }
+  return h1.toString(16) + h2.toString(16) + "-" + t.length;
+}
+function logIndexnow(env, row){
+  try {
+    if (!env || !env.DB) return Promise.resolve();
+    return env.DB.prepare("INSERT INTO indexnow_log (site,ts,source,start_idx,count,status,endpoint,attempt,note) VALUES (?,?,?,?,?,?,?,?,?)")
+      .bind(IN_SITE, new Date().toISOString(), row.source || "", row.start | 0, row.count | 0, row.status | 0, String(row.ep || "").slice(0, 80), 1, String(row.note || "").slice(0, 200))
+      .run().catch(() => {});
+  } catch (e) { return Promise.resolve(); }
+}
+/* 한 묶음(최대 10,000) 씩 네이버 + 폴백 체인(api.indexnow.org → yandex → seznam)에 보내고 indexnow_log 에 남긴다.
+   네이버는 체인 밖에서 따로 — 체인은 첫 200 에서 멈춘다 */
+const IN_EPS = ["https://api.indexnow.org/indexnow", "https://yandex.com/indexnow", "https://search.seznam.cz/indexnow"];
+async function inSubmit(env, urls, source, note){
+  const out = []; let ok = true;
+  for (let i = 0; i < urls.length; i += 10000) {
+    const batch = urls.slice(i, i + 10000);
+    const body = JSON.stringify({ host: IN_HOST, key: INDEXNOW_KEY, keyLocation: IN_ORIGIN + "/" + INDEXNOW_KEY + ".txt", urlList: batch });
+    const opt = { method: "POST", headers: { "content-type": "application/json; charset=utf-8" }, body };
+    let naver = 0, chain = 0, ep = "";
+    try { naver = (await fetch("https://searchadvisor.naver.com/indexnow", opt)).status; } catch (e) { naver = -1; }
+    for (const e of IN_EPS) { try { const r = await fetch(e, opt); chain = r.status; ep = e; if (r.status >= 200 && r.status < 300) break; } catch (x) {} }
+    const good = (naver >= 200 && naver < 300) || (chain >= 200 && chain < 300);
+    if (!good) ok = false;
+    out.push({ n: batch.length, naver, chain, ep: ep.replace(/^https?:\/\//, "").split("/")[0] });
+    await logIndexnow(env, { source, start: i, count: batch.length, status: chain, ep, note: "naver=" + naver + " " + note });
+  }
+  return { ok, out };
+}
+/* 유형별 "지문이 바뀐 날" — 사이트맵 lastmod 가 쓴다 (site_state key='in_fp_date'). 1시간 메모.
+   기록이 없는 유형은 SM_FALLBACK_DATE(이 방식 배포일) */
+const SM_FALLBACK_DATE = "2026-10-27";   /* 이날 전 페이지의 발행일·수정일 표기를 실제 날짜로 바꿨다 */
+let IN_DATES = null, IN_DATES_AT = 0;
+async function loadInDates(env){
+  if (IN_DATES && Date.now() - IN_DATES_AT < 3600000) return IN_DATES;
+  let d = IN_DATES || {};
+  try { const r = env && env.DB ? await env.DB.prepare("SELECT value FROM site_state WHERE site=? AND key=?").bind(IN_SITE, "in_fp_date").first() : null; if (r && r.value) d = JSON.parse(r.value); } catch (e) {}
+  IN_DATES = d; IN_DATES_AT = Date.now(); return d;
+}
+function inLastmod(u){ const t = inTypeKey(u); return (t && IN_DATES && IN_DATES[t]) || SM_FALLBACK_DATE; }
+function inMaxDate(){ let m = SM_FALLBACK_DATE; for (const k in (IN_DATES || {})) if (IN_DATES[k] > m) m = IN_DATES[k]; return m; }
+async function indexnowDaily(env, source, dry, force){
+  try { await loadPosts(env); } catch (e) {}
+  const fresh = postFreshUrls(), types = inUrls();
+  const fp = {};
+  for (const t in types) { try { fp[t] = inFingerprint(await inSample(env, types[t][0])); } catch (e) { fp[t] = "err"; } }
+  let prev = null, dates = {};                      /* prev null = 저장된 지문 없음(첫 실행) · undefined = 읽기 실패 → 새 글만 */
+  try {
+    const r = env && env.DB ? await env.DB.prepare("SELECT value FROM site_state WHERE site=? AND key=?").bind(IN_SITE, "in_fp").first() : null;
+    if (r && r.value) prev = JSON.parse(r.value); else if (!env || !env.DB) prev = undefined;
+    const r2 = env && env.DB ? await env.DB.prepare("SELECT value FROM site_state WHERE site=? AND key=?").bind(IN_SITE, "in_fp_date").first() : null;
+    if (r2 && r2.value) dates = JSON.parse(r2.value);
+  } catch (e) { prev = undefined; }
+  let changed = [];
+  if (force) changed = Object.keys(fp).filter(t => fp[t] !== "err");
+  else if (prev !== undefined) for (const t in fp) if (fp[t] !== "err" && (!prev || prev[t] !== fp[t])) changed.push(t);
+  const plan = { site: IN_SITE, first: prev === null, force: !!force, fresh: fresh.length, changed, counts: {}, total: 0, errs: Object.keys(fp).filter(t => fp[t] === "err") };
+  for (const t of changed) { plan.counts[t] = types[t].length; plan.total += types[t].length; }
+  if (dry) return plan;
+  const res = [];
+  if (fresh.length) res.push(await inSubmit(env, fresh, source, "posts"));
+  const next = Object.assign({}, prev || {}), today = new Date().toISOString().slice(0, 10);
+  /* URL 이 적은 유형(100개 이하)은 한 묶음으로 합쳐 보낸다 — 루트 URL 하나만 담긴 배치는 네이버가 422 를 준다 */
+  const small = changed.filter(t => types[t].length <= 100), big = changed.filter(t => types[t].length > 100);
+  const mark = (ts, ok) => { if (!ok) return; for (const t of ts) { if (!prev || prev[t] !== fp[t]) dates[t] = today; next[t] = fp[t]; } };
+  if (small.length) {
+    let urls = []; for (const t of small) urls = urls.concat(types[t]);
+    if (urls.length === 1 && /^https?:\/\/[^/]+\/?$/.test(urls[0])) urls.push(IN_ORIGIN + "/list");
+    const r = await inSubmit(env, urls, source, "types=" + small.join(",")); res.push(r); mark(small, r.ok);
+  }
+  for (const t of big) { const r = await inSubmit(env, types[t], source, "type=" + t); res.push(r); mark([t], r.ok); }
+  if (!fresh.length && !changed.length) await logIndexnow(env, { source, start: 0, count: 0, status: 0, ep: "", note: "no-change" });
+  if (changed.length && env && env.DB) {
+    try {
+      const ts = new Date().toISOString(), q = "INSERT INTO site_state (site,key,value,ts) VALUES (?,?,?,?) ON CONFLICT(site,key) DO UPDATE SET value=excluded.value, ts=excluded.ts";
+      await env.DB.batch([env.DB.prepare(q).bind(IN_SITE, "in_fp", JSON.stringify(next), ts), env.DB.prepare(q).bind(IN_SITE, "in_fp_date", JSON.stringify(dates), ts)]);
+      IN_DATES = dates; IN_DATES_AT = Date.now();
+    } catch (e) {}
+  }
+  /* 이번에 보낸 유형·새 글을 남긴다 — sites-tools index-submit 이 /api/indexnow-changed 로 받아 깃허브에서 bing.com/indexnow 로 다시 보낸다 */
+  const okTypes = changed.filter(t => next[t] === fp[t]);
+  if ((okTypes.length || fresh.length) && env && env.DB) {
+    try { await env.DB.prepare("INSERT INTO site_state (site,key,value,ts) VALUES (?,?,?,?) ON CONFLICT(site,key) DO UPDATE SET value=excluded.value, ts=excluded.ts")
+      .bind(IN_SITE, "in_last", JSON.stringify({ date: today, types: okTypes, fresh }), new Date().toISOString()).run(); } catch (e) {}
+  }
+  return { plan, sent: res.map(r => r.out) };
+}
+/* 최근 days 일 안에 워커가 IndexNow 로 보낸 URL(바뀐 유형 전체 + 새 글). 공개 주소만 담기므로 키 없이 연다 */
+async function inChangedResp(request, env){
+  const days = Math.min(7, Math.max(1, parseInt(new URL(request.url).searchParams.get("days") || "1", 10) || 1));
+  let last = null; try { const r = env && env.DB ? await env.DB.prepare("SELECT value FROM site_state WHERE site=? AND key=?").bind(IN_SITE, "in_last").first() : null; if (r && r.value) last = JSON.parse(r.value); } catch (e) {}
+  const cutoff = new Date(Date.now() - (days - 1) * 86400000).toISOString().slice(0, 10);
+  let urls = [];
+  if (last && last.date >= cutoff) { const m = inUrls(); urls = (last.fresh || []).slice(); for (const t of last.types || []) if (m[t]) urls = urls.concat(m[t]); }
+  return new Response(JSON.stringify({ site: IN_SITE, date: last && last.date, days, types: last && last.date >= cutoff ? last.types : [], n: urls.length, urls }), { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
+}
+/* 사이트맵 전체(글 제외) */
+function inAllLocs(){ return allUrls().map(u => "<loc>" + u + "</loc>").join(""); }
+/* 유형: 홈·목록·고정 안내·시도(·과목)·시군구(·과목)·동·동×과목·동×학년과목. 글(/post)은 새 글 경로로 따로 */
+function inTypeKey(u){ let p = "/"; try { p = decodeURIComponent(new URL(u).pathname); } catch (e) {} const seg = p.split("/").filter(Boolean);
+  if (!seg.length) return "home"; if (seg[0] === "post") return null;
+  if (seg.length === 1 && (seg[0] === "list" || seg[0] === "regions")) return seg[0];
+  if (seg.length === 1 && FP_ORDER.indexOf(seg[0]) >= 0) return "fp";
+  if (seg[0] === "region" || seg[0] === "gu") return seg[0] + seg.length;
+  if (seg.length === 1) return "dong";
+  return /-/.test(seg[1]) ? "dong-level-subject" : "dong-subject"; }
+async function inSample(env, u){ const r = await handle(new Request(u), env, { waitUntil(){}, passThroughOnException(){} }); return r.status + ":" + (await r.text()); }
+
 function faviconSvg(){
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#b8f545"/><path d="M10 29V12l10 9 10-9v17" fill="none" stroke="#0c0f16" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   return new Response(svg,{headers:{"content-type":"image/svg+xml","cache-control":"public, max-age=86400"}});
@@ -2288,13 +2395,18 @@ const ip=request.headers.get("CF-Connecting-IP")||"";const ua=request.headers.ge
   if(path.indexOf("/img/")===0) return imgProxy(request,ctx,path.slice(5));
   if(path==="/robots.txt") return robots();
   if(path==="/llms.txt"||path==="/llms-full.txt") return llmsTxt();
-  if(path.startsWith("/sitemap")||path==="/rss.xml"||path==="/rss"||path==="/feed"||path==="/atom.xml"||path==="/atom") await loadPosts(env);   /* 사이트맵·RSS 는 동기 함수 */
+  if(path.startsWith("/sitemap")||path==="/rss.xml"||path==="/rss"||path==="/feed"||path==="/atom.xml"||path==="/atom"){ await loadPosts(env); await loadInDates(env); }   /* 사이트맵·RSS 는 동기 함수 */
   if(path==="/sitemap.xml") return sitemapIndex();
   { const sm=path.match(/^\/sitemap-(\d+)\.xml$/); if(sm) return sitemapPart(parseInt(sm[1])); }
   if(path==="/atom.xml"||path==="/atom") return new Response(atomFromRss(await (rss()).text(), SITE+"/atom.xml"),{headers:{"content-type":"application/atom+xml; charset=UTF-8","cache-control":"public, max-age=3600"}});
   if(path==="/rss.xml"||path==="/rss"||path==="/feed") return rss();
   if(path===`/${INDEXNOW_KEY}.txt`) return new Response(INDEXNOW_KEY,{headers:{"content-type":"text/plain"}});
-  if(path==="/indexnow-ping") return indexnowPing(url);
+  if(path==="/api/indexnow-changed") return inChangedResp(request,env);
+  if(path==="/indexnow-submit"){
+    if(url.searchParams.get("key")!==INDEXNOW_KEY) return new Response("forbidden",{status:403});
+    const r=await indexnowDaily(env,"manual",url.searchParams.get("dry")==="1",url.searchParams.get("all")==="1");
+    return new Response(JSON.stringify(r,null,1),{headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store"}});
+  }
   if(path==="/og-image.png") return iconResp(OG_PNG,"image/png");
   if(path==="/og.svg") return new Response(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#152238"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs><rect width="1200" height="630" fill="url(#g)"/><rect x="60" y="60" width="1080" height="510" rx="28" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="2"/><text x="600" y="300" text-anchor="middle" font-family="Pretendard,'Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="86" font-weight="800" fill="#ffffff">우리동네 과외</text><text x="600" y="378" text-anchor="middle" font-family="Pretendard,'Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="34" font-weight="500" fill="rgba(255,255,255,.88)">전국 동네별 초·중·고 1:1 과외</text><text x="600" y="530" text-anchor="middle" font-family="Pretendard,'Apple SD Gothic Neo','Malgun Gothic',sans-serif" font-size="28" font-weight="600" fill="rgba(255,255,255,.72)">myclassup.com</text></svg>`,{headers:{"content-type":"image/svg+xml; charset=UTF-8","cache-control":"public, max-age=86400"}});
   if(path==="/favicon.svg") return faviconSvg();
@@ -2548,12 +2660,9 @@ function blockScraper(request){
 }
 
 export default {
-  /* 매일 1회 IndexNow 자동 제출. URL 이 많아 하루 1,000개씩 돌아가며 보낸다 */
+  /* 매일 1회 IndexNow — 사이트맵 URL 중 바뀐 유형 + 7일 내 새 글만 (indexnowDaily) */
   async scheduled(event, env, ctx){
-    const total=allUrls().length, PER=1000;
-    const day=Math.floor(Date.now()/86400000);
-    const start=total?((day*PER)%total):0;
-    ctx.waitUntil(indexnowPing(new URL(SITE_URL+"/indexnow-ping?start="+start+"&n="+PER)));
+    ctx.waitUntil(indexnowDaily(env,"cron",false,false).then(r=>console.log("[CRON IndexNow]",JSON.stringify(r&&r.plan))).catch(e=>console.log("[CRON IndexNow] ERROR",e&&e.message)));
   },
   async fetch(request, env, ctx){
     const __blk = blockScraper(request); if(__blk) return __blk;
